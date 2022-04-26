@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<SimscapeMultibodyImportXML version="2.0" xmlns="urn:mathworks:SimscapeMultibody:import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Created by="" on="02/10/22||10:25:47" using="Simscape Multibody Link Version 7.0" from="SolidWorks 26.5.0"/>
+<ModelUnits mass="kilogram" length="millimeter"/>
+<DataUnits mass="kilogram" length="meter"/>
+<RootAssembly name="ArmAssembly" uid="ArmAssembly" version="430">
+<AssemblyFile name="ArmAssembly.SLDASM" type="SolidWorks Assembly"/>
+<InstanceTree>
+<Instance name="ArmSegmentAssembly-3" uid="ArmSegmentAssembly-3" entityUid="ArmSegmentAssembly">
+<Transform>
+<Rotation>0.99986597225311735 0 0.016371851768467151 0 1 0 -0.016371851768467151 0 0.99986597225311735</Rotation>
+<Translation>0.85842238484456701 -0.19114947045570091 -0.43651856082675472</Translation>
+</Transform>
+<Instance name="ArmAttachPin-1" uid="ArmAttachPin-1" entityUid="ArmAttachPin*:*Default">
+<Transform>
+<Rotation>-0.68506925535127516 0.72847794432806923 0 0 0 -1.0000000000000002 -0.72847794432806923 -0.68506925535127516 0</Rotation>
+<Translation>-0.20316264693905384 0.039999999999999841 -0.20145640258940556</Translation>
+</Transform>
+</Instance>
+<Instance name="ArmSegment-1" uid="ArmSegment-1" entityUid="ArmSegment*:*Default">
+<Transform>
+<Rotation>0.94765990492845975 0 -0.31928154439457168 2.53396539318109e-16 1 7.3614493269988795e-16 0.31928154439457168 -7.7851987535366892e-16 0.94765990492845975</Rotation>
+<Translation>-0.12261155502013454 0 -0.17431747131586706</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Gripper-2" uid="Gripper-2" entityUid="Gripper*:*Default">
+<Transform>
+<Rotation>0.92947105966488097 0 0.36889503824996572 -3.0382780791837411e-16 1 9.3992538157776689e-16 -0.36889503824996572 -9.8571401124445634e-16 0.92947105966488097</Rotation>
+<Translation>0.92201159876579364 -0.19114947045570047 -0.59178075446410605</Translation>
+</Transform>
+</Instance>
+<Instance name="ArmAttachPin-8" uid="ArmAttachPin-8" entityUid="ArmAttachPin*:*Default">
+<Transform>
+<Rotation>-0.83728330870850676 0.54676929408859021 0 -5.1129319948356243e-16 -6.7788949614132243e-16 -0.99999999999999978 -0.54676929408859021 -0.83728330870850687 8.5173676408209555e-16</Rotation>
+<Translation>0.86159597988757264 -0.15114947045570043 -0.5678025769778583</Translation>
+</Transform>
+</Instance>
+<Instance name="ArmSegmentAssembly-1" uid="ArmSegmentAssembly-1" entityUid="ArmSegmentAssembly">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0.43038318291301669 -0.17608371983374765 -0.37023470366414885</Translation>
+</Transform>
+<Instance name="ArmSegment-1" uid="ArmSegment-1" entityUid="ArmSegment*:*Default">
+<Transform>
+<Rotation>0.93929960706807047 -1.2438047218670066e-16 0.34309801538593637 0 1 3.506663980126205e-16 -0.34309801538593637 -3.2789506408286816e-16 0.93929960706807047</Rotation>
+<Translation>0.0036293702652102633 -0.015065750621953394 -0.017849264197664749</Translation>
+</Transform>
+</Instance>
+<Instance name="ArmAttachPin-1" uid="ArmAttachPin-1" entityUid="ArmAttachPin*:*Default">
+<Transform>
+<Rotation>-0.68506925535127527 0.72847794432806934 0 0 0 -1 -0.72847794432806934 -0.68506925535127527 0</Rotation>
+<Translation>-0.076211096335575712 0.024934249378046613 0.01131406711013988</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="ArmSegmentAssembly-2" uid="ArmSegmentAssembly-2" entityUid="ArmSegmentAssembly">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0.44146198861831398 -0.19628185415430685 -0.38852199503294788</Translation>
+</Transform>
+<Instance name="ArmSegment-1" uid="ArmSegment-1" entityUid="ArmSegment*:*Default">
+<Transform>
+<Rotation>0.41441251292687553 -3.8218996834529075e-16 0.91008915449511429 0 1 4.5091661667689371e-16 -0.91008915449511429 -2.4876100096717861e-16 0.41441251292687553</Rotation>
+<Translation>0.15458107511288854 0.005132383698605858 -0.12323778303806215</Translation>
+</Transform>
+</Instance>
+<Instance name="ArmAttachPin-1" uid="ArmAttachPin-1" entityUid="ArmAttachPin*:*Default">
+<Transform>
+<Rotation>-0.68506925535127527 0.72847794432806934 0 0 0 -1 -0.72847794432806934 -0.68506925535127527 0</Rotation>
+<Translation>0.11935601151410347 0.045132383698606116 -0.045880204905975941</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="ArmBase-1" uid="ArmBase-1" grounded="true" entityUid="ArmBase*:*Default">
+<Transform>
+<Rotation>-0.95635474939335408 0 -0.29220813355000097 0 1 0 0.29220813355000097 0 -0.95635474939335408</Rotation>
+<Translation>0.22506419540933817 -0.15114947045570093 -0.31947253852475888</Translation>
+</Transform>
+</Instance>
+</InstanceTree>
+<Constraints>
+<Concentric name="Concentric31">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmBase-1</Uid>
+</InstancePath>
+<Position>-0.13500000000000006 -0.01999999999999999 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-1</Uid>
+<Uid>ArmAttachPin-1</Uid>
+</InstancePath>
+<Position>0 0 -0.040000000000000008</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Concentric name="Concentric32">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-1</Uid>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>0.13500000000000001 0 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-2</Uid>
+<Uid>ArmAttachPin-1</Uid>
+</InstancePath>
+<Position>0 0 -0.039999999999999994</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Concentric name="Concentric33">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-2</Uid>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>0.13499999999999979 0 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-3</Uid>
+<Uid>ArmAttachPin-1</Uid>
+</InstancePath>
+<Position>0 0 -0.040000000000000022</Position>
+<Axis>0 0 1.0000000000000002</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Concentric name="Concentric34">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Gripper-2</Uid>
+</InstancePath>
+<Position>-0.065000000000000169 0.089999999999999983 0</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmAttachPin-8</Uid>
+</InstancePath>
+<Position>0 0 -0.040000000000000008</Position>
+<Axis>0 0 0.99999999999999978</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident2">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Gripper-2</Uid>
+</InstancePath>
+<Position>0 0.080000000000000002 -0.030000000000000082</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>ArmAttachPin-8</Uid>
+</InstancePath>
+<Position>0 0 -0.040000000000000008</Position>
+<Axis>0 0 -0.99999999999999978</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Concentric name="Concentric37">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-3</Uid>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>0.13500000000000012 0 1.1102230246251565e-16</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmAttachPin-8</Uid>
+</InstancePath>
+<Position>0 0 -0.040000000000000008</Position>
+<Axis>0 0 0.99999999999999978</Axis>
+</ConstraintGeometry>
+</Concentric>
+</Constraints>
+</RootAssembly>
+<Assemblies>
+<Assembly name="ArmSegmentAssembly" uid="ArmSegmentAssembly" version="136">
+<ModelUnits mass="kilogram" length="inch"/>
+<AssemblyFile name="ArmSegmentAssembly.SLDASM" type="SolidWorks Assembly"/>
+<Constraints>
+<Concentric name="Concentric1">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>-0.085000000000000006 0.080000000000000016 0</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmAttachPin-1</Uid>
+</InstancePath>
+<Position>0 0 -0.040000000000000001</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>0.10000000000000001 0.080000000000000016 -0.029999999999999999</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>ArmAttachPin-1</Uid>
+</InstancePath>
+<Position>0 0 -0.040000000000000001</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Coincident>
+</Constraints>
+</Assembly>
+</Assemblies>
+<Parts>
+<Part name="ArmAttachPin" uid="ArmAttachPin*:*Default" version="135">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="ArmAttachPin.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.014137166941154067</Mass>
+<CenterOfMass>0 0 0</CenterOfMass>
+<Inertia>7.7386262787254851e-06 7.7386262787254851e-06 3.9760782021995816e-07 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="ArmAttachPin_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="ArmBase" uid="ArmBase*:*Default" version="205">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="ArmBase.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.89654004214701988</Mass>
+<CenterOfMass>-0.057596190079756936 0 0</CenterOfMass>
+<Inertia>0.0011889458257704831 0.0018783055135726666 0.0015494878239453187 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="ArmBase_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0" g="0.043137254901960784" b="0.59215686274509804" a="1"/>
+<Diffuse r="0" g="0.043137254901960784" b="0.59215686274509804" a="1"/>
+<Specular r="0" g="0.021568627450980392" b="0.29607843137254902" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="ArmSegment" uid="ArmSegment*:*Default" version="368">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="ArmSegment.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.80622012644105889</Mass>
+<CenterOfMass>0.019173688458172043 0.040000000000000015 0</CenterOfMass>
+<Inertia>0.00068114215251731283 0.0028126370719739092 0.0030567070796152715 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="ArmSegment_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="Gripper" uid="Gripper*:*Default" version="191">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="Gripper.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.29168008429403913</Mass>
+<CenterOfMass>-0.019876144360953137 0.040238330646879823 0</CenterOfMass>
+<Inertia>0.00027636540544073458 0.00037807520827440447 0.00048466585046450504 0 0 -4.1623682041519997e-06</Inertia>
+</MassProperties>
+<GeometryFile name="Gripper_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+</Parts>
+</SimscapeMultibodyImportXML>

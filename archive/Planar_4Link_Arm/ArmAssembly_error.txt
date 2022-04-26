@@ -1,0 +1,16 @@
+Constrained Instances: 'ArmSegmentAssembly-1/ArmSegment-1', 'ArmSegmentAssembly-1/ArmSegment-1', 'ArmBase-1', 'ArmBase-1'
+Constraint Name: Width1
+Error Details: Constraint is not supported. The constraint has been ignored.
+---------------------------------------------------------------------------------
+Constrained Instances: 'ArmSegmentAssembly-2/ArmSegment-1', 'ArmSegmentAssembly-2/ArmSegment-1', 'ArmSegmentAssembly-1/ArmSegment-1', 'ArmSegmentAssembly-1/ArmSegment-1'
+Constraint Name: Width3
+Error Details: Constraint is not supported. The constraint has been ignored.
+---------------------------------------------------------------------------------
+Constrained Instances: 'ArmSegmentAssembly-3/ArmSegment-1', 'ArmSegmentAssembly-3/ArmSegment-1', 'ArmSegmentAssembly-2/ArmSegment-1', 'ArmSegmentAssembly-2/ArmSegment-1'
+Constraint Name: Width4
+Error Details: Constraint is not supported. The constraint has been ignored.
+---------------------------------------------------------------------------------
+Constrained Instances: 'Gripper-2', 'Gripper-2', 'ArmSegmentAssembly-3/ArmSegment-1', 'ArmSegmentAssembly-3/ArmSegment-1'
+Constraint Name: Width5
+Error Details: Constraint is not supported. The constraint has been ignored.
+---------------------------------------------------------------------------------

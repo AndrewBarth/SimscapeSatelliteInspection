@@ -1,0 +1,12 @@
+Constrained Instances: 'ClientBase-1', 'ClientNozzle-1'
+Constraint Name: Lock1
+Error Details: Constraint is not supported. The constraint has been exported as unknown constraint.
+---------------------------------------------------------------------------------
+Constrained Instances: 'ClientBase-1', 'ClientNozzle-1'
+Constraint Name: Lock1
+Error Details: Constraint geometry is not supported. The constraint geometry has been exported as unknown geometry.
+---------------------------------------------------------------------------------
+Constrained Instances: 'ClientBase-1', 'ClientNozzle-1'
+Constraint Name: Lock1
+Error Details: Constraint geometry is not supported. The constraint geometry has been exported as unknown geometry.
+---------------------------------------------------------------------------------
