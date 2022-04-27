@@ -1,5 +1,5 @@
 
-addpath('utilities')
+addpath('../utilities')
 
 
 % Parameter settings from reference
@@ -131,7 +131,7 @@ for k = 1:nPts
         estInertia(k,:) = (estK*inertiaBar)';
     else
         estMass(k) = 0;
-        estIneria(k,:) = zeros(1,3);
+        estInertia(k,:) = zeros(1,3);
     end
     
 end
