@@ -1,9 +1,31 @@
-% function [rVec,pVec,rVec0,rBase,RL,RLbase,RJ,RJbase,kVec,T00,PoseMats] = computeGeometry(x0,nLink,Link_Length,massVec,Base_a)
 function [geometry] = computeGeometry(x0,nLink,Link_Length,massVec,alpha,Base_a,Base_c,Base_z)
-
+% Function to compute the system geometry based on the current joint angles
+% and arm configuration
+%
+% Inputs: x0:            state vector [position eulerAngles jointAngles
+%                                      velocity angularRate jointRates]
+%         nLink:         number of links in arm
+%         Link_Length:   vector of link lengths
+%         massVec:       vector of masses (base and links)
+%         alpha:         alpha angle for DH parameters
+%         Base_a         z dimension of base
+%         Base_c:        x dimension of base
+%         Base_z:        z rotaion of base
+%
+% Output: geometry:      structure containing geometry parameters
+%
 % Assumptions and Limitations:
 %   Set up for a 3 joint system
-
+%
+% Dependencies:
+%   fKinematics
+%   robotXRot, robotYRot, robotZRot
+%
+% References:
+%    1. Wilde, Markus, et al. "Equations of Motion of Free-Floating 
+%          Spacecraft-Manipulator Systems: An Engineer's Tutorial." 
+%          Frontiers in Robotics and AI 5 (2018): 41.
+%
 % Author: Andrew Barth
 %
 % Modification History:
@@ -11,10 +33,10 @@ function [geometry] = computeGeometry(x0,nLink,Link_Length,massVec,alpha,Base_a,
 %    Mar 15 2022 - Added array sizing for Simulink implementation
 %
 
-%global NLINKS
 coder.extrinsic('Simulink.Bus') 
 assert(nLink < 10);
 
+% Initialize data sizes
 DHparams = zeros(nLink+1,4);
 RJb = zeros(nLink+1,3,3);
 RJ  = zeros(nLink+1,3,3);
@@ -106,6 +128,7 @@ rVec(3,:) = rBase' + rVec0(3,:,1)';
 
 alphaOut = alpha';
 
+% Store data in geometry structure
 geometry.rBase = rBase;
 geometry.rVec = rVec;
 geometry.rVec0 = rVec0;
@@ -119,5 +142,3 @@ geometry.T00 = T00;
 geometry.PoseMats = PoseMats;
 geometry.alpha = alphaOut;
 
-% geometry_bus_info = Simulink.Bus.createObject(geometry);
-% geometry_bus = evalin('base', geometry_bus_info.busName);

@@ -1,6 +1,8 @@
+% Script to define parameters used in the joint control algorithm.
+% Some of these may now be redundant with the Simulink implementation
 
-
-
+% Define a Simulink parameter to store the number of links
+% This was necessary for Simulink to allow arrays to be sized by nLink
 NLINKS = Simulink.Parameter;
 NLINKS.Value = 3;
 NLINKS.CoderInfo.StorageClass = 'Auto';
@@ -18,10 +20,10 @@ NLINKS.Max = [];
 NLINKS.DocUnits = '';
 
 nLink = 3;
-assert(nLink==3);
 
 dtr = pi/180;
 
+% Set the run time of the simulation
 endTime = 50;
 
 % Set up mass properties
@@ -154,7 +156,4 @@ rcm = msum / mt;
 % Set up the initial dynamic state
 x0(:,1) = [rcm [phi theta psi] q [xcmDot ycmDot zcmDot] [w_x w_y w_z] qDot]';
 
-% initialGeometry = computeGeometry(x0(:,1),nLink,Link_Length,massVec,alpha,Base_a,Base_c,Base_z);
-% geometry_bus_info = Simulink.Bus.createObject(initialGeometry);
-% geometry_bus = evalin('base', geometry_bus_info.busName);
 

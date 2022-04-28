@@ -1,8 +1,35 @@
 function [Ho, Hom, Hsq, Hm, Hstar, HstarInv, HoInv, linkInertia, Jt, Jr] = computeMassMatrix(x0,geometry,massProperties,nLink)
-
+% Function to compute the generalized inertia matrix along with its
+% components.
+%
+% Inputs: x0:             state vector [position eulerAngles jointAngles
+%                                       velocity angularRate jointRates]
+%         geometry:       structure containing geometry parameters
+%         massProperties: structure containing mass property values
+%         nLink:          number of links in arm
+%
+% Output: Ho:             base spacecraft inertia matrix
+%         Hom:            dynamic inertia coupling matrix
+%         Hsq:            joint rate contribution
+%         Hm:             manipulator inertia matrix
+%         Hstar:          generaized inertia matrix
+%         HstarInv:       inverse of generaized inertia matrix
+%         HoInv:          inverse of base spacecraft inertia matrix
+%         linkInertia:    inertia of each link
+%         Jt:             linear motion Jacobian
+%         Jr:             angular motion Jacobian
+%
 % Assumptions and Limitations:
-%   
-
+%   (none)
+%
+% Dependencies:
+%   skewMat
+%
+% References:
+%    1. Wilde, Markus, et al. "Equations of Motion of Free-Floating 
+%          Spacecraft-Manipulator Systems: An Engineer's Tutorial." 
+%          Frontiers in Robotics and AI 5 (2018): 41.
+%
 % Author: Andrew Barth
 %
 % Modification History:
@@ -39,7 +66,7 @@ linkInertia = zeros(nLink,3,3);
     end
 
     % Form the base-spacecraft inertia matrix
-    Ho = [mt*eye(3,3) -mt*rocSkew; mt*rocSkew Hs];                              % Ref 1, Eq. 28
+    Ho = [mt*eye(3,3) -mt*rocSkew; mt*rocSkew Hs];           % Ref 1, Eq. 28
 
 
     Jts = zeros(3,nLink);          % part of dynamic coupling inertia matrix
@@ -47,11 +74,12 @@ linkInertia = zeros(nLink,3,3);
     Hm  = zeros(nLink,nLink);      % manipulator inertia matrix
     Jt = zeros(nLink,3,nLink);
     Jr = zeros(nLink,3,nLink);
+    % Loop through each link and compute components of inertia matrix
     for i = 1:nLink
         for j = 1:i
             kSkew = skewMat(kVec(j,:));
-            Jt(i,:,j) = kSkew*(rVec(i,:) - pVec(j,:))';   % Ref 1, Eq. 33
-            Jr(i,:,j) = kVec(j,:);                                 % Ref 1, Eq. 35
+            Jt(i,:,j) = kSkew*(rVec(i,:) - pVec(j,:))';      % Ref 1, Eq. 33
+            Jr(i,:,j) = kVec(j,:);                           % Ref 1, Eq. 35
         end
         Jti = squeeze(Jt(i,:,:));
         Jri = squeeze(Jr(i,:,:));
@@ -60,13 +88,14 @@ linkInertia = zeros(nLink,3,3);
         Hsq = Hsq + (squeeze(linkInertia(i,:,:))*Jri + massVec(i+1)*rSkew*Jti);     % Ref 1, Eq. 34
         Hm  = Hm  + (Jri'*squeeze(linkInertia(i,:,:))*Jri + massVec(i+1)*Jti'*Jti); % Ref 1, Eq. 36
     end
-    Hom = [Jts;Hsq];                                                        % Ref 1, Eq. 31
+    % Form dynamic coupling matrix
+    Hom = [Jts;Hsq];                                         % Ref 1, Eq. 31
 
     % Inverse of Ho
     Su = Hs + mt*rocSkew*rocSkew;                            % Ref 1, Eq. 53
     invSu = Su\eye(size(Su));
     HoInv = [(1/mt*eye(3,3) - rocSkew*invSu*rocSkew) rocSkew*invSu; -invSu*rocSkew invSu]; % Ref 1, Eq. 52
 
-    % H star
-    Hstar = Hm - Hom'*HoInv*Hom;                                            % Ref 1, Eq. 45
+    % H star (generalized inertia matrix)
+    Hstar = Hm - Hom'*HoInv*Hom;                             % Ref 1, Eq. 45
     HstarInv = Hstar\eye(size(Hstar));

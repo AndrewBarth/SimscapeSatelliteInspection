@@ -25,10 +25,6 @@ sat.service.IC.twist.linear.x = 0.0;
 sat.service.IC.twist.linear.y = 0.0;
 sat.service.IC.twist.linear.z = 0.0;
 % Attitude in rad Z-Y-X order and sequence
-%sat.service.IC.pose.orientation = [-90 90 -65]*dtr;
-%sat.service.IC.pose.orientation = [0 22.5 90]*dtr;
-%sat.service.IC.pose.orientation = [0 22.5 0]*dtr;
-%sat.service.IC.pose.orientation = [50 20.0 0]*dtr;
 sat.service.IC.pose.orientation = [0 0.0 0]*dtr;
 % Angular velocity in rad/s
 sat.service.IC.twist.angular = [0.0 0.0 0.0]*dtr;
