@@ -88,14 +88,15 @@ Base_b = sat.service.radius;
 Base_c = sat.service.length;
 
 % Define controller data
-controlData.cntrlMode = 2;   % 1: Joint Control, 2: EE control
+controlData.cntrlMode = 2;   % 1: Joint Control, 2: EE control (Joint control not implemented in Simulink)
 controlData.Kp = [1 1 1]*0.7;
 controlData.Kd = [1 1 1]*4;
 controlData.Ki = [1 1 1]*0.0;
 
-% Used for joint control only
+% Used for joint control only (Joint control not implemented in Simulink)
 controlData.qCmdDot = [0 0 0];
-controlData.qCmd = [50 -45 20]*pi/180;
+controlData.qCmd = [0 0 0]*pi/180;
+
 % Used for end effector control [pos, ang, vel, angRate]
 controlData.eeCmd = zeros(1,12);
 controlData.eeRefTraj(1,:) = [-0.3      0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
@@ -110,7 +111,6 @@ controlDataBus = evalin('base',busInfo.busName);
 
 % Initial State
 rBase0  = [sat.service.IC.pose.position.x sat.service.IC.pose.position.y sat.service.IC.pose.position.z];
-%rBase0 = [5 2 0];
 xcmDot = sat.service.IC.twist.linear.x;
 ycmDot = sat.service.IC.twist.linear.y;
 zcmDot = sat.service.IC.twist.linear.z;
@@ -123,7 +123,6 @@ w_z   = sat.service.IC.twist.angular(3);
 
 % Initial control torques
 tau(:,1) = [0 0 0]';
-
 
 % Compute initial geometry
 %Rot_Inertial_To_SC = robotZRot(psi)*robotYRot(theta)*robotXRot(phi);
