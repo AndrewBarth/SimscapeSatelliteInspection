@@ -14,6 +14,7 @@ FlexibleRod_Params
 ClientAssembly_DataFile
 Satellite_Params
 Initialize_Joint_Control
+Initialize_Sat_Control
 Initialize_Navigation
 loadBusData
 

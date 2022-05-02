@@ -24,7 +24,7 @@ nLink = 3;
 dtr = pi/180;
 
 % Set the run time of the simulation
-endTime = 50;
+endTime = 80;
 
 % Set up mass properties
 m_base = sat.service.mass + smiData.Solid(1).mass;  % Sum satellite base and arm base 
@@ -87,27 +87,37 @@ Base_a = sat.service.radius; % This should be the base of the arm
 Base_b = sat.service.radius;
 Base_c = sat.service.length;
 
-% Define controller data
-controlData.cntrlMode = 2;   % 1: Joint Control, 2: EE control (Joint control not implemented in Simulink)
-controlData.Kp = [1 1 1]*0.7;
-controlData.Kd = [1 1 1]*4;
-controlData.Ki = [1 1 1]*0.0;
+% Define arm controller data
+jointControlData.cntrlMode = 2;   % 1: Joint Control, 2: EE control (Joint control not implemented in Simulink)
+jointControlData.Kp = [1 1 1]*0.7;
+jointControlData.Kd = [1 1 1]*4;
+jointControlData.Ki = [1 1 1]*0.;
 
 % Used for joint control only (Joint control not implemented in Simulink)
-controlData.qCmdDot = [0 0 0];
-controlData.qCmd = [0 0 0]*pi/180;
+jointControlData.qCmdDot = [0 0 0];
+jointControlData.qCmd = [0 0 0]*pi/180;
 
 % Used for end effector control [pos, ang, vel, angRate]
-controlData.eeCmd = zeros(1,12);
-controlData.eeRefTraj(1,:) = [-0.3      0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-controlData.eeRefTraj(2,:) = [0.0       0.5       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-controlData.eeRefTraj(3,:) = [0.0       0.5       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-controlData.eeRefTraj(4,:) = [0.0       0.8       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-controlData.refTime = [0 10 20 40];
-controlData.torqueLimit = 0.5*ones(1,nLink);
+jointControlData.eeCmd = zeros(1,12);
+jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -80.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(3,:) = [0.0       0.5       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(4,:) = [0.0       0.5       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(5,:) = [0.0       0.8       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 
-busInfo = Simulink.Bus.createObject(controlData);
-controlDataBus = evalin('base',busInfo.busName);
+% jointControlData.eeRefTraj(1,:) = [0.0      0.7       0.2710 90.0*dtr 0.0  90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(2,:) = [0.0      0.7       0.2710 90.0*dtr 0.0  90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(3,:) = [0.0       0.7       0.2710 90.0*dtr 0.0 90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(4,:) = [0.0       0.7       0.2710 90.0*dtr 0.0 90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(5,:) = [0.0       0.7       0.2710 90.0*dtr 0.0 90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+
+jointControlData.refTime = [0 20 30 50 70];
+jointControlData.jointControlMode = 0;
+jointControlData.jointControlModeVec = [1 2 2 2 2];   % 1 = hold position, 2 = EE control
+jointControlData.torqueLimit = 0.5*ones(1,nLink);
+
+busInfo = Simulink.Bus.createObject(jointControlData);
+jointControlDataBus = evalin('base',busInfo.busName);
 
 % Initial State
 rBase0  = [sat.service.IC.pose.position.x sat.service.IC.pose.position.y sat.service.IC.pose.position.z];

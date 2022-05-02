@@ -144,15 +144,16 @@ smiData.Solid(4).ID = 'Gripper*:*Default';
 smiData.RevoluteJoint(3).Rz.Pos = 0.0;
 smiData.RevoluteJoint(3).ID = '';
 
-smiData.RevoluteJoint(1).Rz.Pos = 20.0;  % deg
 smiData.RevoluteJoint(1).Rz.Pos = 80.0;  % deg
 smiData.RevoluteJoint(1).ID = '[ArmBase-1:-:ArmSegmentAssembly-2:ArmSegment-1]';
 
-smiData.RevoluteJoint(2).Rz.Pos = -45.0;  % deg
 smiData.RevoluteJoint(2).Rz.Pos = 90.0;  % deg
 smiData.RevoluteJoint(2).ID = '[ArmSegmentAssembly-2:ArmSegment-1:-:ArmSegmentAssembly-3:ArmSegment-1]';
 
 smiData.RevoluteJoint(3).Rz.Pos = 20.0;  % deg
 smiData.RevoluteJoint(3).ID = '[ArmSegmentAssembly-3:ArmSegment-1:-:Gripper-2]';
 
-
+% Zero angles for joints results in straight-arm configuration
+% smiData.RevoluteJoint(1).Rz.Pos = 0.0;
+% smiData.RevoluteJoint(2).Rz.Pos = 0.0;
+% smiData.RevoluteJoint(3).Rz.Pos = 0.0;

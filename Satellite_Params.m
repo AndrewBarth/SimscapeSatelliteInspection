@@ -39,7 +39,7 @@ sat.service.camera.bodyOrientation = [45 0 90]*dtr;
 
 sat.client.mass = 1000;
 sat.client.dim = [1.0 0.5 1.0];
-IC.rel_position = [-0.25 2.0 0.25];
+IC.rel_position = [-0.25 2.5 0.0];
 % Attitude in rad Z-Y-X order and sequence
 IC.rel_orientation = [0 0 0]*dtr;
 % Angular velocity in rad/s

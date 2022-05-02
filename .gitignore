@@ -2,6 +2,7 @@ slprj/*
 archive/*
 *rtw/*
 *.asv
+*.slxc
 SimpleArm/*
 ViperX_300/*
 testModels/*

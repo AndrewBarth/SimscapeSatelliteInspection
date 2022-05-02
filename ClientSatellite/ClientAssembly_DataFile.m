@@ -19,8 +19,7 @@ client.smiData.RigidTransform(1).ID = '';
 
 %Translation Method - Cartesian
 %Rotation Method - Arbitrary Axis
-%client.smiData.RigidTransform(1).translation = [-29.387985525019083 0.3087255108417723 0.75535809323684777];  % in
-client.smiData.RigidTransform(1).translation = [0 0 0];  % in
+client.smiData.RigidTransform(1).translation = [0 0 0];  % m
 client.smiData.RigidTransform(1).angle = 0;  % rad
 client.smiData.RigidTransform(1).axis = [0 0 0];
 client.smiData.RigidTransform(1).ID = 'RootGround[ClientBase-1]';
