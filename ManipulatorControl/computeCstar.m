@@ -40,9 +40,9 @@ T = zeros(nLink+1,4,4);
 dTJdk = zeros(nLink,4,4);
 dTLdk = zeros(nLink,4,4);
 dInertiadk = zeros(nLink,3,3);
-dHomdk = zeros(nLink,6,3);
+dHomdk = zeros(nLink,6,nLink);
 dHodk = zeros(nLink,6,6);
-dHstardk = zeros(nLink,3,3);
+dHstardk = zeros(nLink,nLink,nLink);
 cstar = zeros(1,nLink);
 
 % Extract variables from structure for convenience
@@ -110,16 +110,18 @@ for k=1:nLink
                             squeeze(RL(i,:,:))*squeeze(inertiaMat(i,:,:))*squeeze(dTLdk(i,1:3,1:3))';
     end
 
-    dHmdk = zeros(nLink,3,3);
-    dJtsdk = zeros(nLink,3,3);
-    dHsqdk = zeros(nLink,3,3);
+    %dHmdk = zeros(nLink,3,3);
+    dHmdk = zeros(nLink,nLink,nLink);
+    dJtsdk = zeros(nLink,3,nLink);
+    dHsqdk = zeros(nLink,3,nLink);
     dHsdk = zeros(nLink,3,3);
     drocdk = zeros(nLink,3);
     for i = 1:nLink
         Jti = squeeze(Jt(i,:,:));
         Jri = squeeze(Jr(i,:,:));
         % Form joint-angle derivative of Manipulator Inertia Matrix
-        dHmdk(k,:,:) = squeeze(dHmdk(k,:,:)) + squeeze(dTJdk(i,1:3,1:3))'*squeeze(linkInertia(i,:,:))*Jri + ...
+        %dHmdk(k,:,:) = squeeze(dHmdk(k,:,:)) + squeeze(dTJdk(i,1:3,1:3))'*squeeze(linkInertia(i,:,:))*Jri + ...
+        dHmdk(k,:,:) = squeeze(dHmdk(k,:,:)) + squeeze(dJridk(i,:,:))'*squeeze(linkInertia(i,:,:))*Jri + ...
                                       Jri'*squeeze(dInertiadk(i,:,:))*Jri + ...
                                       Jri'*squeeze(linkInertia(i,:,:))*squeeze(dJridk(i,:,:)) + ...
                                       massVec(i)*squeeze(dJTidk(i,:,:))'*Jti + ...
@@ -136,7 +138,7 @@ for k=1:nLink
                        massVec(i)*(skewMat(squeeze(dTLdk(i,1:3,4)))*skewMat(rVec0(i,:)) + ...
                        skewMat(rVec0(i,:))*skewMat(squeeze(dTLdk(i,1:3,4))));         % Ref 1, Eq.101
     end
-    % Final cstar computatoins
+    % Final cstar computations
     drocdk(k,:) = drocdk(k,:)/sum(massVec);
     dHomdk(k,:,:) = [squeeze(dJtsdk(k,:,:)); squeeze(dHsqdk(k,:,:))];
     dHodk(k,:,:) = [zeros(3,3) -mt*skewMat(drocdk(k,:)); mt*skewMat(drocdk(k,:)) skewMat(dHsdk(k,:,:))];
