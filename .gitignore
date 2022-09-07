@@ -4,6 +4,5 @@ archive/*
 *.asv
 *.slxc
 SimpleArm/*
-ViperX_300/*
 testModels/*
 MassPropID_Code/*
