@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<SimscapeMultibodyImportXML version="2.0" xmlns="urn:mathworks:SimscapeMultibody:import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Created by="" on="08/26/22||13:15:33" using="Simscape Multibody Link Version 7.0" from="SolidWorks 26.5.0"/>
+<ModelUnits mass="kilogram" length="inch"/>
+<DataUnits mass="kilogram" length="meter"/>
+<RootAssembly name="" uid="" version="104">
+<AssemblyFile name="" type="SolidWorks Assembly"/>
+<InstanceTree>
+<Instance name="8 - VXA-300-M.step-1" uid="8 - VXA-300-M.step-1" grounded="true" entityUid="8 - VXA-300-M.step" rigid="true">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 0</Translation>
+</Transform>
+<Instance name="DRG.step-1" uid="DRG.step-1" grounded="true" entityUid="DRG.step*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>7.3513499999999996e-10 -0.40929430698882102 0.426749985516027</Translation>
+</Transform>
+</Instance>
+<Instance name="540 Dual Shoulder.step-1" uid="540 Dual Shoulder.step-1" grounded="true" entityUid="540 Dual Shoulder.step*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>1.9251999999999999e-11 0.00063257170541200004 0.075999999999997001</Translation>
+</Transform>
+</Instance>
+<Instance name="Carriage-DualRail-VX-ABS.step-1" uid="Carriage-DualRail-VX-ABS.step-1" grounded="true" entityUid="Carriage-DualRail-VX-ABS.step*:*Default">
+<Transform>
+<Rotation>1 0 -1.0000000000000001e-15 -1.0000000000000001e-15 -8.3e-14 -1 0 1 -8.3e-14</Rotation>
+<Translation>0.0045010052632330003 -0.457794305997892 0.42674998405498399</Translation>
+</Transform>
+</Instance>
+<Instance name="540 Base.step-1" uid="540 Base.step-1" grounded="true" entityUid="540 Base.step*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 0</Translation>
+</Transform>
+</Instance>
+<Instance name="Carriage-DualRail-VX-ABS.step-2" uid="Carriage-DualRail-VX-ABS.step-2" grounded="true" entityUid="Carriage-DualRail-VX-ABS.step*:*Default">
+<Transform>
+<Rotation>-1 1.7600000000000001e-13 -1.0000000000000001e-15 1.0000000000000001e-15 8.3e-14 -1 -1.7600000000000001e-13 -1 -8.3e-14</Rotation>
+<Translation>-0.0044989980181279997 -0.45779430699254497 0.42674998616779097</Translation>
+</Transform>
+</Instance>
+<Instance name="Fore - 8 - VX-300.step-1" uid="Fore - 8 - VX-300.step-1" grounded="true" entityUid="Fore - 8 - VX-300.step*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>6.1071099999999996e-10 -0.059549999583945003 0.42675000953674103</Translation>
+</Transform>
+</Instance>
+<Instance name="UA - 8 - VX-300.step-1" uid="UA - 8 - VX-300.step-1" grounded="true" entityUid="UA - 8 - VX-300.step*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>-7.6115e-11 1.0000000000000001e-15 0.126749999999997</Translation>
+</Transform>
+</Instance>
+<Instance name="VX-300 - Wrist.step-1" uid="VX-300 - Wrist.step-1" grounded="true" entityUid="VX-300 - Wrist.step*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0.00016056482110000001 -0.35955000149129501 0.42691057374712998</Translation>
+</Transform>
+</Instance>
+</Instance>
+</InstanceTree>
+<Constraints>
+</Constraints>
+</RootAssembly>
+<Assemblies>
+<Assembly name="8 - VXA-300-M.step" uid="8 - VXA-300-M.step" version="103">
+<ModelUnits mass="kilogram" length="inch"/>
+<AssemblyFile name="8 - VXA-300-M.step.SLDASM" type="SolidWorks Assembly"/>
+</Assembly>
+</Assemblies>
+<Parts>
+<Part name="540 Base.step" uid="540 Base.step*:*Default" version="102">
+<ModelUnits mass="kilogram" length="inch"/>
+<PartFile name="540 Base.step.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>1.6733840067154275</Mass>
+<CenterOfMass>2.371374874440384e-08 0.040349831523312181 0.030478304887902135</CenterOfMass>
+<Inertia>0.0094175312001645167 0.0028251883431290991 0.010685710344619083 0.00029260743567126367 -3.3573587462967285e-11 3.0186326735306981e-09</Inertia>
+</MassProperties>
+<GeometryFile name="540 Base.step_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.18823529411764706" g="0.23137254901960785" b="0.58823529411764708" a="1"/>
+<Diffuse r="0.18823529411764706" g="0.23137254901960785" b="0.58823529411764708" a="1"/>
+<Specular r="0.094117647058823528" g="0.11568627450980393" b="0.29411764705882354" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="540 Dual Shoulder.step" uid="540 Dual Shoulder.step*:*Default" version="102">
+<ModelUnits mass="kilogram" length="inch"/>
+<PartFile name="540 Dual Shoulder.step.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.22750581122900987</Mass>
+<CenterOfMass>-5.6858968896946431e-11 -0.00063257170541243871 0.028193866791525121</CenterOfMass>
+<Inertia>0.00014765365287512698 0.00024988618034625908 0.00021598801915563814 0 -3.8887538987436949e-15 0</Inertia>
+</MassProperties>
+<GeometryFile name="540 Dual Shoulder.step_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.26666666666666666" g="0.58823529411764708" b="0.28235294117647058" a="1"/>
+<Diffuse r="0.26666666666666666" g="0.58823529411764708" b="0.28235294117647058" a="1"/>
+<Specular r="0.13333333333333333" g="0.29411764705882354" b="0.14117647058823529" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="Carriage-DualRail-VX-ABS.step" uid="Carriage-DualRail-VX-ABS.step*:*Default" version="102">
+<ModelUnits mass="kilogram" length="inch"/>
+<PartFile name="Carriage-DualRail-VX-ABS.step.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.030669808943561843</Mass>
+<CenterOfMass>-0.051686317138539023 9.4758736664924129e-12 0.055956492896849813</CenterOfMass>
+<Inertia>2.1192874774447557e-05 1.2306198268894296e-05 1.1073937644804792e-05 -9.3704922843451233e-14 -2.1657846695715557e-06 -3.9876499756935815e-15</Inertia>
+</MassProperties>
+<GeometryFile name="Carriage-DualRail-VX-ABS.step_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.078431372549019607" g="0.63921568627450975" b="0.7803921568627451" a="1"/>
+<Diffuse r="0.078431372549019607" g="0.63921568627450975" b="0.7803921568627451" a="1"/>
+<Specular r="0.039215686274509803" g="0.31960784313725488" b="0.39019607843137255" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="DRG.step" uid="DRG.step*:*Default" version="102">
+<ModelUnits mass="kilogram" length="inch"/>
+<PartFile name="DRG.step.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.19139929463118993</Mass>
+<CenterOfMass>2.251530492461971e-06 -0.059992567695561119 0.0019631681632945046</CenterOfMass>
+<Inertia>0.00012559653507907367 0.00029818907948719138 0.00030514221608875626 -9.8607159458686272e-06 4.5632160724078901e-08 8.3897857679305449e-10</Inertia>
+</MassProperties>
+<GeometryFile name="DRG.step_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.82745098039215681" g="0.20392156862745098" b="0.47450980392156861" a="1"/>
+<Diffuse r="0.82745098039215681" g="0.20392156862745098" b="0.47450980392156861" a="1"/>
+<Specular r="0.4137254901960784" g="0.10196078431372549" b="0.2372549019607843" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="Fore - 8 - VX-300.step" uid="Fore - 8 - VX-300.step*:*Default" version="102">
+<ModelUnits mass="kilogram" length="inch"/>
+<PartFile name="Fore - 8 - VX-300.step.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.38861921954319817</Mass>
+<CenterOfMass>-1.7055734413912739e-05 -0.17043047621834798 -2.0988581164460565e-11</CenterOfMass>
+<Inertia>0.0035516982770555641 0.00014522397651780758 0.0036376348955316079 9.2573485942440568e-13 0 -8.5883649021687649e-07</Inertia>
+</MassProperties>
+<GeometryFile name="Fore - 8 - VX-300.step_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.90980392156862744" g="0.67843137254901964" b="0.13725490196078433" a="1"/>
+<Diffuse r="0.90980392156862744" g="0.67843137254901964" b="0.13725490196078433" a="1"/>
+<Specular r="0.45490196078431372" g="0.33921568627450982" b="0.068627450980392163" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="UA - 8 - VX-300.step" uid="UA - 8 - VX-300.step*:*Default" version="102">
+<ModelUnits mass="kilogram" length="inch"/>
+<PartFile name="UA - 8 - VX-300.step.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.51309917484769318</Mass>
+<CenterOfMass>3.2029575199953756e-09 -0.016547339400982464 0.20861951038117338</CenterOfMass>
+<Inertia>0.0058510298421326256 0.005825203940564668 0.00053694122232421327 0.00077326554149955763 -1.0423811817102008e-10 -1.2559816097103309e-11</Inertia>
+</MassProperties>
+<GeometryFile name="UA - 8 - VX-300.step_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.76862745098039209" g="0.20784313725490194" b="0.15294117647058825" a="1"/>
+<Diffuse r="0.76862745098039209" g="0.20784313725490194" b="0.15294117647058825" a="1"/>
+<Specular r="0.38431372549019605" g="0.10392156862745097" b="0.076470588235294124" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="VX-300 - Wrist.step" uid="VX-300 - Wrist.step*:*Default" version="102">
+<ModelUnits mass="kilogram" length="inch"/>
+<PartFile name="VX-300 - Wrist.step.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.068593686550646446</Mass>
+<CenterOfMass>-0.00016056464239558915 -0.048326419407329638 0.011281300277898872</CenterOfMass>
+<Inertia>2.3792124423652393e-05 2.5537244709274735e-05 2.7238098893013366e-05 1.524497956612199e-06 -1.2358111469222435e-11 7.0931177680021198e-12</Inertia>
+</MassProperties>
+<GeometryFile name="VX-300 - Wrist.step_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.98431372549019602" g="0.54509803921568623" b="0.13725490196078433" a="1"/>
+<Diffuse r="0.98431372549019602" g="0.54509803921568623" b="0.13725490196078433" a="1"/>
+<Specular r="0.49215686274509801" g="0.27254901960784311" b="0.068627450980392163" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+</Parts>
+</SimscapeMultibodyImportXML>
