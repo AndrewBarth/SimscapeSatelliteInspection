@@ -2,7 +2,7 @@ clear
 clc
 
 % Select robotic arm to use in the simulation
-ARM_TYPE = 1;    
+ARM_TYPE = 0;    
 % 0 = Planar3Link
 % 1 = ViperX300 (5-DOF)
 % 2 = General6DOF (6-DOF)
