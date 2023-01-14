@@ -1,14 +1,17 @@
-function [geometry] = computeGeometry(x0,nLink,Link_Length,massVec,alpha,DHparams)
+function [geometry] = computeGeometry(x0,nLink,Link_CG,massVec,alpha,thetaOffset,DHparams,attachPnt,attachAngles)
 % Function to compute the system geometry based on the current joint angles
 % and arm configuration
 %
 % Inputs: x0:            state vector [position eulerAngles jointAngles
 %                                      velocity angularRate jointRates]
 %         nLink:         number of links in arm
-%         Link_Length:   vector of link lengths
+%         Link_CG:       vector of locations of link CGs
 %         massVec:       vector of masses (base and links)
 %         alpha:         alpha angle for DH parameters
+%         thetaOffset:   offset for the theta angle in the DH parameters
 %         DHparams:      Denavit-Hartenberg parameters for the arm
+%         attachPnt:     location of the arm attach point relative to the base
+%         attachAngles:  rotation of the arm attach point relative to the base
 %
 % Output: geometry:      structure containing geometry parameters
 %
@@ -30,7 +33,9 @@ function [geometry] = computeGeometry(x0,nLink,Link_Length,massVec,alpha,DHparam
 %    Oct 19 2018 - Initial version
 %    Mar 15 2022 - Added array sizing for Simulink implementation
 %    Aug 29 2022 - Generalized to support a variable number of links
-%
+%    Sep 19 2022 - Added offset angle for theta angle
+%    Dec 12 2022 - Changed to input link CG directly
+%    Jan 11 2023 - Different method to compute Pose matrices
 
 coder.extrinsic('Simulink.Bus') 
 assert(nLink < 10);
@@ -51,27 +56,37 @@ rcm = x0(1:3)';
 eulerAng = x0(4:6)';
 q = x0(7:7+nLink-1);
 
-Link_CG = Link_Length/2;
-
-% Update joint angles in DH parameters
-for i = 1:nLink
-    DHparams(i+1,4) = q(i);
+if size(DHparams,1) > nLink
+    % Update joint angles in DH parameters
+    for i = 1:nLink
+        DHparams(i+1,4) = q(i)+thetaOffset(i);
+    end
+else
+    % Update joint angles in DH parameters
+    for i = 1:nLink
+        DHparams(i,4) = q(i)+thetaOffset(i);
+    end
 end
 
 % Call forward kinematics to compute pose matrices (relative to spacecraft)
-PoseMats = fKinematics(DHparams,'all');
+basePoseMats = zeros(4,4,nLink+1);
+basePoseMats = fKinematics(DHparams,'all');
+attachMat = EulerToDCM_321(attachAngles); 
+attachPose = [ [attachMat [attachPnt]]; [0 0 0 1] ];
+for i=1:nLink+1    
+    PoseMats(:,:,i) = attachPose*basePoseMats(:,:,i);
+end
 
 % Compute initial geometry
 
 % Begin with rotation matrix of Base to Inertial frame
 Rot_Inertial_To_SC = robotZRot(eulerAng(3))*robotYRot(eulerAng(2))*robotXRot(eulerAng(1));
-Tmat(1,:,:) = [ [Rot_Inertial_To_SC(1:3,1:3) [0 0 0]']; [0 0 0 1] ];
+Tmat(1,:,:) = [ [Rot_Inertial_To_SC(1:3,1:3) [0 0 0]']; [0 0 0 1] ];    % Ref 1, Eq. 7
 
 % Rotation from Joint to Base frame (and End Effector to Base)
 for i = 1:nLink+1
     Tmat(i+1,:,:) = [PoseMats(1:3,1:3,i) PoseMats(1:3,4,i); [0 0 0 1] ];
 end
-
 
 % Rotation matrix from Joint i to Base frame
 % Last element is rotation from End Effector to Base frame
@@ -80,10 +95,9 @@ for i = 1:nLink+1
     RJb(i,:,:) = squeeze(Tmat(1+i,1:3,1:3));
 end
 
-
-
 % Rotation matrix from Joint i to Inertial frame
 % Last element is rotation from End Effector to Inertial frame
+% ALB: Isn't this actually Inertial to Joint????
 for i = 1:nLink+1
     RJ(i,:,:) = squeeze(Tmat(1,1:3,1:3))*squeeze(Tmat(i+1,1:3,1:3));
 end
@@ -92,18 +106,18 @@ end
 % Link frame i is the same as Joint frame i+1
 RLbase = RJbase;
 for i = 1:nLink
-    RL(i,:,:) = RJ(i+1,:,:);
+    RL(i,:,:) = RJ(i+1,:,:);      % Ref 1, Eq. 4
 end
 
 % Joint axis rotation vector of joint i in the Inertial frame
 for i = 1:nLink
-    kVec(i,:,1) = squeeze(RJ(i,:,:))*[0 0 1]';
+    kVec(i,:,1) = squeeze(RJ(i,:,:))*[0 0 1]';    % Ref 1, Eq. 5
 end
 
-% Define location for the cg of the link with respect to base
+% Define location for the cg of the link with respect to cg of base
 for i=1:nLink
    rVec0(i,:) = squeeze(Tmat(1,1:3,1:3))*Tmat(i+1,1:3,4)' + ...
-                squeeze(Tmat(1,1:3,1:3))*squeeze(Tmat(i+2,1:3,1:3))*[Link_CG(i) 0 0]';
+                squeeze(RJ(i+1,:,:))*Link_CG(i,:)';
 end
 
 % Compute the system center of mass relative to the base

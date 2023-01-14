@@ -67,7 +67,7 @@ RJbaseDot = skewMat(omegaJ(1,:))*RJbase;
 inertiaBaseDot = RJbaseDot*inertiaMatBase*RJbase' + RJbase*inertiaMatBase*RJbaseDot'; % Ref 1, Eq. 70
 
 for i = 2:nLink+1
-    omegaJ(i,:) = omegaJ(i-1) + kVec(i-1,:)*x0(jDIdx+(i-2));      % Ref 1, Eq. 68
+    omegaJ(i,:) = omegaJ(i-1) + kVec(i-1,:)*x0(jDIdx+(i-2));       % Ref 1, Eq. 68
     RJDot(i,:,:) = skewMat(omegaJ(i,:))*squeeze(RJ(i,:,:));        % Ref 1, Eq. 67
 end
 mtRocDot = zeros(3,3);
@@ -77,7 +77,7 @@ for i = 1:nLink
     rDot0(i,:) = rBaseDot + skewMat(omegaJ(i,:))*rVec0(i,:)';
     pDot(i,:)  = rcmDot +   skewMat(omegaJ(i,:))*pVec(i,:)';
 
-    RLDot(i,:,:) = RJDot(i+1,:,:);
+    RLDot(i,:,:) = RJDot(i+1,:,:);                                  % Ref 1, Eq. 69
     % Compute derivative of the inertia matrix
     inertiaDot(i,:,:) = squeeze(RLDot(i,:,:))*squeeze(inertiaMat(i,:,:))*squeeze(RL(i,:,:))' + ...
                         squeeze(RL(i,:,:))*squeeze(inertiaMat(i,:,:))*squeeze(RLDot(i,:,:))';  % Ref 1, Eq. 70
