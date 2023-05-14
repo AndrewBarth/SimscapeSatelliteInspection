@@ -45,8 +45,9 @@ i = endLink;
         Jmxi(4:6,j) = kVec(j,:)';                        % Ref 1, Eq. 104
     end
 xoi = pVec(i+1,:) - p0;                                  % Ref 1, Eq. 106
-Joxi = [eye(3,3) skewMat(xoi); zeros(3,3) eye(3,3)];     % Ref 1, Eq. 105
+% Joxi = [eye(3,3) skewMat(xoi); zeros(3,3) eye(3,3)];     % Ref 1, Eq. 105
+Joxi = [eye(3,3) skewMat(-1*xoi); zeros(3,3) eye(3,3)];     % Ref 1, Eq. 105
 
 % Compute generalzed Jacobian
 Jstar = Jmxi - Joxi*HoInv*Hom;    % Ref 1, Eq. 110
-
+% Jstar = Jmxi;    % Ref 1, Eq. 110

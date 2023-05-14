@@ -326,8 +326,28 @@ busInfo = Simulink.Bus.createObject(jointControlData);
 jointControlDataBus = evalin('base',busInfo.busName);
 %% Satellite Control Calculations
 % This is a relative position and velocity to the client
-satControlData.Trans.cmdPos = IC.rel_position;
+satControlData_Trans.cmdPos = IC.rel_position;
 
 % Create Simulink Bus
-busInfo = Simulink.Bus.createObject(satControlData);
-satControlDataBus = evalin('base',busInfo.busName);
+busInfo = Simulink.Bus.createObject(satControlData_Trans);
+satControlDataBus_Trans = evalin('base',busInfo.busName);
+busInfo = Simulink.Bus.createObject(satControlData_Rot);
+satControlDataBus_Rot = evalin('base',busInfo.busName);
+clear elems;
+elems(1) = Simulink.BusElement;
+elems(1).Name = 'Trans';
+elems(1).Dimensions = [1];
+elems(1).DimensionsMode = 'Fixed';
+elems(1).DataType = 'satControlDataBus_Trans';
+elems(1).SampleTime = -1;
+elems(1).Complexity = 'real';
+elems(2) = Simulink.BusElement;
+elems(2).Name = 'Rot';
+elems(2).Dimensions = [1];
+elems(2).DimensionsMode = 'Fixed';
+elems(2).DataType = 'satControlDataBus_Rot';
+elems(2).SampleTime = -1;
+elems(2).Complexity = 'real';
+satControlDataBus = Simulink.Bus;
+satControlDataBus.Elements = elems;
+

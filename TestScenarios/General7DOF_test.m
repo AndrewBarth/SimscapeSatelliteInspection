@@ -33,13 +33,15 @@ sat.service.panel_mount.dim = [0.15 0.03 0.03];
 Base_dia = 0.45;
 Base_height = 0.09;
 
-% Attached point details for the simscape model
+% Attach point details for the simscape model
 %armAttachOffset(1).orientation = [-90 0 22.5]*dtr;
 armAttachOffset(1).orientation = [-45 0 90]*dtr;
 armAttachOffset(1).translation = [sat.service.radius*cos(pi/8)*sin(pi/4) -Base_dia/2 -1*(1-cos(pi/4))+Base_height];
 armAttachOffset(1).orientation = [0 0 90]*dtr;
 armAttachOffset(1).translation = [0 -Base_dia/2 0];
 
+jointControlData.torqueLimit = 0.5*ones(1,nLink);
+jointControlData.deadzone = 0.01*ones(1,nLink);
 
 jointControlData.refTime = [0 5 30 50 70];
 %jointControlData.eeRefTraj(1,:) = [2.2682    0.5576    2.3177  -90.0*dtr 180.0*dtr -45.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];  % 
