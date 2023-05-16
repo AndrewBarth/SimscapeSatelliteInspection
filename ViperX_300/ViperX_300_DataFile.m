@@ -178,6 +178,12 @@ smiData.RevoluteJoint(4).ID = '[wrist1]';
 smiData.RevoluteJoint(5).Rz.Pos = 0.0;  % deg Bounds: -180, +180
 smiData.RevoluteJoint(5).ID = '[wrist2]';
 
+smiData.RevoluteJoint(1).Rz.Pos = 0.0;  % deg Bounds: -180, +180 
+smiData.RevoluteJoint(2).Rz.Pos = 0.0;  % deg  Bounds: -106, +72
+smiData.RevoluteJoint(3).Rz.Pos = 0.0;  % deg Bounds: -101, +92
+smiData.RevoluteJoint(4).Rz.Pos = 0.0;  % deg Bounds: -107, +92
+smiData.RevoluteJoint(5).Rz.Pos = 0.0;  % deg Bounds: -180, +180
+
 % Zero angles for joints results in straight-arm configuration
 % smiData.RevoluteJoint(1).Rz.Pos = 0.0;
 % smiData.RevoluteJoint(2).Rz.Pos = 0.0;

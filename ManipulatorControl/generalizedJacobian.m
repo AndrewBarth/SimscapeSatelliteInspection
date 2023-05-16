@@ -24,6 +24,7 @@ function Jstar = generalizedJacobian(geometry,HoInv,Hom,nLink)
 % Modification History:
 %    Oct 19 2018 - Initial version
 %    Mar 15 2022 - Added array sizing for Simulink implementation
+%    Jan 13 2023 - Used last element of pVec for end effector position
 %
 
 % Extract variables from structure for convenience
@@ -35,19 +36,18 @@ p0 = geometry.rBase;
 % Intialize array sizes
 Jmxi = zeros(6,nLink);
 
-% Fixed to use end effect as the end link
+% Set to use end effector as the end link
 endLink = nLink;
-%for i = 1:endLink
-    i = endLink;
-        for j = 1:endLink
-            kSkew = skewMat(kVec(j,:));
-            Jmxi(1:3,j) = kSkew*(rVec(i,:) - pVec(j,:))';  % Ref 1, Eq. 104
-            Jmxi(4:6,j) = kVec(j,:)';                      % Ref 1, Eq. 104
-        end
-    xoi = rVec(i,:) - p0;
-    Joxi = [eye(3,3) skewMat(xoi); zeros(3,3) eye(3,3)];   % Ref 1, Eq. 105
-%end
+i = endLink;
+    for j = 1:endLink
+        kSkew = skewMat(kVec(j,:));
+        Jmxi(1:3,j) = kSkew*(pVec(i+1,:) - pVec(j,:))';  % Ref 1, Eq. 104
+        Jmxi(4:6,j) = kVec(j,:)';                        % Ref 1, Eq. 104
+    end
+xoi = pVec(i+1,:) - p0;                                  % Ref 1, Eq. 106
+% Joxi = [eye(3,3) skewMat(xoi); zeros(3,3) eye(3,3)];     % Ref 1, Eq. 105
+Joxi = [eye(3,3) skewMat(-1*xoi); zeros(3,3) eye(3,3)];     % Ref 1, Eq. 105
 
 % Compute generalzed Jacobian
 Jstar = Jmxi - Joxi*HoInv*Hom;    % Ref 1, Eq. 110
-
+% Jstar = Jmxi;    % Ref 1, Eq. 110

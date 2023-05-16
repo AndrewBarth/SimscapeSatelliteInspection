@@ -2,8 +2,9 @@
 
 %% General parameters
 
-% Set the run time of the simulation
+% Set the run time and step size of the simulation
 endTime = 80;
+stepSize = 0.001;
 
 %% Rod Parameters
 % Properties of aluminum
@@ -146,22 +147,66 @@ NLINKS.DocUnits = '';
 if ARM_TYPE == 1
     NLINKS.Value = 5;
 
-    % Data from drawing on Trossen Robotics website (in mm)
-    Link_Length(1) = 126.75 / 1000;
+    % Data Trossen Robotics URDF File
+    Base_height = 79.00 / 1000;
+    waist_offset = [0, 0, 0.079];
+    shoulder_offset = [0, 0, 0.04805];
+    elbow_offset = [0.05955, 0, 0.3];
+    wrist_rotate_offset = [0.069744, 0, 0];
+    gripper_link_offset = [0.042825, 0, 0];
+    gripper_origin_offset = [0.005675, 0, 0];
+    gripper_bar_offset = [0.025875, 0, 0];
+    ee_gripper_origin_offset = [0.0385, 0, 0];
+    ee_offset = wrist_rotate_offset + gripper_link_offset + ...
+                gripper_origin_offset + gripper_bar_offset + ...
+                ee_gripper_origin_offset;
+    Link_Length(1) = 126.75 / 1000 - Base_height;
     Link_Length(2) = 300.00 / 1000;
-    Link_Length(3) = 300.00 / 1000;
-    Link_Length(4) = 70.0 / 1000;
-    Link_Length(5) = 65.95 / 1000;
+    Link_Length(3) = 300.00 / 1000 + elbow_offset(1);
+    Link_Length(4) = 0.0 / 1000;
+    Link_Length(5) = ee_offset(1);
+
 elseif ARM_TYPE == 2
     NLINKS.Value = 6;
 
     % Arbitary values (in m)
-    Link_Length(1) = 126.75;
-    Link_Length(2) = 300.00;
-    Link_Length(3) = 300.00;
-    Link_Length(4) = 70.0;
-    Link_Length(5) = 65.95;
-    Link_Length(6) = 10.0;
+    Link_Length(1) = ArmLink1_height;
+    Link_Length(2) = 227.5 / 1000;
+    Link_Length(3) = 227.5 / 1000;
+    Link_Length(4) = 227.5 / 1000;
+    Link_Length(5) = 227.5 / 1000;
+    Link_Length(6) = 0.065;
+%     Link_Length(5) = 65.95;
+%     Link_Length(6) = 10.0;
+
+elseif ARM_TYPE == 3
+    NLINKS.Value = 7;
+
+    Base_height = 0.04;
+    Base_dia = 0.45;
+    % CAD model values (in m)
+    Link_Length(1) = 0.05 + 0.04 + 0.1;   % Attach base plus Base height plus shoulder 1
+    Link_Length(2) = 0.35 - .15 + 0.075;   % subtract half of shoulder_2 and add radius of shoulder 3
+%     Link_Length(3) = 0.20 / 2 + 1;     % half the length of shoulder 3 plus main link 1
+    Link_Length(3) = (0.20 - .16/2) + 1;   % shoulder 3 minus radius of shoulder 2 plus main link 1
+%     Link_Length(4) = 0.075 + 0.075;    % half elbow 1 plus radius elbow 2
+    Link_Length(4) =  0.15 - 0.15/2 + 0.15/2; % subtract radius of main link 1 and add radius of elbow 2
+%     Link_Length(5) = 0.2 - 0.06 + 1;   % subtract elbow joint 1 radius plus main link 2
+    Link_Length(5) = (0.20 - .12/2) + 1;   % elbow 2 minus radius of elbow 1 pluse main link 2
+%     Link_Length(6) = 0.075 + 0.075;    % half wrist 1 plus radius wrist 2
+    Link_Length(6) = 0.15 - 0.15/2 + 0.15/2; % subtract radius of main link 2 and add radius of wrist 2
+%     Link_Length(6) = 0.2 - 0.12/2;     % subtract radius of elbow 1
+    Link_Length(7) = 0.2 - 0.06;       % subtract wrist joint 1 radius
+
+
+    Link_CG(1,:) = [0 0 Link_Length(1)/2];
+    Link_CG(2,:) = [0 0 Link_Length(2)/2];
+    Link_CG(3,:) = [0 0 Link_Length(3)/2];
+    Link_CG(4,:) = [0 0 -Link_Length(4)/2];
+    Link_CG(5,:) = [0 0 Link_Length(5)/2];
+    Link_CG(6,:) = [0 0 -Link_Length(6)/2];
+    Link_CG(7,:) = [0 0 Link_Length(7)/2];
+
 else
     NLINKS.Value = 3;
 
@@ -169,9 +214,16 @@ else
     Link_Length(1) = 0.2;
     Link_Length(2) = 0.2;
     Link_Length(3) = 0.08;
+
+%     Link_CG(1,:) = [0 0 Link_Length(1)/2];
+%     Link_CG(2,:) = [0 0 Link_Length(2)/2];
+%     Link_CG(3,:) = [0 0 Link_Length(3)/2];
+    Link_CG(1,:) = [Link_Length(1)/2 0 0];
+    Link_CG(2,:) = [Link_Length(2)/2 0 0];
+    Link_CG(3,:) = [Link_Length(3)/2 0 0];
 end
 % Assumes CG is in the middle of the link
-Link_CG = Link_Length/2;
+% Link_CG = Link_Length/2;
 
 nLink = NLINKS.Value;
 
@@ -187,9 +239,16 @@ alpha = zeros(1, nLink);
 
 % Define arm controller data
 jointControlData.cntrlMode = 2;   % 1: Joint Control, 2: EE control (Joint control not implemented in Simulink)
-jointControlData.Kp = [1 1 1]*0.7;
-jointControlData.Kd = [1 1 1]*4;
-jointControlData.Ki = [1 1 1]*0.;
+% jointControlData.Kp = [1 1 1 .1 .1 .1]*0.7;
+jointControlData.Kp = [1 1 1 .2 .2 .2]*0.7;
+jointControlData.Kd = [1 1 1 1 1 1]*4;
+% jointControlData.Kd = [1 1 1 1 1 1]*0;
+jointControlData.Ki = [1 1 1 1 1 1]*0.;
+
+% Use these with 3-Link Planar arm
+% jointControlData.Kp = [1 1 1 1 1 1]*0.7;   % when using angle erross
+jointControlData.Kp = [1 1 1 .05 .05 .05]*0.7; % when using MRP errors
+jointControlData.Kd = [1 1 1 .8 .8 .8]*4;
 
 % Used for joint control only (Joint control not implemented in Simulink)
 jointControlData.qCmdDot = [0 0 0];
@@ -213,36 +272,38 @@ jointControlData.refTime = [0 20 30 50 70];
 jointControlData.jointControlMode = 0;
 jointControlData.jointControlModeVec = [2 2 2 2 2];   % 1 = hold position, 2 = EE control
 jointControlData.torqueLimit = 0.5*ones(1,nLink);
-
+% jointControlData.deadzone = 0.02*ones(1,nLink);
+% jointControlData.deadzone = 0.001*ones(1,nLink);
+jointControlData.deadzone = 0.0001*ones(1,nLink);
 % Initial control torques
 %tau(:,1) = [0 0 0]';
 
 %% Satellite Control Parameters
 % Translational commands and gains
 %IC.rel_position = [-0.25 2.5 0.0];
-satControlData.Trans.cmdVel = [0 0 0];
+satControlData_Trans.cmdVel = [0 0 0];
 
-satControlData.Trans.Kp = [15 15 15];
-satControlData.Trans.Kd = [120 120 120];
-satControlData.Trans.Ki = [0.05 0.05 0.05];
+satControlData_Trans.Kp = [15 15 15];
+satControlData_Trans.Kd = [120 120 120];
+satControlData_Trans.Ki = [0.05 0.05 0.05];
 
-satControlData.Trans.forceLimit = 20;
+satControlData_Trans.forceLimit = 20;
 
 % Rotational commands and gains
 % This is a relative angle and rate to the client
 % If the client is rotating it will match the rate
-satControlData.Rot.cmdAngle = [0 0 0]*dtr;
-satControlData.Rot.cmdRate = [0 0 0]*dtr;
+satControlData_Rot.cmdAngle = [0 0 0]*dtr;
+satControlData_Rot.cmdRate = [0 0 0]*dtr;
 
-% satControlData.Rot.Kp = [50 50 50];
-% satControlData.Rot.Kd = [200 200 200];
-% satControlData.Rot.Ki = [0.05 0.05 0.05];
+% satControlData_Rot.Kp = [50 50 50];
+% satControlData_Rot.Kd = [200 200 200];
+% satControlData_Rot.Ki = [0.05 0.05 0.05];
 % Disable rotational control 
-satControlData.Rot.Kp = [0 0 0];
-satControlData.Rot.Kd = [0 0 0];
-satControlData.Rot.Ki = [0 0 0];
+satControlData_Rot.Kp = [0 0 0];
+satControlData_Rot.Kd = [0 0 0];
+satControlData_Rot.Ki = [0 0 0];
 
-satControlData.Rot.torqueLimit = 10;
+satControlData_Rot.torqueLimit = 10;
 
 %% Navigation Parameters
 nav.CameraToBase.orientation = [-90 0 -45]*dtr;

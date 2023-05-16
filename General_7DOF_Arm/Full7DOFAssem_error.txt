@@ -1,0 +1,12 @@
+Constrained Instances: 'ElbowAssem-1/MainLink2-1', 'WristAssem-1/WristJoint_1-1'
+Constraint Name: Tangent1
+Error Details: Constraint geometry is not supported. The constraint geometry has been exported as unknown geometry.
+---------------------------------------------------------------------------------
+Constrained Instances: 'ElbowJoint_1-1', 'MainLink1-1'
+Constraint Name: Tangent3
+Error Details: Constraint geometry is not supported. The constraint geometry has been exported as unknown geometry.
+---------------------------------------------------------------------------------
+Constrained Instances: 'ShoulderJoint_1-1', 'ShoulderJoint_2-1'
+Constraint Name: Tangent1
+Error Details: Constraint geometry is not supported. The constraint geometry has been exported as unknown geometry.
+---------------------------------------------------------------------------------
