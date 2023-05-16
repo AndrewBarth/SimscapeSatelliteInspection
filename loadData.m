@@ -51,7 +51,7 @@ elseif ARM_TYPE == 3
     General7DOF_test
 end
 
-ARM_CONTROL_TYPE = 0;
+ARM_CONTROL_TYPE = 1;
 VSS_ModelBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==0');
 VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
 

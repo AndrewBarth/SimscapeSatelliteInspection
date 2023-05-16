@@ -2,8 +2,9 @@
 
 %% General parameters
 
-% Set the run time of the simulation
+% Set the run time and step size of the simulation
 endTime = 80;
+stepSize = 0.001;
 
 %% Rod Parameters
 % Properties of aluminum
