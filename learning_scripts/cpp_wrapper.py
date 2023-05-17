@@ -26,7 +26,7 @@ class cppWrapper(object):
     def step_cpp(self,agent_ids,action_dict,stop_time):
 
         nAgents = len(agent_ids)
-        int nDof = 3;
+        nDof = 3;
 
         # Extract the actions from the dictionary
         actions = []

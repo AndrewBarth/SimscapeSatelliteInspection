@@ -89,6 +89,10 @@ int_T sim_init(real_T* initial_conditions)
   }
 
   // ADD INITIAL CONDITIONS HERE
+  SatelliteServicing_Mission_P.RTP_AE61E748_PositionTargetValu = initial_conditions[0];
+  SatelliteServicing_Mission_P.RTP_3768B6F2_PositionTargetValu = initial_conditions[1];
+  SatelliteServicing_Mission_P.RTP_406F8664_PositionTargetValu = initial_conditions[2];
+
 
   // Initialize model
   SatelliteServicing_Mission_initialize(SatelliteServicing_Mission_M,
@@ -112,11 +116,11 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T*
   //(void)(argv);
 
 
-  int nDof = 3;
+  int agents = 3;
 
   // Set the inputs for the model
 //  SatelliteServicing_Mission_U.control_type = 1;
-  for (int i=0; i<nDof; i++) {
+  for (int i=0; i<agents; i++) {
       SatelliteServicing_Mission_U.ManipulatorActions[i] = actions[i];
   }
 

@@ -18,10 +18,10 @@
 
 PRODUCT_NAME              = SatelliteServicing_Mission
 MAKEFILE                  = SatelliteServicing_Mission.mk
-MATLAB_ROOT               = $(HOME)/sat_servicing/R2022b
-MATLAB_BIN                = $(HOME)/sat_servicing/R2022b/bin
+MATLAB_ROOT               = $(HOME)/SimscapeSatelliteInspection/R2022b
+MATLAB_BIN                = $(HOME)/SimscapeSatelliteInspection/R2022b/bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)/win64
-START_DIR                 = $(HOME)/sat_servicing/SimscapeSatelliteInspection
+START_DIR                 = $(HOME)/SimscapeSatelliteInspection/SimscapeSatelliteInspection
 SOLVER                    = 
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0

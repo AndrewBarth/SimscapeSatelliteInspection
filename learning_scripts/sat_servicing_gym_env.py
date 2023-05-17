@@ -18,37 +18,37 @@ class SatServiceEnv(MultiAgentEnv):
 
         #self.nAgents = 3
         #self.agents = {1, 2, 3}
-        self.nAgents = 1
-        self.agents = {1}
+        self.nAgents = kwargs['nAgents']
+        self.agents = {1,2,3}
         self.agent_ids = set(self.agents)
+ 
+        # Process argements
+        self.initial_state = kwargs['initial_state']
+        self.stop_time = kwargs['stop_time']
 
         # Define the reference trajectory
-        self.ref_radius = 10
-        self.ref_period = 6*60
-        self.reference_trajectory = refTraj(self.ref_radius,self.ref_period)
+        self.ref_radius = kwargs['radius']
+        self.ref_period = kwargs['period']
+        self.reference_trajectory = {i: refTraj(self.ref_radius[i],self.ref_period[i]) for i in self.agent_ids}
 
         self.reward_parameters = {}
         self.reward_parameters['position_error'] = {}
         self.reward_parameters['position_error']['min_error'] = 0.1
         self.reward_parameters['position_error']['max_reward'] = 1.0
+        #self.reward_parameters['position_error']['scale_factor'] = -1e-3
         self.reward_parameters['position_error']['scale_factor'] = -0.1
         self.reward_parameters['position_error']['exponent'] = 0.03
 
         self.reward_parameters['velocity_error'] = {}
-        self.reward_parameters['velocity_error']['min_error'] = 0.01
+        self.reward_parameters['velocity_error']['min_error'] = 0.005
         self.reward_parameters['velocity_error']['max_reward'] = 1.0
+        #self.reward_parameters['velocity_error']['scale_factor'] = -10.0
         self.reward_parameters['velocity_error']['scale_factor'] = -0.1
         self.reward_parameters['velocity_error']['exponent'] = 3.0 
 
         self.reward_parameters['control_effort'] = {}
-        self.reward_parameters['control_effort']['scale_factor'] = -50
-
-        if len(args) > 0:
-            print('Initializing state')
-            self.initial_state = args[0]
-            self.stop_time = args[1]
-        else:
-            print('Initial state and stop time must be provided as input')
+        #self.reward_parameters['control_effort']['scale_factor'] = -1e-1
+        self.reward_parameters['control_effort']['scale_factor'] = -5
 
         self.terminateds = set()
         self.truncateds = set()
@@ -122,7 +122,7 @@ class SatServiceEnv(MultiAgentEnv):
 
         obs = {}
         for agent_id in self.agent_ids:
-            obs[agent_id] = np.array([0.0]*6*self.nAgents,dtype=np.float32)
+            obs[agent_id] = np.array([0.0]*6,dtype=np.float32)
 
         info = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.output_states = dict([(agent_id, []) for agent_id in self.agent_ids])
@@ -207,7 +207,7 @@ class SatServiceEnv(MultiAgentEnv):
 
     def compute_errors(self, agent_id, time, states):
         
-        desired_state = np.array(self.reference_trajectory.compute_desired_state(time))
+        desired_state = np.array(self.reference_trajectory[agent_id].compute_desired_state(time))
         current_state = np.array(states[0:6])
         error_state = desired_state - current_state
 
