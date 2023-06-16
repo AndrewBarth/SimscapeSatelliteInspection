@@ -166,6 +166,12 @@ if ARM_TYPE == 1
     Link_Length(4) = 0.0 / 1000;
     Link_Length(5) = ee_offset(1);
 
+    arm1.Joint_Limits(1,:) = [-pi pi];
+    arm1.Joint_Limits(2,:) = [-1.850049007113989 1.256637061435917];
+    arm1.Joint_Limits(3,:) = [-1.762782544514273 1.605702911834783];
+    arm1.Joint_Limits(4,:) = [-1.867502299633933 2.234021442552742];
+    arm1.Joint_Limits(5,:) = [-pi pi];
+
 elseif ARM_TYPE == 2
     NLINKS.Value = 6;
 
@@ -178,6 +184,13 @@ elseif ARM_TYPE == 2
     Link_Length(6) = 0.065;
 %     Link_Length(5) = 65.95;
 %     Link_Length(6) = 10.0;
+
+    arm1.Joint_Limits(1,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(2,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(3,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(4,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(5,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(6,:) = [-2*pi 2*pi];
 
 elseif ARM_TYPE == 3
     NLINKS.Value = 7;
@@ -207,6 +220,14 @@ elseif ARM_TYPE == 3
     Link_CG(6,:) = [0 0 -Link_Length(6)/2];
     Link_CG(7,:) = [0 0 Link_Length(7)/2];
 
+    arm1.Joint_Limits(1,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(2,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(3,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(4,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(5,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(6,:) = [-2*pi 2*pi];
+    arm1.Joint_Limits(7,:) = [-2*pi 2*pi];
+
 else
     NLINKS.Value = 3;
 
@@ -221,6 +242,10 @@ else
     Link_CG(1,:) = [Link_Length(1)/2 0 0];
     Link_CG(2,:) = [Link_Length(2)/2 0 0];
     Link_CG(3,:) = [Link_Length(3)/2 0 0];
+
+    arm1.Joint_Limits(1,:) = [-120 120]*pi/180;
+    arm1.Joint_Limits(2,:) = [-120 120]*pi/180;
+    arm1.Joint_Limits(3,:) = [-120 120]*pi/180;
 end
 % Assumes CG is in the middle of the link
 % Link_CG = Link_Length/2;
@@ -275,8 +300,8 @@ jointControlData.torqueLimit = 0.5*ones(1,nLink);
 % jointControlData.deadzone = 0.02*ones(1,nLink);
 % jointControlData.deadzone = 0.001*ones(1,nLink);
 jointControlData.deadzone = 0.0001*ones(1,nLink);
-% Initial control torques
-%tau(:,1) = [0 0 0]';
+
+jointControlData.angleLimit = arm1.Joint_Limits;
 
 %% Satellite Control Parameters
 % Translational commands and gains
