@@ -19,32 +19,47 @@ class SatServiceEnv(MultiAgentEnv):
         #self.nAgents = 3
         #self.agents = {1, 2, 3}
         self.nAgents = kwargs['nAgents']
-        self.agents = {1,2,3}
+        self.agents = {1}
         self.agent_ids = set(self.agents)
  
         # Process argements
         self.initial_state = kwargs['initial_state']
+        self.dof = kwargs['dof']
         self.stop_time = kwargs['stop_time']
 
         # Define the reference trajectory
         self.ref_radius = kwargs['radius']
         self.ref_period = kwargs['period']
-        self.reference_trajectory = {i: refTraj(self.ref_radius[i],self.ref_period[i]) for i in self.agent_ids}
+        self.reference_trajectory = {i: refTraj(self.stop_time) for i in self.agent_ids}
 
         self.reward_parameters = {}
         self.reward_parameters['position_error'] = {}
-        self.reward_parameters['position_error']['min_error'] = 0.1
+        self.reward_parameters['position_error']['min_error'] = 0.0
         self.reward_parameters['position_error']['max_reward'] = 1.0
-        #self.reward_parameters['position_error']['scale_factor'] = -1e-3
-        self.reward_parameters['position_error']['scale_factor'] = -0.1
-        self.reward_parameters['position_error']['exponent'] = 0.03
+        self.reward_parameters['position_error']['scale_factor'] = 2.0
+        self.reward_parameters['position_error']['exponent'] = -0.005
+        self.reward_parameters['position_error']['bias'] = -2.0
+
+        self.reward_parameters['orientation_error'] = {}
+        self.reward_parameters['orientation_error']['min_error'] = 0.0
+        self.reward_parameters['orientation_error']['max_reward'] = 1.0
+        self.reward_parameters['orientation_error']['scale_factor'] = 2.0
+        self.reward_parameters['orientation_error']['exponent'] = -0.005
+        self.reward_parameters['orientation_error']['bias'] = -2.0
 
         self.reward_parameters['velocity_error'] = {}
-        self.reward_parameters['velocity_error']['min_error'] = 0.005
+        self.reward_parameters['velocity_error']['min_error'] = 0.00
         self.reward_parameters['velocity_error']['max_reward'] = 1.0
-        #self.reward_parameters['velocity_error']['scale_factor'] = -10.0
-        self.reward_parameters['velocity_error']['scale_factor'] = -0.1
-        self.reward_parameters['velocity_error']['exponent'] = 3.0 
+        self.reward_parameters['velocity_error']['scale_factor'] = 1.0 
+        self.reward_parameters['velocity_error']['exponent'] = -3.0 
+        self.reward_parameters['velocity_error']['bias'] = -1.0
+
+        self.reward_parameters['angular_rate_error'] = {}
+        self.reward_parameters['angular_rate_error']['min_error'] = 0.00
+        self.reward_parameters['angular_rate_error']['max_reward'] = 1.0
+        self.reward_parameters['angular_rate_error']['scale_factor'] = 1.0 
+        self.reward_parameters['angular_rate_error']['exponent'] = -3.0 
+        self.reward_parameters['angular_rate_error']['bias'] = -1.0
 
         self.reward_parameters['control_effort'] = {}
         #self.reward_parameters['control_effort']['scale_factor'] = -1e-1
@@ -57,8 +72,9 @@ class SatServiceEnv(MultiAgentEnv):
 
         # Define the action space
         self._action_space_in_preferred_format = True
+        agent_dof = self.dof[1]
         box_act_space = Box(low=-0.02, high=0.02,
-                            shape=(3,), dtype=np.float32)
+                            shape=(agent_dof,), dtype=np.float32)
 #        self.action_space = Dict(
 #            {
 #                1: box_act_space,
@@ -70,8 +86,9 @@ class SatServiceEnv(MultiAgentEnv):
         
         # Define the observation space
         self._obs_space_in_preferred_format = True
+        agent_dof = self.dof[1]
         box_obs_space = Box(low=-1e5, high=1e5,
-                            shape=(6,), dtype=np.float32)
+                            shape=(6+2*agent_dof,), dtype=np.float32)
          
 #        self.observation_space = Dict(
 #            {
@@ -116,13 +133,13 @@ class SatServiceEnv(MultiAgentEnv):
         else:
             initial_state = {}
             for agent_id in self.agent_ids:
-                initial_state[agent_id] = [0]*6
+                initial_state[agent_id] = [0]*self.dof[agent_id]
         
         self.cppWrapper.init_cpp(self.agent_ids,initial_state)
 
         obs = {}
         for agent_id in self.agent_ids:
-            obs[agent_id] = np.array([0.0]*6,dtype=np.float32)
+            obs[agent_id] = np.array([0.0]*(6+2*self.dof[agent_id]),dtype=np.float32)
 
         info = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.output_states = dict([(agent_id, []) for agent_id in self.agent_ids])
@@ -146,6 +163,11 @@ class SatServiceEnv(MultiAgentEnv):
         # Extract position and velocity errors
         obs = errors[agent_id][0:6]
 
+        # Add joint angles and rates
+        start_idx=24
+        end_idx=start_idx+2*self.dof[agent_id]
+        obs = np.append(obs,states[agent_id][start_idx:end_idx])
+
         return obs
 
     def get_reward(self, agent_id, error_states, action_states):
@@ -156,38 +178,52 @@ class SatServiceEnv(MultiAgentEnv):
         # Reward is based on the square of the error
         msq_error = np.dot(pos_error,pos_error)
 
-        #params = self.reward_parameters['position_error']
-        #if msq_error < params['min_error']:
-        #    poserr_reward = params['max_reward']
-        #else:
-        #    poserr_reward = params['scale_factor']*msq_error
 
         norm_error = np.linalg.norm(pos_error)
         params = self.reward_parameters['position_error']
         if norm_error < params['min_error']:
             poserr_reward = params['max_reward']
         else:
-            poserr_reward = params['scale_factor']*np.exp(params['exponent']*norm_error)
+            poserr_reward = params['scale_factor']*np.exp(params['exponent']*norm_error)+params['bias']
+
+        # Get orietentation error for this agent
+        ori_error = np.array(error_states[agent_id][3:6])
+
+        # Reward is based on the square of the error
+        msq_error = np.dot(ori_error,ori_error)
+
+        norm_error = np.linalg.norm(ori_error)
+        params = self.reward_parameters['orientation_error']
+        if norm_error < params['min_error']:
+            orierr_reward = params['max_reward']
+        else:
+            orierr_reward = params['scale_factor']*np.exp(params['exponent']*norm_error)+params['bias']
 
         # Get velocity error for this agent
-        vel_error = np.array(error_states[agent_id][3:6])
+        vel_error = np.array(error_states[agent_id][6:9])
 
         # Reward is based on the square of the error
         msq_error = np.dot(vel_error,vel_error)
-
-        #params = self.reward_parameters['velocity_error']
-        #if msq_error < params['min_error']:
-        #    velerr_reward = params['max_reward']
-        #else:
-        #    velerr_reward = params['scale_factor']*msq_error
 
         norm_error = np.linalg.norm(vel_error)
         params = self.reward_parameters['velocity_error']
         if norm_error < params['min_error']:
             velerr_reward = params['max_reward']
         else:
-            velerr_reward = params['scale_factor']*np.exp(params['exponent']*norm_error)
+            velerr_reward = params['scale_factor']*np.exp(params['exponent']*norm_error)+params['bias']
 
+        # Get angular rate error for this agent
+        rat_error = np.array(error_states[agent_id][9:12])
+
+        # Reward is based on the square of the error
+        msq_error = np.dot(rat_error,rat_error)
+
+        norm_error = np.linalg.norm(rat_error)
+        params = self.reward_parameters['angular_rate_error']
+        if norm_error < params['min_error']:
+            raterr_reward = params['max_reward']
+        else:
+            raterr_reward = params['scale_factor']*np.exp(params['exponent']*norm_error)+params['bias']
 
         params = self.reward_parameters['control_effort']
         control_effort = np.linalg.norm(action_states[agent_id])
@@ -195,9 +231,11 @@ class SatServiceEnv(MultiAgentEnv):
 
         reward = {}
         reward['position_error_reward'] = poserr_reward
+        reward['orientation_error_reward'] = orierr_reward
         reward['velocity_error_reward'] = velerr_reward
+        reward['angular_rate_error_reward'] = raterr_reward
         reward['control_reward'] = control_reward
-        reward['total'] = poserr_reward + velerr_reward + control_reward
+        reward['total'] = poserr_reward + orierr_reward + velerr_reward + raterr_reward + control_reward
         
         return reward
 
@@ -208,7 +246,7 @@ class SatServiceEnv(MultiAgentEnv):
     def compute_errors(self, agent_id, time, states):
         
         desired_state = np.array(self.reference_trajectory[agent_id].compute_desired_state(time))
-        current_state = np.array(states[0:6])
+        current_state = np.array(states[12:24])
         error_state = desired_state - current_state
 
         return error_state
@@ -239,7 +277,7 @@ class SatServiceEnv(MultiAgentEnv):
         rewards = {}
         # Collect rewards
         for agent_id in agent_ids:
-            self.reward_states[agent_id] = [step_rewards[agent_id]['position_error_reward'], step_rewards[agent_id]['velocity_error_reward'], step_rewards[agent_id]['control_reward']]
+            self.reward_states[agent_id] = [step_rewards[agent_id]['position_error_reward'], step_rewards[agent_id]['orientation_error_reward'], step_rewards[agent_id]['velocity_error_reward'], step_rewards[agent_id]['angular_rate_error_reward'], step_rewards[agent_id]['control_reward']]
             rewards[agent_id] = step_rewards[agent_id]['total']
         
         # Not used, but required to return

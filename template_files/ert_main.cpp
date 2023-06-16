@@ -93,6 +93,7 @@ int_T sim_init(real_T* initial_conditions)
   SatelliteServicing_Mission_P.RTP_3768B6F2_PositionTargetValu = initial_conditions[1];
   SatelliteServicing_Mission_P.RTP_406F8664_PositionTargetValu = initial_conditions[2];
 
+  printf("ICs: %6.3f %6.3f %6.3f\n",SatelliteServicing_Mission_P.RTP_AE61E748_PositionTargetValu,SatelliteServicing_Mission_P.RTP_3768B6F2_PositionTargetValu,SatelliteServicing_Mission_P.RTP_406F8664_PositionTargetValu);
 
   // Initialize model
   SatelliteServicing_Mission_initialize(SatelliteServicing_Mission_M,
@@ -124,27 +125,29 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T*
       SatelliteServicing_Mission_U.ManipulatorActions[i] = actions[i];
   }
 
+
   // Simulating the model step behavior (in non real-time) to
   //   simulate model behavior at stop time.
-
-  while ((rtmGetErrorStatus(SatelliteServicing_Mission_M) == (nullptr)) &&
-         !rtmGetStopRequested(SatelliteServicing_Mission_M)) {
-    rt_OneStep(SatelliteServicing_Mission_M);
+  for (int s=0;s<1; s++) {
+      rt_OneStep(SatelliteServicing_Mission_M);
   }
 
   // Collect observations
-  for (int i=0; i<50; i++) {
+  for (int i=0; i<33; i++) {
        observations[i] = SatelliteServicing_Mission_Y.Observations[i];
   }
 
   double current_time = rtmGetT(SatelliteServicing_Mission_M);
   *simTime = current_time;
-  if (int(*simTime*1e6) % int(100.0*1e6) == 0) {
+  if (int(*simTime*1e6) % int(10.0*1e6) == 0) {
       printf("Current Time: %6.3f\n",*simTime);
+      //printf("Actions: %6.3f %6.3f %6.3f\n",actions[0],actions[1],actions[2]);
+      printf("Joint Ang and Rate: %9.6f %9.6f %9.6f %9.6f %9.6f %9.6f\n",observations[24],observations[25],observations[26],observations[27],observations[28],observations[29]);
+      printf("Joint Cmds: %6.3f %6.3f %6.3f\n",observations[30],observations[31],observations[32]);
   }
 
   // Determine if simulation has reached its end time
-  if (rtmGetT(SatelliteServicing_Mission_M) > stopTime) {
+  if (rtmGetT(SatelliteServicing_Mission_M) >= stopTime) {
       rtmSetStopRequested(SatelliteServicing_Mission_M,1);
       printf("Terminating CPP simulation\n");
       dones[0] = 1;
@@ -152,10 +155,24 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T*
   } else {
       dones[0] = 0;
   }
+  dones[1] = 0;
 
+  return 0;
+}
+
+int_T sim_terminate()
+{
   // Terminate model
   SatelliteServicing_Mission_terminate(SatelliteServicing_Mission_M);
+
   return 0;
+}
+
+// Declare external functions to be accessed from Python
+extern "C++" {
+    int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T* dones, real_T* simTime);
+    int_T sim_init(real_T* initial_conditions);
+    int_T sim_terminate();
 }
 
 //

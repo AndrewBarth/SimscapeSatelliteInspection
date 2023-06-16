@@ -14,33 +14,37 @@ class cppWrapper(object):
 
         # Extract the initial conditions from the dictionary
         initial_states = []
+        nStates = 0
         for agent_id in agent_ids:
-            initial_states.extend(initial_state_dict[agent_id][0:6])
+            nStates += len(initial_state_dict[agent_id])
+            initial_states.extend(initial_state_dict[agent_id])
 
+        nStates = len(initial_states)
         # Create variables using ctypes to pass initial conditions to C++
         lib._Z8sim_initPd.argtypes = [ctypes.POINTER(ctypes.c_double)]
-        initial_state_data = (ctypes.c_double * (6*nAgents) )(*initial_states)
+        initial_state_data = (ctypes.c_double * (nStates) )(*initial_states)
 
         ret = lib._Z8sim_initPd(initial_state_data)
 
     def step_cpp(self,agent_ids,action_dict,stop_time):
 
         nAgents = len(agent_ids)
-        nDof = 3;
 
         # Extract the actions from the dictionary
         actions = []
         for agent_id in agent_ids:
-            actions.extend(action_dict[agent_id][0:nDof])
+            actions.extend(action_dict[agent_id])
 
+        nActions = len(actions)
+        nObservations = 33*nAgents
         # Create variables using ctypes to pass actions and 
         # observations to and from C++
         # NOTE: Sizes are hardcoded in the C++ code so nAgents must match
         # the value used to generate the C++ code
         lib._Z11sim_wrapperdPdS_PiS_.argtypes = [ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.c_double)]
         empty_var = []
-        action_data = (ctypes.c_double * (nDof*nAgents) )(*actions)
-        observation_data = (ctypes.c_double  * (50*nAgents) )(*empty_var)
+        action_data = (ctypes.c_double * (nActions) )(*actions)
+        observation_data = (ctypes.c_double  * (nObservations) )(*empty_var)
         done_data = (ctypes.c_int  * 2)(*empty_var)
         stoptime_data = (ctypes.c_double)(stop_time)
         simtime = (ctypes.c_double * 1)(*empty_var)
@@ -51,7 +55,8 @@ class cppWrapper(object):
         # Extract the observations and place them in a python dictionary
         observations = {}
         for agent_id in agent_ids:
-            observations[agent_id] = [observation_data[50*(agent_id-1)+i] for i in range(50)]
+            #observations[agent_id] = [observation_data[33*(agent_id-1)+i] for i in range(33)]
+            observations[agent_id] = [observation_data[i] for i in range(33)]
 
         # Extract the dones and place them in a python dictionsary
         # Dones are shared between all agents

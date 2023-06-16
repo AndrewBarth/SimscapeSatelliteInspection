@@ -2,7 +2,7 @@
 ## Makefile generated for component 'SatelliteServicing_Mission'. 
 ## 
 ## Makefile     : SatelliteServicing_Mission.mk
-## Generated on : Mon May 01 12:51:59 2023
+## Generated on : Wed May 24 14:13:05 2023
 ## Final product: $(RELATIVE_PATH_TO_ANCHOR)/SatelliteServicing_Mission.elf
 ## Product type : executable
 ## 
@@ -161,7 +161,7 @@ BUILD_TYPE = "Top-Level Shared Object"
 ## INCLUDE PATHS
 ###########################################################################
 
-INCLUDES_BUILDINFO = -I$(START_DIR) -I$(START_DIR)/SatelliteServicing_Mission_ert_rtw -I$(MATLAB_ROOT)/extern/include -I$(MATLAB_ROOT)/simulink/include -I$(MATLAB_ROOT)/rtw/c/src -I$(MATLAB_ROOT)/rtw/c/src/ext_mode/common -I$(MATLAB_ROOT)/rtw/c/ert -I$(MATLAB_ROOT)/extern/physmod/win64/lang/include -I$(MATLAB_ROOT)/extern/physmod/win64/mc/include -I$(MATLAB_ROOT)/extern/physmod/win64/pd/include -I$(MATLAB_ROOT)/extern/physmod/win64/pm/include -I$(MATLAB_ROOT)/extern/physmod/win64/pm_log/include -I$(MATLAB_ROOT)/extern/physmod/win64/pm_math/include -I$(MATLAB_ROOT)/extern/physmod/win64/sm/include -I$(MATLAB_ROOT)/extern/physmod/win64/sm_ssci/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_comp/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_core/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_ds/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_sli/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_st/include
+INCLUDES_BUILDINFO = -I$(START_DIR) -I$(START_DIR)/SatelliteServicing_Mission_ert_rtw -I$(MATLAB_ROOT)/extern/include -I$(MATLAB_ROOT)/simulink/include -I$(MATLAB_ROOT)/rtw/c/src -I$(MATLAB_ROOT)/rtw/c/src/ext_mode/common -I$(MATLAB_ROOT)/rtw/c/ert -I$(MATLAB_ROOT)/extern/physmod/win64/lang/include -I$(MATLAB_ROOT)/extern/physmod/win64/mc/include -I$(MATLAB_ROOT)/extern/physmod/win64/pd/include -I$(MATLAB_ROOT)/extern/physmod/win64/pm/include -I$(MATLAB_ROOT)/extern/physmod/win64/pm_log/include -I$(MATLAB_ROOT)/extern/physmod/win64/pm_math/include -I$(MATLAB_ROOT)/extern/physmod/win64/sm/include -I$(MATLAB_ROOT)/extern/physmod/win64/sm_ssci/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_comp/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_core/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_ds/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_sli/include -I$(MATLAB_ROOT)/extern/physmod/win64/ssc_st/include -I$(START_DIR)/slprj/ert/_sharedutils
 
 INCLUDES = $(INCLUDES_BUILDINFO)
 
@@ -180,7 +180,7 @@ DEFINES = $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_OPTS) $(DEFINES_STAN
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_create.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_setParameters.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_asserts.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_deriv.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_checkDynamics.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_compOutputsKin.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_compOutputsDyn.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_asm_delegate.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_sim_delegate.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_mode_zero_crossings.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_logging.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_geometries.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_gateway.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_backsubrr_dbl.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_forwardsubrr_dbl.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_lu_real.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_matrixlib_dbl.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission.cpp $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_data.cpp $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rtGetInf.cpp $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rtGetNaN.cpp $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_nonfinite.cpp
+SRCS = $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_create.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_setParameters.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_asserts.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_deriv.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_checkDynamics.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_compOutputsKin.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_compOutputsDyn.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_asm_delegate.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_sim_delegate.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_mode_zero_crossings.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_logging.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_geometries.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_acc66beb_1_gateway.c $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission.cpp $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission_data.cpp
 
 MAIN_SRC = $(START_DIR)/SatelliteServicing_Mission_ert_rtw/ert_main.cpp
 
@@ -190,7 +190,7 @@ ALL_SRCS = $(SRCS) $(MAIN_SRC)
 ## OBJECTS
 ###########################################################################
 
-OBJS = SatelliteServicing_Mission_acc66beb_1.c.o SatelliteServicing_Mission_acc66beb_1_create.c.o SatelliteServicing_Mission_acc66beb_1_setParameters.c.o SatelliteServicing_Mission_acc66beb_1_asserts.c.o SatelliteServicing_Mission_acc66beb_1_deriv.c.o SatelliteServicing_Mission_acc66beb_1_checkDynamics.c.o SatelliteServicing_Mission_acc66beb_1_compOutputsKin.c.o SatelliteServicing_Mission_acc66beb_1_compOutputsDyn.c.o SatelliteServicing_Mission_acc66beb_1_asm_delegate.c.o SatelliteServicing_Mission_acc66beb_1_sim_delegate.c.o SatelliteServicing_Mission_acc66beb_1_mode_zero_crossings.c.o SatelliteServicing_Mission_acc66beb_1_logging.c.o SatelliteServicing_Mission_acc66beb_1_geometries.c.o SatelliteServicing_Mission_acc66beb_1_gateway.c.o rt_backsubrr_dbl.c.o rt_forwardsubrr_dbl.c.o rt_lu_real.c.o rt_matrixlib_dbl.c.o SatelliteServicing_Mission.cpp.o SatelliteServicing_Mission_data.cpp.o rtGetInf.cpp.o rtGetNaN.cpp.o rt_nonfinite.cpp.o
+OBJS = SatelliteServicing_Mission_acc66beb_1.c.o SatelliteServicing_Mission_acc66beb_1_create.c.o SatelliteServicing_Mission_acc66beb_1_setParameters.c.o SatelliteServicing_Mission_acc66beb_1_asserts.c.o SatelliteServicing_Mission_acc66beb_1_deriv.c.o SatelliteServicing_Mission_acc66beb_1_checkDynamics.c.o SatelliteServicing_Mission_acc66beb_1_compOutputsKin.c.o SatelliteServicing_Mission_acc66beb_1_compOutputsDyn.c.o SatelliteServicing_Mission_acc66beb_1_asm_delegate.c.o SatelliteServicing_Mission_acc66beb_1_sim_delegate.c.o SatelliteServicing_Mission_acc66beb_1_mode_zero_crossings.c.o SatelliteServicing_Mission_acc66beb_1_logging.c.o SatelliteServicing_Mission_acc66beb_1_geometries.c.o SatelliteServicing_Mission_acc66beb_1_gateway.c.o SatelliteServicing_Mission.cpp.o SatelliteServicing_Mission_data.cpp.o
 
 MAIN_OBJ = ert_main.cpp.o
 
@@ -206,7 +206,7 @@ PREBUILT_OBJS =
 ## LIBRARIES
 ###########################################################################
 
-LIBS = ./ssc_sli.lib ./sm_ssci.lib ./ssc_core.lib ./ssc_st.lib ./mc.lib ./sm.lib ./pm_math.lib ./pm.lib
+LIBS = ./ssc_sli.lib ./sm_ssci.lib ./ssc_core.lib ./ssc_st.lib ./mc.lib ./sm.lib ./pm_math.lib ./pm.lib $(START_DIR)/slprj/ert/_sharedutils/rtwshared.lib
 
 ###########################################################################
 ## SYSTEM LIBRARIES
@@ -1295,22 +1295,6 @@ SatelliteServicing_Mission_acc66beb_1_gateway.c.o : $(START_DIR)/SatelliteServic
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-rt_backsubrr_dbl.c.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_backsubrr_dbl.c
-	$(CC) $(CFLAGS) -o "$@" "$<"
-
-
-rt_forwardsubrr_dbl.c.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_forwardsubrr_dbl.c
-	$(CC) $(CFLAGS) -o "$@" "$<"
-
-
-rt_lu_real.c.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_lu_real.c
-	$(CC) $(CFLAGS) -o "$@" "$<"
-
-
-rt_matrixlib_dbl.c.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_matrixlib_dbl.c
-	$(CC) $(CFLAGS) -o "$@" "$<"
-
-
 SatelliteServicing_Mission.cpp.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/SatelliteServicing_Mission.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
@@ -1320,18 +1304,6 @@ SatelliteServicing_Mission_data.cpp.o : $(START_DIR)/SatelliteServicing_Mission_
 
 
 ert_main.cpp.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/ert_main.cpp
-	$(CPP) $(CPPFLAGS) -o "$@" "$<"
-
-
-rtGetInf.cpp.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rtGetInf.cpp
-	$(CPP) $(CPPFLAGS) -o "$@" "$<"
-
-
-rtGetNaN.cpp.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rtGetNaN.cpp
-	$(CPP) $(CPPFLAGS) -o "$@" "$<"
-
-
-rt_nonfinite.cpp.o : $(START_DIR)/SatelliteServicing_Mission_ert_rtw/rt_nonfinite.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 

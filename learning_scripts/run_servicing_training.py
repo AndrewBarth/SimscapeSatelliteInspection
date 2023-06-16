@@ -9,17 +9,16 @@ from sat_servicing_gym_env import SatServiceEnv
 from custom_metrics import MyCallbacks
 from utils import data_utils
 
-nAgents=3
+nAgents=1
 
 # Set initial conditions
 initial_state = {}
 
-initial_state[1] = [80]
-initial_state[2] = [90]
-initial_state[3] = [20]
+initial_state[1] = [80,90,20]
 
 stop_time = 80.0
 
+dof = {1: 3}
 radius = {1: 10, 2: 15, 3: 20}
 period = {1: 6*60, 2: 6*60, 3: 6*60}
 
@@ -41,10 +40,10 @@ nIter = 5000
 
 
 register_env(
-        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,stop_time=stop_time,radius=radius,nAgents=nAgents,period=period)
+        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,radius=radius,nAgents=nAgents,period=period)
     )
 
-env = SatServiceEnv(initial_state=initial_state,stop_time=stop_time,radius=radius,nAgents=nAgents,period=period)
+env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,radius=radius,nAgents=nAgents,period=period)
 
 algo = PPOConfig()\
     .environment('multi_agent_sat_servicing')\
@@ -56,12 +55,12 @@ algo = PPOConfig()\
             "policy_1": (
                 None, env.observation_space[1], env.action_space[1], {"gamma": 0.98}
             ),
-            "policy_2": (
-                None, env.observation_space[2], env.action_space[2], {"gamma": 0.99}
-            ),
-            "policy_3": (
-               None, env.observation_space[3], env.action_space[3], {"entropy_coeff": 0.005, "gamma": 0.98}
-            ),
+#            "policy_2": (
+#                None, env.observation_space[2], env.action_space[2], {"gamma": 0.99}
+#            ),
+#            "policy_3": (
+#               None, env.observation_space[3], env.action_space[3], {"entropy_coeff": 0.005, "gamma": 0.98}
+#            ),
         },
         policy_mapping_fn = lambda agent_id,episode, worker, **kw: f"policy_{agent_id}",
         )\
