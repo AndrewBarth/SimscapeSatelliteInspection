@@ -28,8 +28,6 @@ class SatServiceEnv(MultiAgentEnv):
         self.stop_time = kwargs['stop_time']
 
         # Define the reference trajectory
-        self.ref_radius = kwargs['radius']
-        self.ref_period = kwargs['period']
         self.reference_trajectory = {i: refTraj(self.stop_time) for i in self.agent_ids}
 
         self.reward_parameters = {}
@@ -128,6 +126,8 @@ class SatServiceEnv(MultiAgentEnv):
 
     def reset(self, seed, options):
 
+        print('Resetting Simulation')
+
         if hasattr(self, 'initial_state'):
             initial_state = self.initial_state
         else:
@@ -160,7 +160,7 @@ class SatServiceEnv(MultiAgentEnv):
         # Add position error
         #obs.extend(errors[agent_id])
 
-        # Extract position and velocity errors
+        # Extract position and orientation errors
         obs = errors[agent_id][0:6]
 
         # Add joint angles and rates
@@ -235,7 +235,9 @@ class SatServiceEnv(MultiAgentEnv):
         reward['velocity_error_reward'] = velerr_reward
         reward['angular_rate_error_reward'] = raterr_reward
         reward['control_reward'] = control_reward
-        reward['total'] = poserr_reward + orierr_reward + velerr_reward + raterr_reward + control_reward
+        # Only include position error, orientation error and control effort in the training reward
+        #reward['total'] = poserr_reward + orierr_reward + velerr_reward + raterr_reward + control_reward
+        reward['total'] = poserr_reward + orierr_reward + control_reward
         
         return reward
 
@@ -248,6 +250,9 @@ class SatServiceEnv(MultiAgentEnv):
         desired_state = np.array(self.reference_trajectory[agent_id].compute_desired_state(time))
         current_state = np.array(states[12:24])
         error_state = desired_state - current_state
+
+        #if time % 10 == 0:
+        #    print('Desired: ',desired_state[0:3], ' Current: ',current_state[0:3])
 
         return error_state
 
@@ -263,12 +268,14 @@ class SatServiceEnv(MultiAgentEnv):
         # Get the observations
         observations = {i: self.get_observation(i,states,errors) for i in agent_ids}
 
+        #if sim_time % 10 == 0:
+        #    print('Obs: ',observations[1][0:3])
+
         # Collect states and errors
         for agent_id in agent_ids:
             self.output_states[agent_id] = states[agent_id]
             self.error_states[agent_id] = errors[agent_id].tolist()
             self.action_states[agent_id] = action[agent_id].tolist()
-            self.action_states[agent_id][2] = 0
             self.info[agent_id]['obs'].append(observations[agent_id])
 
         # Compute rewards for this step 
@@ -278,6 +285,7 @@ class SatServiceEnv(MultiAgentEnv):
         # Collect rewards
         for agent_id in agent_ids:
             self.reward_states[agent_id] = [step_rewards[agent_id]['position_error_reward'], step_rewards[agent_id]['orientation_error_reward'], step_rewards[agent_id]['velocity_error_reward'], step_rewards[agent_id]['angular_rate_error_reward'], step_rewards[agent_id]['control_reward']]
+            # Total reward is used in training
             rewards[agent_id] = step_rewards[agent_id]['total']
         
         # Not used, but required to return

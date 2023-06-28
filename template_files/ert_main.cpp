@@ -144,6 +144,7 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T*
       //printf("Actions: %6.3f %6.3f %6.3f\n",actions[0],actions[1],actions[2]);
       printf("Joint Ang and Rate: %9.6f %9.6f %9.6f %9.6f %9.6f %9.6f\n",observations[24],observations[25],observations[26],observations[27],observations[28],observations[29]);
       printf("Joint Cmds: %6.3f %6.3f %6.3f\n",observations[30],observations[31],observations[32]);
+      printf("End Effector Pos: %6.3f %6.3f %6.3f\n",observations[12],observations[13],observations[14]);
   }
 
   // Determine if simulation has reached its end time

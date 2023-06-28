@@ -22,30 +22,41 @@ dof = {1: 3}
 radius = {1: 10, 2: 15, 3: 20}
 period = {1: 6*60, 2: 6*60, 3: 6*60}
 
-time_step = 0.5    # This is fixed in the CPP code, do not change
-train_batch_size = int(stop_time/time_step)
-#rollout_fragment_length = int(stop_time/time_step)
-#train_batch_size = int(1000)
+time_step = 0.001    # This is fixed in the CPP code, do not change
 
-train_batch_size = int(7200);
 #rollout_fragment_length = int(360)
 rollout_fragment_length = "auto"
-sgd_minibatch_size = int(train_batch_size/10)
-rollout_workers = 0
-#rollout_workers = 2
-#save_step = 100 
-save_step = 50 
-checkpoint_step = 200
-nIter = 5000
+
+#rollout_workers = 0
+rollout_workers = 2
+
+save_step = 10 
+checkpoint_step = 50
+nIter = 100 
 
 
 register_env(
-        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,radius=radius,nAgents=nAgents,period=period)
+        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAgents=nAgents)
     )
 
-env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,radius=radius,nAgents=nAgents,period=period)
+env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAgents=nAgents)
 
-algo = PPOConfig()\
+#train_batch_size = int(50)
+train_batch_size = int(stop_time/time_step)
+sgd_minibatch_size = int(train_batch_size/10)
+#num_sgd_iter = 1
+#clip_param = 0.3
+entropy_coeff = 0.005
+kl_coeff = 0.5
+lambdaVal = 0.95
+lr = 5e-4
+lr_start = 5e-4
+lr_end = 1e-5
+
+# Define a learning rate schedule
+lr_endtime = 0.6*nIter*train_batch_size
+
+algoConfig = PPOConfig()\
     .environment('multi_agent_sat_servicing')\
     .multi_agent(
         policies={
@@ -82,8 +93,8 @@ algo = PPOConfig()\
             evaluation_interval=None,
             evaluation_parallel_to_training=False,
             # Run 1 episodes each time evaluation runs
-            evaluation_duration=int(stop_time/time_step),
-            evaluation_duration_unit='timesteps',
+            evaluation_duration=1,
+            evaluation_duration_unit='episodes',
             custom_evaluation_function=None,
 #            evaluation_config=PPOConfig.overrides(
 #                train_batch_size=5000,
@@ -91,7 +102,13 @@ algo = PPOConfig()\
 #                rollout_fragment_length=5000
 #            )\
     )\
-    .build()
+#    .build()
+
+algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.99, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
+})
+
+# Now Build the config
+algo = algoConfig.build()
 
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M")
 save_dir = []
