@@ -246,6 +246,7 @@ else
     arm1.Joint_Limits(1,:) = [-120 120]*pi/180;
     arm1.Joint_Limits(2,:) = [-120 120]*pi/180;
     arm1.Joint_Limits(3,:) = [-120 120]*pi/180;
+
 end
 % Assumes CG is in the middle of the link
 % Link_CG = Link_Length/2;
@@ -302,6 +303,7 @@ jointControlData.torqueLimit = 0.5*ones(1,nLink);
 jointControlData.deadzone = 0.0001*ones(1,nLink);
 
 jointControlData.angleLimit = arm1.Joint_Limits;
+jointControlData.rateLimit = 10*ones(1,nLink)*pi/180;
 
 %% Satellite Control Parameters
 % Translational commands and gains
