@@ -19,16 +19,14 @@ initial_state[1] = [80,90,20]
 stop_time = 80.0
 
 dof = {1: 3}
-radius = {1: 10, 2: 15, 3: 20}
-period = {1: 6*60, 2: 6*60, 3: 6*60}
 
 time_step = 0.001    # This is fixed in the CPP code, do not change
 
 #rollout_fragment_length = int(360)
 rollout_fragment_length = "auto"
 
-#rollout_workers = 0
-rollout_workers = 2
+rollout_workers = 0
+#rollout_workers = 2
 
 save_step = 10 
 checkpoint_step = 50
@@ -43,7 +41,7 @@ env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAge
 
 #train_batch_size = int(50)
 train_batch_size = int(stop_time/time_step)
-sgd_minibatch_size = int(train_batch_size/10)
+sgd_minibatch_size = int(train_batch_size/1000)
 #num_sgd_iter = 1
 #clip_param = 0.3
 entropy_coeff = 0.005
