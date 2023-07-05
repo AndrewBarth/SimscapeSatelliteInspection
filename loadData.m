@@ -58,3 +58,14 @@ VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
 % Perfom initialization calculations based on parameter data
 AllCalcs
 loadBusData
+
+% Set the source of the joint commands (computed or playback)
+JOINT_COMMAND_SOURCE = 0;
+VSS_ComputedTorques = Simulink.Variant('JOINT_COMMAND_SOURCE==0');
+VSS_Playback         = Simulink.Variant('JOINT_COMMAND_SOURCE==1');
+
+% Call routine to configure the joints in the arm model to accept the
+% chosen joint command type (only set up for planar 3 Link arm)
+if ARM_TYPE == 0
+    configureArmJoints
+end
