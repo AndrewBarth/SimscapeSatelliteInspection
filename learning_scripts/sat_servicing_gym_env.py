@@ -21,6 +21,7 @@ class SatServiceEnv(MultiAgentEnv):
         self.nAgents = kwargs['nAgents']
         self.agents = {1}
         self.agent_ids = set(self.agents)
+        self._agent_ids = set(self.agents)
  
         # Process argements
         self.initial_state = kwargs['initial_state']
@@ -61,7 +62,8 @@ class SatServiceEnv(MultiAgentEnv):
 
         self.reward_parameters['control_effort'] = {}
         #self.reward_parameters['control_effort']['scale_factor'] = -1e-1
-        self.reward_parameters['control_effort']['scale_factor'] = -5
+        #self.reward_parameters['control_effort']['scale_factor'] = -5
+        self.reward_parameters['control_effort']['scale_factor'] = -1
 
         self.terminateds = set()
         self.truncateds = set()
@@ -85,9 +87,11 @@ class SatServiceEnv(MultiAgentEnv):
         # Define the observation space
         self._obs_space_in_preferred_format = True
         agent_dof = self.dof[1]
-        box_obs_space = Box(low=-1e5, high=1e5,
-                            shape=(6+2*agent_dof,), dtype=np.float32)
+        #box_obs_space = Box(low=-1e5, high=1e5,
+        #                    shape=(6+2*agent_dof,), dtype=np.float32)
          
+        box_obs_space = Box(low=-1e5, high=1e5,
+                            shape=(6+2*agent_dof,))
 #        self.observation_space = Dict(
 #            {
 #                1: box_obs_space,
@@ -167,6 +171,8 @@ class SatServiceEnv(MultiAgentEnv):
         start_idx=24
         end_idx=start_idx+2*self.dof[agent_id]
         obs = np.append(obs,states[agent_id][start_idx:end_idx])
+        obs = obs.astype('float32')
+        
 
         return obs
 

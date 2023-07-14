@@ -15,14 +15,16 @@ def main():
     time_step = 0.001
 
     # Specify data
-    fileDate = '2023-06-28'
-    fileTime = '11-00'    # Full 500 iterations of training
+    fileDate = '2023-07-12'
+    fileTime = '10-59'    # Full 500 iterations of training
+    fileDate = '2023-07-13'
+    fileTime = '14-32'    # Full 500 iterations of training
 
     scenario_type = 'eval_dv'
 
     file_path = os.path.dirname(sys.path[0])+"/data_storage/"+fileDate+"-"+fileTime
 
-    episode_number = 10
+    episode_number = 60
     nAgents = 1
 
     caseType='3d'

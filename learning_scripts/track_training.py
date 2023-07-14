@@ -10,8 +10,8 @@ from utils.load_agent_data import load_data
 def main():
 
     # Specify data
-    fileDate = '2023-06-28'
-    fileTime = '11-00'    
+    fileDate = '2023-07-12'
+    fileTime = '10-59'    
 
     scenario_type = 'eval_dv'
 
@@ -45,7 +45,7 @@ def main():
 
     labels=['End Effector Total Reward','Iterations','Reward']
     legend=['Arm1']
-    colors=['orange','green','red']
+    colors=['orange','green','red','blue','cyan']
 #    plotData={'data0':np.array(totalReward1),'data1':np.array(totalReward2),'data2':np.array(totalReward3)}
 #    plot_static('1d',plotData,labels,legend,colors)
     xData = {}
@@ -54,17 +54,17 @@ def main():
     yData['Arm1'] = np.array(totalReward)
     plot_xy('1d',xData,yData,labels,legend,colors)
 
-    labels=['Cubesat Position Error','Points','X Error (m)','Y Error (m)','Z Error (m)']
+    labels=['End Effector Position Error','Points','X Error (m)','Y Error (m)','Z Error (m)']
     plotData={'data0':np.array(position_error)}
     plot_static('3d',plotData,labels,legend,colors)
 
-    labels=['Cubesat Velocity Error','Points','X Error (m/s)','Y Error (m/s)','Z Error (m/s)']
+    labels=['End Effector Velocity Error','Points','X Error (m/s)','Y Error (m/s)','Z Error (m/s)']
     plotData={'data0':np.array(velocity_error)}
     plot_static('3d',plotData,labels,legend,colors)
 
-    labels=['Rewards','Points','Pos Error Reward','Vel Error Reward','Control Reward']
-    legend=['Pos Error Reward','Vel Error Reward','Control Reward']
-    plotData={'data0':reward['poserr_reward'],'data1':reward['velerr_reward'],'data2':reward['cnterr_reward']}
+    labels=['Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward']
+    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward']
+    plotData={'data0':reward['poserr_reward'],'data1':reward['orierr_reward'],'data3':reward['cnterr_reward']}
     plot_static('1d',plotData,labels,legend,colors)
 
     plt.show()
