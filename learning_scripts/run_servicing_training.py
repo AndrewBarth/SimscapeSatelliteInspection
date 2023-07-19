@@ -2,6 +2,7 @@ import sys
 import os
 import time
 import pickle
+import numpy as np
 from ray.rllib.algorithms.algorithm_config import AlgorithmConfig
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.tune.registry import register_env
@@ -9,6 +10,7 @@ from datetime import datetime
 from sat_servicing_gym_env import SatServiceEnv
 from custom_metrics import MyCallbacks
 from utils import data_utils
+from utils.format_mat_data import format_mat_data
 
 nAgents=1
 
@@ -35,6 +37,8 @@ save_step = 10
 checkpoint_step = 10
 nIter = 100 
 
+caseName = 'agent_parameters'
+caseTitle = 'Agent Parameters'
 
 register_env(
         "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAgents=nAgents)
@@ -78,7 +82,7 @@ algoConfig = PPOConfig()\
         },
         policy_mapping_fn = lambda agent_id,episode, worker, **kw: f"policy_{agent_id}",
         )\
-    .framework(framework='tf')\
+    .framework(framework='tf2')\
     .rollouts(
           create_env_on_local_worker=True,
           num_rollout_workers=rollout_workers,
@@ -90,7 +94,9 @@ algoConfig = PPOConfig()\
     .debugging(logger_config={"type": "ray.tune.logger.TBXLogger"})\
     .training(
           train_batch_size=train_batch_size,
-          sgd_minibatch_size=sgd_minibatch_size)\
+          sgd_minibatch_size=sgd_minibatch_size,
+          model={'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
+          )\
     .evaluation(
             evaluation_num_workers=0,
             # Will  evaluate after training.
@@ -133,8 +139,8 @@ for agent_id in env.agent_ids:
 time_steps = 0
 
 # Restore the old (checkpointed) state.
-checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-07-13_14-32-57fr1roea1/checkpoint_000061'
-algo.restore(checkpoint_dir)
+#checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-07-13_14-32-57fr1roea1/checkpoint_000061'
+#algo.restore(checkpoint_dir)
 
 for Iter in range(algo.iteration,nIter): 
     print('Iteration: ', Iter)
@@ -161,6 +167,16 @@ for Iter in range(algo.iteration,nIter):
             data_utils.save_pkl(content=eval_results['evaluation']['custom_metrics'][agent_id], fdir=save_dir_inc, fname="agent_parameters.pkl")
 #            #data_utils.save_pkl(content=train_params, fdir=os.path.dirname(save_dir_inc), fname="train_parameters.pkl")
 #            rospy.logerr("agent: "+name+" Q-net stored")
+
+            # Save as mat file, first must place in dictionary
+            Data = np.array(eval_results['evaluation']['custom_metrics'][agent_id])
+
+            matData = format_mat_data(Data,caseTitle,caseName,time_step)
+
+            # Create mat file
+            fileName = caseName + '.mat'
+            data_utils.save_mat(content=matData, fdir=save_dir_inc, fname=fileName)
+
 
 #print(results)
 # Save a final checkpoint

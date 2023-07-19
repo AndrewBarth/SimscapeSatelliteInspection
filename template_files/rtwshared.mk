@@ -19,8 +19,8 @@
 
 PRODUCT_NAME              = rtwshared
 MAKEFILE                  = rtwshared.mk
-MATLAB_ROOT               = $(HOME)/SimscapeSatelliteInspection/R2022b
-MATLAB_BIN                = $(HOME)/SimscapeSatelliteInspection/R2022b/bin
+MATLAB_ROOT               = $(HOME)/SimscapeSatelliteInspection/R2023a
+MATLAB_BIN                = $(HOME)/SimscapeSatelliteInspection/R2023a/bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)/win64
 START_DIR                 = $(HOME)/SimscapeSatelliteInspection/SimscapeSatelliteInspection
 SOLVER                    = 
