@@ -96,8 +96,7 @@ int_T sim_init(real_T* initial_conditions)
   printf("ICs: %6.3f %6.3f %6.3f\n",SatelliteServicing_Mission_P.RTP_AE61E748_PositionTargetValu,SatelliteServicing_Mission_P.RTP_3768B6F2_PositionTargetValu,SatelliteServicing_Mission_P.RTP_406F8664_PositionTargetValu);
 
   // Initialize model
-  SatelliteServicing_Mission_initialize(SatelliteServicing_Mission_M,
-    &SatelliteServicing_Mission_U, &SatelliteServicing_Mission_Y);
+  SatelliteServicing_Mission_initialize(SatelliteServicing_Mission_M);
 
   return(0);
 }

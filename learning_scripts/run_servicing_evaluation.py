@@ -10,6 +10,7 @@ from datetime import datetime
 from sat_servicing_gym_env import SatServiceEnv
 from custom_metrics import MyCallbacks
 from utils import data_utils
+from utils.format_mat_data import format_mat_data
 
 nAgents=1
 
@@ -27,7 +28,7 @@ time_step = 0.001    # This is fixed in the CPP code, do not change
 # Define the checkpoint for the trained algorithm
 caseTitle = 'test_scenario'
 caseName = 'Test_Scenario'
-checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-06-28_11-00-394pelsrt8/checkpoint_000001'
+checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-07-14_08-11-16mxmvnjkh/checkpoint_000071'
 
 # Register the enviroment with gym and create an instance of the environment
 register_env(
@@ -60,34 +61,11 @@ for i in range(env.nAgents):
     
     # Save as mat file, first must place in dictionary
     Data = np.array(eval_results['evaluation']['custom_metrics'][agent_id])
-    npts = len(Data[0])
 
-    # Create the time vector
-    time_vec = np.arange(0,npts*time_step,time_step)
-    print(npts,len(time_vec))
+    matData = format_mat_data(Data,caseTitle,caseName,time_step)
 
-    # Output data in standard format
-    outdata = {}
-    outdata[caseName] = {}
-    outdata[caseName]['Title'] = caseTitle
-    outdata[caseName]['time'] = time_vec
-    outdata[caseName]['sat'] = {}
-    outdata[caseName]['ee'] = {}
-    outdata[caseName]['arm'] = {}
-    outdata[caseName]['ee']['position']    = Data[0,:,12:15]
-    outdata[caseName]['ee']['orientation'] = Data[0,:,15:18]
-    outdata[caseName]['ee']['velocity']    = Data[0,:,18:21]
-    outdata[caseName]['ee']['ang_rate']    = Data[0,:,21:24]
-    outdata[caseName]['ee']['position_error']    = Data[0,:,33:36]
-    outdata[caseName]['ee']['orientation_error'] = Data[0,:,36:39]
-    outdata[caseName]['ee']['velocity_error']    = Data[0,:,39:42]
-    outdata[caseName]['ee']['ang_rate_error']    = Data[0,:,42:45]
-    outdata[caseName]['arm']['jAngle'] = Data[0,:,24:27]
-    outdata[caseName]['arm']['jRate']  = Data[0,:,27:30]
-    outdata[caseName]['arm']['jCmd']   = Data[0,:,30:33]
-    outdata[caseName]['arm']['jCmd']   = Data[0,:,30:33]
-    outdata[caseName]['arm']['action'] = Data[0,:,45:48]
+    # Create mat file
     fileName = caseName + '.mat'
-    data_utils.save_mat(content=outdata, fdir=save_dir_inc, fname=fileName)
+    data_utils.save_mat(content=matData, fdir=save_dir_inc, fname=fileName)
 
 print('Evaluation Complete')
