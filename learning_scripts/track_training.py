@@ -10,8 +10,8 @@ from utils.load_agent_data import load_data
 def main():
 
     # Specify data
-    fileDate = '2023-07-12'
-    fileTime = '10-59'    
+    fileDate = '2023-07-20'
+    fileTime = '10-36'    
 
     scenario_type = 'eval_dv'
 
@@ -55,11 +55,11 @@ def main():
     plot_xy('1d',xData,yData,labels,legend,colors)
 
     labels=['End Effector Position Error','Points','X Error (m)','Y Error (m)','Z Error (m)']
-    plotData={'data0':np.array(position_error)}
+    plotData={'data0':np.array(position_error[-1])}
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Velocity Error','Points','X Error (m/s)','Y Error (m/s)','Z Error (m/s)']
-    plotData={'data0':np.array(velocity_error)}
+    plotData={'data0':np.array(velocity_error[-1])}
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward']

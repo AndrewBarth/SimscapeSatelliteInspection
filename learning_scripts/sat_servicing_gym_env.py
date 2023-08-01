@@ -35,7 +35,7 @@ class SatServiceEnv(MultiAgentEnv):
         self.reward_parameters['position_error'] = {}
         self.reward_parameters['position_error']['min_error'] = 0.0
         self.reward_parameters['position_error']['max_reward'] = 1.0
-        self.reward_parameters['position_error']['scale_factor'] = 2.0
+        self.reward_parameters['position_error']['scale_factor'] = 20.0
         self.reward_parameters['position_error']['exponent'] = -0.005
         self.reward_parameters['position_error']['bias'] = -2.0
 

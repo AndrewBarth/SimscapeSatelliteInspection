@@ -19,7 +19,7 @@ initial_state = {}
 
 initial_state[1] = [80,90,20]
 
-stop_time = 80.0
+stop_time = 20.0
 
 dof = {1: 3}
 
@@ -49,7 +49,7 @@ env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAge
 #train_batch_size = int(50)
 #train_batch_size = int(stop_time/time_step)
 #sgd_minibatch_size = int(train_batch_size/1000)
-train_batch_size = int(80000)
+train_batch_size = int(20000)
 sgd_minibatch_size = int(train_batch_size/100)
 #num_sgd_iter = 1
 #clip_param = 0.3
@@ -98,17 +98,18 @@ algoConfig = PPOConfig()\
           model={'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
           )\
     .evaluation(
-            evaluation_num_workers=0,
+            evaluation_num_workers=1,
             # Will  evaluate after training.
             evaluation_interval=None,
             evaluation_parallel_to_training=False,
             # Run 1 episodes each time evaluation runs
-            evaluation_duration=1,
-            evaluation_duration_unit='episodes',
-            #evaluation_duration=nSteps,
-            #evaluation_duration_unit='timesteps',
+            #evaluation_duration=1,
+            #evaluation_duration_unit='episodes',
+            evaluation_duration=nSteps,
+            evaluation_duration_unit='timesteps',
             custom_evaluation_function=None,
-            evaluation_config=AlgorithmConfig.overrides(
+            #evaluation_config=AlgorithmConfig.overrides(
+            evaluation_config=dict(
                 horizon=nSteps,
                 rollout_fragment_length=nSteps,
                 train_batch_size=nSteps,
@@ -121,11 +122,11 @@ algoConfig = PPOConfig()\
 
 algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.99, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
 })
-algoConfig.evaluation_config=PPOConfig.overrides(
-                horizon=nSteps,
-                rollout_fragment_length=nSteps,
-                train_batch_size=nSteps,
-            )
+#algoConfig.evaluation_config=PPOConfig.overrides(
+#                horizon=nSteps,
+#                rollout_fragment_length=nSteps,
+#                train_batch_size=nSteps,
+#            )
 
 # Now Build the config
 algo = algoConfig.build()
