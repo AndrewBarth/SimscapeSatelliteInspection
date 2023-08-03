@@ -19,7 +19,7 @@ initial_state = {}
 
 initial_state[1] = [80,90,20]
 
-stop_time = 20.0
+stop_time = 10.0
 
 dof = {1: 3}
 
@@ -27,11 +27,11 @@ time_step = 0.001    # This is fixed in the CPP code, do not change
 nSteps = int(stop_time/time_step)
 
 #rollout_fragment_length = int(360)
-rollout_fragment_length = "auto"
-#rollout_fragment_length = int(10000)
+#rollout_fragment_length = "auto"
+rollout_fragment_length = int((stop_time/time_step)/2)
 
-rollout_workers = 0
-#rollout_workers = 2
+#rollout_workers = 0
+rollout_workers = 2
 
 save_step = 10 
 checkpoint_step = 10
@@ -49,7 +49,7 @@ env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAge
 #train_batch_size = int(50)
 #train_batch_size = int(stop_time/time_step)
 #sgd_minibatch_size = int(train_batch_size/1000)
-train_batch_size = int(20000)
+train_batch_size = int(10000)
 sgd_minibatch_size = int(train_batch_size/100)
 #num_sgd_iter = 1
 #clip_param = 0.3
@@ -98,18 +98,18 @@ algoConfig = PPOConfig()\
           model={'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
           )\
     .evaluation(
-            evaluation_num_workers=1,
+            evaluation_num_workers=0,
             # Will  evaluate after training.
             evaluation_interval=None,
             evaluation_parallel_to_training=False,
             # Run 1 episodes each time evaluation runs
             #evaluation_duration=1,
             #evaluation_duration_unit='episodes',
-            evaluation_duration=nSteps,
+            evaluation_duration=nSteps*2,
             evaluation_duration_unit='timesteps',
             custom_evaluation_function=None,
-            #evaluation_config=AlgorithmConfig.overrides(
-            evaluation_config=dict(
+            #evaluation_config=dict(
+            evaluation_config=PPOConfig.overrides(
                 horizon=nSteps,
                 rollout_fragment_length=nSteps,
                 train_batch_size=nSteps,
@@ -158,7 +158,7 @@ for Iter in range(algo.iteration,nIter):
     # Store intermediate data from training
     if not Iter % save_step:
 
-        print('Running an evalution case')
+        print('Running an evaluation case')
         eval_results = algo.evaluate()
         for i in range(env.nAgents):
             save_dir_inc = save_dir[i]+"_"+str(Iter)
