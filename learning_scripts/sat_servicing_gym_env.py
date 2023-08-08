@@ -35,16 +35,16 @@ class SatServiceEnv(MultiAgentEnv):
         self.reward_parameters['position_error'] = {}
         self.reward_parameters['position_error']['min_error'] = 0.0
         self.reward_parameters['position_error']['max_reward'] = 1.0
-        self.reward_parameters['position_error']['scale_factor'] = 20.0
-        self.reward_parameters['position_error']['exponent'] = -0.005
-        self.reward_parameters['position_error']['bias'] = -2.0
+        self.reward_parameters['position_error']['scale_factor'] = 0.02
+        self.reward_parameters['position_error']['exponent'] = -2.0
+        self.reward_parameters['position_error']['bias'] = -0.02
 
         self.reward_parameters['orientation_error'] = {}
         self.reward_parameters['orientation_error']['min_error'] = 0.0
         self.reward_parameters['orientation_error']['max_reward'] = 1.0
-        self.reward_parameters['orientation_error']['scale_factor'] = 2.0
-        self.reward_parameters['orientation_error']['exponent'] = -0.005
-        self.reward_parameters['orientation_error']['bias'] = -2.0
+        self.reward_parameters['orientation_error']['scale_factor'] = -0.001
+        self.reward_parameters['orientation_error']['power'] = 2.0
+        self.reward_parameters['orientation_error']['bias'] = -0.001
 
         self.reward_parameters['velocity_error'] = {}
         self.reward_parameters['velocity_error']['min_error'] = 0.00
@@ -64,6 +64,7 @@ class SatServiceEnv(MultiAgentEnv):
         #self.reward_parameters['control_effort']['scale_factor'] = -1e-1
         #self.reward_parameters['control_effort']['scale_factor'] = -5
         self.reward_parameters['control_effort']['scale_factor'] = -1
+        self.reward_parameters['control_effort']['bias'] = 0
 
         self.terminateds = set()
         self.truncateds = set()
@@ -203,7 +204,7 @@ class SatServiceEnv(MultiAgentEnv):
         if norm_error < params['min_error']:
             orierr_reward = params['max_reward']
         else:
-            orierr_reward = params['scale_factor']*np.exp(params['exponent']*norm_error)+params['bias']
+            orierr_reward = params['scale_factor']*(norm_error**params['power'])+params['bias']
 
         # Get velocity error for this agent
         vel_error = np.array(error_states[agent_id][6:9])
@@ -233,7 +234,7 @@ class SatServiceEnv(MultiAgentEnv):
 
         params = self.reward_parameters['control_effort']
         control_effort = np.linalg.norm(action_states[agent_id])
-        control_reward = params['scale_factor']*control_effort
+        control_reward = params['scale_factor']*control_effort+params['bias']
 
         reward = {}
         reward['position_error_reward'] = poserr_reward

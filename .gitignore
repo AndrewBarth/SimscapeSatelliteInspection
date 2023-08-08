@@ -3,6 +3,7 @@ archive/*
 *rtw/*
 *.asv
 *.slxc
+*.pyc
 SimpleArm/*
 testModels/*
 MassPropID_Code/*
