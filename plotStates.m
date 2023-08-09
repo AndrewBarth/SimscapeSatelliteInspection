@@ -2,6 +2,8 @@
 close all
 jointData = [out.joint_state.Data out.joint_cmds.Data];
 data_time = (0:80/(length(jointData)-1):80)';
+rtd = 180/pi;
+
 %% Joint Data
 % figure for joint angles
 figure; 
@@ -103,6 +105,8 @@ xlabel('Time (s)')
 % pos_client = out.client_cm_state.translation.position.Data;
 pos_base = out.base_state.translation.position.Data;
 pos_ee = out.ee_state.translation.position.Data;
+ori_ee = out.ee_state.rotation.euler.Data;
+
 % pos_tip= out.tip_states.Data(:,1:3);
 
 % figure for client positions
@@ -154,6 +158,23 @@ grid on; grid minor
 subplot(3,1,3)
 plot(data_time,pos_ee(:,3)); ylabel('z-Position (m)')
 legend('EE Position z','location','best')
+grid on; grid minor
+xlabel('Time (s)')
+
+% figure for ee orientation
+figure;
+subplot(3,1,1)
+plot(data_time,ori_ee(:,1)*rtd); ylabel('x-Orientation (m)')
+title('EE Orientation')
+legend('EE Orientation x','location','best')
+grid on; grid minor
+subplot(3,1,2)
+plot(data_time,ori_ee(:,2)*rtd); ylabel('y-Orientation (m)')
+legend('EE Orientation y','location','best')
+grid on; grid minor
+subplot(3,1,3)
+plot(data_time,ori_ee(:,3)*rtd); ylabel('z-Orientation (m)')
+legend('EE Orientation z','location','best')
 grid on; grid minor
 xlabel('Time (s)')
 

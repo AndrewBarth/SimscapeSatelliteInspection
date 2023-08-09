@@ -285,14 +285,8 @@ jointControlData.eeCmd = zeros(1,12);
 jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -80.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-
-% jointControlData.eeRefTraj(1,:) = [0.0      0.7       0.2710 90.0*dtr 0.0  90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(2,:) = [0.0      0.7       0.2710 90.0*dtr 0.0  90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(3,:) = [0.0       0.7       0.2710 90.0*dtr 0.0 90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(4,:) = [0.0       0.7       0.2710 90.0*dtr 0.0 90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(5,:) = [0.0       0.7       0.2710 90.0*dtr 0.0 90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 
 jointControlData.refTime = [0 20 30 50 70];
 jointControlData.jointControlMode = 0;
