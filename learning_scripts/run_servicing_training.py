@@ -2,6 +2,8 @@ import sys
 import os
 import time
 import pickle
+import gc
+import psutil
 import numpy as np
 from ray.rllib.algorithms.algorithm_config import AlgorithmConfig
 from ray.rllib.algorithms.ppo import PPOConfig
@@ -20,6 +22,7 @@ initial_state = {}
 initial_state[1] = [80,90,20]
 
 stop_time = 80.0
+stop_time = 20.0
 
 dof = {1: 3}
 
@@ -33,9 +36,9 @@ rollout_fragment_length = "auto"
 #rollout_workers = 0
 rollout_workers = 5
 
-save_step = 10 
-checkpoint_step = 10
-nIter = 100 
+save_step = 20 
+checkpoint_step = 50
+nIter = 400 
 
 caseName = 'agent_parameters'
 caseTitle = 'Agent Parameters'
@@ -104,7 +107,9 @@ algoConfig = PPOConfig()\
             evaluation_interval=None,
             evaluation_parallel_to_training=False,
             # Run 1 episodes each time evaluation runs
-            evaluation_duration=rollout_workers*16,
+            #evaluation_duration=rollout_workers*16,
+            evaluation_duration=rollout_workers*4,
+            #evaluation_duration=1*16,
             evaluation_duration_unit='episodes',
             #evaluation_duration=nSteps,
             #evaluation_duration_unit='timesteps',
@@ -170,6 +175,7 @@ for Iter in range(algo.iteration,nIter):
 
         print('Running an evaluation case')
         eval_results = algo.evaluate()
+
       
         #if eval_results['evaluation']['episodes_this_iter'] > 0:
         if True:
@@ -191,6 +197,13 @@ for Iter in range(algo.iteration,nIter):
                 fileName = caseName + '.mat'
                 data_utils.save_mat(content=matData, fdir=save_dir_inc, fname=fileName)
 
+        # auto_garbage_collection - Call the garbage collection if memory used is greater than 80% of total available memory.
+        # This is called to deal with an issue in Ray not freeing up used memory.
+
+        # pct - Default value of 80%.  Amount of memory in use that triggers the garbage collection call.
+        pct = 80.0
+        if psutil.virtual_memory().percent >= pct:
+            gc.collect()
 
 #print(results)
 # Save a final checkpoint

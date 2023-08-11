@@ -8,6 +8,7 @@ from ray.rllib.utils.typing import MultiAgentDict
 
 from cpp_wrapper import cppWrapper
 from reference_trajectory import refTraj
+from utils import math_utils
 
 
 class SatServiceEnv(MultiAgentEnv):
@@ -255,6 +256,12 @@ class SatServiceEnv(MultiAgentEnv):
     def compute_errors(self, agent_id, time, states):
         
         desired_state = np.array(self.reference_trajectory[agent_id].compute_desired_state(time))
+
+        # Convert desired orientation to Modified Rodrigues Parameter format
+        desired_quaternion = math_utils.EulerToQuat_321(desired_state[3:6])
+        desired_mrp = math_utils.quatToMRP(math_utils.quatConj(desired_quaternion))
+        desired_state[3:6] = desired_mrp
+
         current_state = np.array(states[12:24])
         error_state = desired_state - current_state
 
@@ -280,7 +287,11 @@ class SatServiceEnv(MultiAgentEnv):
 
         # Collect states and errors
         for agent_id in agent_ids:
+            quat_state = math_utils.MRPToQuat(np.array(states[agent_id][15:18]))
+            euler_state = math_utils.quatToEuler_321(quat_state)
+            
             self.output_states[agent_id] = states[agent_id]
+            self.output_states[agent_id][15:18] = euler_state
             self.error_states[agent_id] = errors[agent_id].tolist()
             self.action_states[agent_id] = action[agent_id].tolist()
             self.info[agent_id]['obs'].append(observations[agent_id])

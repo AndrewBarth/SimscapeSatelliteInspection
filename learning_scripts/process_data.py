@@ -15,8 +15,8 @@ def main():
     time_step = 0.001
 
     # Specify data
-    fileDate = '2023-08-08'
-    fileTime = '14-39'    # 
+    fileDate = '2023-08-10'
+    fileTime = '07-59'    # 
 
     scenario_type = 'eval_dv'
 
@@ -52,12 +52,12 @@ def main():
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
-    legend=['Acutal','Reference']
+    legend=['Actual','Reference']
     plotData={'data0':ee['position'],'data1':np.array(ref_position)}
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Orientation','Points','X Orientation (deg)','Y Orientation (deg)','Z Orientation (deg)']
-    legend=['Acutal','Reference']
+    legend=['Actual','Reference']
     plotData={'data0':ee['orientation']*180.0/np.pi,'data1':np.array(ref_orientation)*180.0/np.pi}
     plot_static('3d',plotData,labels,legend,colors)
 
@@ -66,7 +66,7 @@ def main():
     plotData={'data0':ee['position_error']}
     plot_static('3d',plotData,labels,legend,colors)
 
-    labels=['End Effector Orientation Error','Points','X Orientation Error (r)','Y Orientation Error (r)','Z Orientation Error (r)']
+    labels=['End Effector Orientation Error','Points','X Orientation Error (--)','Y Orientation Error (--)','Z Orientation Error (--)']
     legend=['EE']
     plotData={'data0':ee['orientation_error']}
     plot_static('3d',plotData,labels,legend,colors)
@@ -82,6 +82,11 @@ def main():
     labels=['Arm 1 Joint Angles','Points','Joint 1 (rad)','Joint 2 (rad)','Joint 3 (rad)']
     plotData={'data0':arm['jAngle']*rtd}
     plot_static('3d',plotData,labels,legend,colors)
+
+    labels=['Arm 1 Joint Rates','Points','Joint 1 (r/s)','Joint 2 (r/s)','Joint 3 (r/s)']
+    plotData={'data0':arm['jRate']*rtd}
+    plot_static('3d',plotData,labels,legend,colors)
+
     plt.show()
 
     return 0

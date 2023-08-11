@@ -26,9 +26,11 @@ dof = {1: 3}
 time_step = 0.001    # This is fixed in the CPP code, do not change
 
 # Define the checkpoint for the trained algorithm
-caseTitle = 'test_scenario'
-caseName = 'Test_Scenario'
-checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-07-14_08-11-16mxmvnjkh/checkpoint_000071'
+#caseTitle = 'test_scenario'
+#caseName = 'Test_Scenario'
+caseTitle = 'agent_parameters'
+caseName = 'agent_parameters'
+checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-08-09_22-08-24f53wadel/checkpoint_000400'
 
 # Register the enviroment with gym and create an instance of the environment
 register_env(
