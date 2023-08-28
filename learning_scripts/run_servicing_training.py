@@ -55,6 +55,9 @@ env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAge
 #train_batch_size = int(80000)
 train_batch_size = int(5000)
 sgd_minibatch_size = int(train_batch_size/100)
+nBatches = int(nSteps/train_batch_size)
+duration = nBatches*rollout_workers
+
 #num_sgd_iter = 1
 #clip_param = 0.3
 entropy_coeff = 0.005
@@ -107,9 +110,7 @@ algoConfig = PPOConfig()\
             evaluation_interval=None,
             evaluation_parallel_to_training=False,
             # Run 1 episodes each time evaluation runs
-            #evaluation_duration=rollout_workers*16,
-            evaluation_duration=rollout_workers*4,
-            #evaluation_duration=1*16,
+            evaluation_duration=duration,
             evaluation_duration_unit='episodes',
             #evaluation_duration=nSteps,
             #evaluation_duration_unit='timesteps',

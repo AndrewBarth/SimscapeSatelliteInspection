@@ -10,8 +10,8 @@ from utils.load_agent_data import load_data
 def main():
 
     # Specify data
-    fileDate = '2023-08-08'
-    fileTime = '11-50'    
+    fileDate = '2023-08-14'
+    fileTime = '19-07'    
 
     scenario_type = 'eval_dv'
 
@@ -38,6 +38,7 @@ def main():
         cumPosReward = np.cumsum(reward['poserr_reward'],axis=0)
         cumOriReward = np.cumsum(reward['orierr_reward'],axis=0)
         cumCntReward = np.cumsum(reward['cnterr_reward'],axis=0)
+        cumJntReward = np.cumsum(reward['jntlmt_reward'],axis=0)
         totalReward.append(np.sum(cumReward[npts-1]))
         all_reward.append(reward)
  
@@ -65,19 +66,19 @@ def main():
     plotData={'data0':np.array(velocity_error[-1])}
     plot_static('3d',plotData,labels,legend,colors)
 
-    labels=['Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward']
-    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward']
-    plotData={'data0':reward['poserr_reward'],'data1':reward['orierr_reward'],'data3':reward['cnterr_reward']}
+    labels=['Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward']
+    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward']
+    plotData={'data0':reward['poserr_reward'],'data1':reward['orierr_reward'],'data3':reward['cnterr_reward'],'data4':reward['jntlmt_reward']}
     plot_static('1d',plotData,labels,legend,colors)
 
-    labels=['Cumulative Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Total Reward']
-    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Total Reward']
-    plotData={'data0':cumPosReward,'data1':cumOriReward,'data2':cumCntReward,'data3':cumReward}
+    labels=['Cumulative Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Total Reward']
+    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Total Reward']
+    plotData={'data0':cumPosReward,'data1':cumOriReward,'data2':cumCntReward,'data3':cumJntReward,'data4':cumReward}
     plot_static('1d',plotData,labels,legend,colors)
 
-    labels=['Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward']
-    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward']
-    plotData={'data0':cumPosReward,'data1':cumOriReward,'data3':cumCntReward}
+    labels=['Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward']
+    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward']
+    plotData={'data0':cumPosReward,'data1':cumOriReward,'data3':cumCntReward,'data4':cumJntReward}
     plot_static('1d',plotData,labels,legend,colors)
 
     plt.show()

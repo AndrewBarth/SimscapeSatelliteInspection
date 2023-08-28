@@ -37,8 +37,9 @@ def load_data(episode, agent, file_path):
         reward['velerr_reward'] = Data[:,50]
         reward['raterr_reward'] = Data[:,51]
         reward['cnterr_reward'] = Data[:,52]
+        reward['jntlmt_reward'] = Data[:,53]
         #reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['velerr_reward']+reward['raterr_reward']+reward['cnterr_reward']
-        reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']
+        reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']+reward['jntlmt_reward']
     else:
         npts = trajData.shape[1]
         sat['position']    = trajData[0,:,0:3]
@@ -62,7 +63,8 @@ def load_data(episode, agent, file_path):
         reward['velerr_reward'] = trajData[0,:,50]
         reward['raterr_reward'] = trajData[0,:,51]
         reward['cnterr_reward'] = trajData[0,:,52]
+        reward['jntlmt_reward'] = trajData[0,:,53]
         #reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['velerr_reward']+reward['raterr_reward']+reward['cnterr_reward']
-        reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']
+        reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']+reward['jntlmt_reward']
 
     return npts,sat,ee,arm,reward
