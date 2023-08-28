@@ -69,7 +69,7 @@ void rt_OneStep(RT_MODEL_SatelliteServicing_M_T *const
   // Enable interrupts here
 }
 
-int_T sim_init(real_T* initial_conditions)
+int_T sim_init(real_T* initial_conditions, real_T* joint_limits)
 {
   // Allocate model data
   SatelliteServicing_Mission_M = SatelliteServicing_Mission
@@ -97,6 +97,14 @@ int_T sim_init(real_T* initial_conditions)
 
   // Initialize model
   SatelliteServicing_Mission_initialize(SatelliteServicing_Mission_M);
+
+  // Get joint limit data to return to Python
+  joint_limits[0] = SatelliteServicing_Mission_P.jointControlData.angleLimit[0];
+  joint_limits[1] = SatelliteServicing_Mission_P.jointControlData.angleLimit[1];
+  joint_limits[2] = SatelliteServicing_Mission_P.jointControlData.angleLimit[2];
+  joint_limits[3] = SatelliteServicing_Mission_P.jointControlData.angleLimit[3];
+  joint_limits[4] = SatelliteServicing_Mission_P.jointControlData.angleLimit[4];
+  joint_limits[5] = SatelliteServicing_Mission_P.jointControlData.angleLimit[5];
 
   return(0);
 }
@@ -171,7 +179,7 @@ int_T sim_terminate()
 // Declare external functions to be accessed from Python
 extern "C++" {
     int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T* dones, real_T* simTime);
-    int_T sim_init(real_T* initial_conditions);
+    int_T sim_init(real_T* initial_conditions, real_T* joint_limits);
     int_T sim_terminate();
 }
 
