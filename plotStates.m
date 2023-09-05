@@ -1,7 +1,7 @@
 %% ALWAYS RUN THIS SECTION AS A FIRST STEP (YOU ONLY NEED TO DO IT ONCE)
 close all
 jointData = [out.joint_state.Data out.joint_cmds.Data];
-data_time = (0:80/(length(jointData)-1):80)';
+data_time = (0:endTime/(length(jointData)-1):endTime)';
 rtd = 180/pi;
 
 %% Joint Data
@@ -164,16 +164,16 @@ xlabel('Time (s)')
 % figure for ee orientation
 figure;
 subplot(3,1,1)
-plot(data_time,ori_ee(:,1)*rtd); ylabel('x-Orientation (m)')
+plot(data_time,ori_ee(:,1)*rtd); ylabel('x-Orientation (deg)')
 title('EE Orientation')
 legend('EE Orientation x','location','best')
 grid on; grid minor
 subplot(3,1,2)
-plot(data_time,ori_ee(:,2)*rtd); ylabel('y-Orientation (m)')
+plot(data_time,ori_ee(:,2)*rtd); ylabel('y-Orientation (deg)')
 legend('EE Orientation y','location','best')
 grid on; grid minor
 subplot(3,1,3)
-plot(data_time,ori_ee(:,3)*rtd); ylabel('z-Orientation (m)')
+plot(data_time,ori_ee(:,3)*rtd); ylabel('z-Orientation (deg)')
 legend('EE Orientation z','location','best')
 grid on; grid minor
 xlabel('Time (s)')

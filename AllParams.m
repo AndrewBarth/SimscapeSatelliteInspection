@@ -3,7 +3,7 @@
 %% General parameters
 
 % Set the run time and step size of the simulation
-endTime = 80;
+endTime = 20;
 stepSize = 0.001;
 
 %% Rod Parameters
@@ -282,7 +282,7 @@ jointControlData.qCmd = [0 0 0]*pi/180;
 
 % Used for end effector control [pos, ang, vel, angRate]
 jointControlData.eeCmd = zeros(1,12);
-jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -80.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -40.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
