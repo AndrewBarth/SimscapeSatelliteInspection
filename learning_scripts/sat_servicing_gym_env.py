@@ -111,6 +111,9 @@ class SatServiceEnv(MultiAgentEnv):
         # Create dictionary to store output states
         self.output_states = dict([(agent_id, []) for agent_id in self.agent_ids])
 
+        # Create dictionary to store joint states
+        self.joint_states = dict([(agent_id, []) for agent_id in self.agent_ids])
+
         # Create dictionary to store error states
         self.error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
 
@@ -141,7 +144,10 @@ class SatServiceEnv(MultiAgentEnv):
             for agent_id in self.agent_ids:
                 initial_state[agent_id] = [0]*self.dof[agent_id]
         
-        self.cppWrapper.init_cpp(self.agent_ids,initial_state)
+        joint_limit_data = self.cppWrapper.init_cpp(self.agent_ids,initial_state,self.dof)
+
+        # These parameters were extracted from the CPP code
+        self.joint_limits = joint_limit_data
 
         obs = {}
         for agent_id in self.agent_ids:
@@ -149,6 +155,7 @@ class SatServiceEnv(MultiAgentEnv):
 
         info = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.output_states = dict([(agent_id, []) for agent_id in self.agent_ids])
+        self.joint_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.action_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.reward_states = dict([(agent_id, []) for agent_id in self.agent_ids])
@@ -178,7 +185,7 @@ class SatServiceEnv(MultiAgentEnv):
 
         return obs
 
-    def get_reward(self, agent_id, error_states, action_states):
+    def get_reward(self, agent_id, joint_states, error_states, action_states):
 
         # Get position error for this agent
         pos_error = np.array(error_states[agent_id][0:3])
@@ -237,15 +244,28 @@ class SatServiceEnv(MultiAgentEnv):
         control_effort = np.linalg.norm(action_states[agent_id])
         control_reward = params['scale_factor']*control_effort+params['bias']
 
+        joint_angles = np.array(joint_states[agent_id])
+        joint_limits = self.joint_limits[agent_id] 
+        joint_limit_reward = 0
+        for i in range(len(joint_angles)):
+            if joint_angles[i] <=0:
+                if joint_angles[i] < 0.98*joint_limits[i]:
+                    joint_limit_reward += -0.1
+            else: 
+                if joint_angles[i] > 0.98*joint_limits[i+len(joint_angles)]:
+                    joint_limit_reward += -0.1
+                 
+
         reward = {}
         reward['position_error_reward'] = poserr_reward
         reward['orientation_error_reward'] = orierr_reward
         reward['velocity_error_reward'] = velerr_reward
         reward['angular_rate_error_reward'] = raterr_reward
         reward['control_reward'] = control_reward
-        # Only include position error, orientation error and control effort in the training reward
+        reward['joint_limit_reward'] = joint_limit_reward
+        # Only include position error, orientation error, control effort, and joint limit in the training reward
         #reward['total'] = poserr_reward + orierr_reward + velerr_reward + raterr_reward + control_reward
-        reward['total'] = poserr_reward + orierr_reward + control_reward
+        reward['total'] = poserr_reward + orierr_reward + control_reward + joint_limit_reward
         
         return reward
 
@@ -289,7 +309,7 @@ class SatServiceEnv(MultiAgentEnv):
         for agent_id in agent_ids:
             quat_state = math_utils.MRPToQuat(np.array(states[agent_id][15:18]))
             euler_state = math_utils.quatToEuler_321(quat_state)
-            
+            self.joint_states[agent_id] = states[agent_id][24:24+self.dof[agent_id]]
             self.output_states[agent_id] = states[agent_id]
             self.output_states[agent_id][15:18] = euler_state
             self.error_states[agent_id] = errors[agent_id].tolist()
@@ -297,12 +317,12 @@ class SatServiceEnv(MultiAgentEnv):
             self.info[agent_id]['obs'].append(observations[agent_id])
 
         # Compute rewards for this step 
-        step_rewards = {i: self.get_reward(i,self.error_states,self.action_states) for i in agent_ids}
+        step_rewards = {i: self.get_reward(i,self.joint_states,self.error_states,self.action_states) for i in agent_ids}
 
         rewards = {}
         # Collect rewards
         for agent_id in agent_ids:
-            self.reward_states[agent_id] = [step_rewards[agent_id]['position_error_reward'], step_rewards[agent_id]['orientation_error_reward'], step_rewards[agent_id]['velocity_error_reward'], step_rewards[agent_id]['angular_rate_error_reward'], step_rewards[agent_id]['control_reward']]
+            self.reward_states[agent_id] = [step_rewards[agent_id]['position_error_reward'], step_rewards[agent_id]['orientation_error_reward'], step_rewards[agent_id]['velocity_error_reward'], step_rewards[agent_id]['angular_rate_error_reward'], step_rewards[agent_id]['control_reward'],step_rewards[agent_id]['joint_limit_reward']]
             # Total reward is used in training
             rewards[agent_id] = step_rewards[agent_id]['total']
         

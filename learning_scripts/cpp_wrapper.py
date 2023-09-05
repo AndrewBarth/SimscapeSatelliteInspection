@@ -7,7 +7,7 @@ class cppWrapper(object):
     def __init__(self):
         pass
 
-    def init_cpp(self, agent_ids, initial_state_dict):
+    def init_cpp(self, agent_ids, initial_state_dict, dof_dict):
         print('Initializing CPP Simulation')
 
         nAgents = len(agent_ids)
@@ -15,16 +15,29 @@ class cppWrapper(object):
         # Extract the initial conditions from the dictionary
         initial_states = []
         nStates = 0
+        nJoints = 0
         for agent_id in agent_ids:
+            nJoints += dof_dict[agent_id]
             nStates += len(initial_state_dict[agent_id])
             initial_states.extend(initial_state_dict[agent_id])
 
         nStates = len(initial_states)
         # Create variables using ctypes to pass initial conditions to C++
-        lib._Z8sim_initPd.argtypes = [ctypes.POINTER(ctypes.c_double)]
+        lib._Z8sim_initPdS_.argtypes = [ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double)]
         initial_state_data = (ctypes.c_double * (nStates) )(*initial_states)
 
-        ret = lib._Z8sim_initPd(initial_state_data)
+        empty_var = []
+        joint_limit_data = (ctypes.c_double * (2*nJoints))(*empty_var)
+
+        ret = lib._Z8sim_initPdS_(initial_state_data,joint_limit_data)
+
+        # Extract the joint limits and place them in a python dictionsary
+        joint_limit_dict = {}
+        for agent_id in agent_ids:
+            joint_limit_dict[agent_id] = [joint_limit_data[i] for i in range(2*dof_dict[agent_id])]
+
+
+        return joint_limit_dict
 
     def step_cpp(self,agent_ids,action_dict,stop_time):
 
