@@ -279,11 +279,15 @@ class SatServiceEnv(MultiAgentEnv):
 
         # Convert desired orientation to Modified Rodrigues Parameter format
         desired_quaternion = math_utils.EulerToQuat_321(desired_state[3:6])
-        desired_mrp = math_utils.quatToMRP(math_utils.quatConj(desired_quaternion))
+        #desired_mrp = math_utils.quatToMRP(math_utils.quatConj(desired_quaternion))
+        desired_mrp = math_utils.quatToMRP(desired_quaternion)
         desired_state[3:6] = desired_mrp
 
         current_state = np.array(states[12:24])
         error_state = desired_state - current_state
+
+        mrp_error = math_utils.MRPError(np.array(states[15:18]),desired_mrp)
+        error_state[3:6] = mrp_error
 
         #if time % 10 == 0:
         #    print('Desired: ',desired_state[0:3], ' Current: ',current_state[0:3])
@@ -308,11 +312,14 @@ class SatServiceEnv(MultiAgentEnv):
         # Collect states and errors
         for agent_id in agent_ids:
             quat_state = math_utils.MRPToQuat(np.array(states[agent_id][15:18]))
-            euler_state = math_utils.quatToEuler_321(quat_state)
+            euler_state = math_utils.quatToEuler_321(math_utils.quatConj(quat_state))
             self.joint_states[agent_id] = states[agent_id][24:24+self.dof[agent_id]]
             self.output_states[agent_id] = states[agent_id]
             self.output_states[agent_id][15:18] = euler_state
+            quat_error = math_utils.MRPToQuat(np.array(errors[agent_id][3:6]))
+            euler_error = math_utils.quatToEuler_321(math_utils.quatConj(quat_error))
             self.error_states[agent_id] = errors[agent_id].tolist()
+            #self.error_states[agent_id][3:6] = euler_error
             self.action_states[agent_id] = action[agent_id].tolist()
             self.info[agent_id]['obs'].append(observations[agent_id])
 

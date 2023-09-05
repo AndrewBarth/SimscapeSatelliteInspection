@@ -218,6 +218,56 @@ def quatToEuler_321(q):
 
     return euler
 
+def MRPError(MRPState,MRPCmd):
+    '''
+    Compute the error between two sets of Modified Rodrigues Parameters
+
+    Args:
+        MRPState: MRP representing the current state
+        MRPCmd: MRP representing the commanded state
+
+    Reference:  Shuster, Malcolm D. "A survey of attitude representations." Navigation 8, no. 9 (1993): 439-517.
+
+    Error formed by MRP composition operator Ref. 1, Eq. 257 
+    Cmd comp State
+    '''
+    MRPErrpr = np.zeros(3)
+
+    # Compute the square of the norm for each MRP
+    normSqrdState = np.linalg.norm(MRPState)**2
+    normSqrdCmd = np.linalg.norm(MRPCmd)**2
+
+    # Compute MRP error
+    num = (1 - normSqrdState)*MRPCmd - (1 - normSqrdCmd)*MRPState - 2*np.matmul(skewMat(MRPCmd),MRPState)
+    den = 1 + normSqrdCmd*normSqrdState - 2*np.matmul(MRPCmd,MRPState)
+
+    MRPError = num/den
+ 
+    return MRPError
+
+def skewMat(vec):
+    '''
+    Compose a skew matrix given a vector
+    
+    Inputs: vec (3x1)
+    
+    Output: mat (3x3)
+    
+    Assumptions and Limitations:
+      (none)
+
+    References:
+      (none)
+
+    Author: Andrew Barth
+    
+    Modification History:
+       Mar 21 2019 - Initial version
+    
+    '''
+    mat = np.array([[0, -vec[2], vec[1]],[vec[2], 0, -vec[0]],[-vec[1], vec[0], 0]])
+    return mat
+
 def save_csv(content, fdir, fname):
     """
     Save content into path/name as csv file

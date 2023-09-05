@@ -19,7 +19,7 @@ initial_state = {}
 
 initial_state[1] = [80,90,20]
 
-stop_time = 80.0
+stop_time = 20.0
 
 dof = {1: 3}
 
@@ -30,7 +30,7 @@ time_step = 0.001    # This is fixed in the CPP code, do not change
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-08-09_22-08-24f53wadel/checkpoint_000400'
+checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-09-01_14-18-258l94dnoc/checkpoint_000041'
 
 # Register the enviroment with gym and create an instance of the environment
 register_env(

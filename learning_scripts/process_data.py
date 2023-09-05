@@ -15,14 +15,14 @@ def main():
     time_step = 0.001
 
     # Specify data
-    fileDate = '2023-08-10'
-    fileTime = '07-59'    # 
+    fileDate = '2023-09-01'
+    fileTime = '15-40'    # 
 
     scenario_type = 'eval_dv'
 
     file_path = os.path.dirname(sys.path[0])+"/data_storage/"+fileDate+"-"+fileTime
 
-    episode_number = 1
+    episode_number = 380
     nAgents = 1
 
     caseType='3d'
@@ -79,11 +79,11 @@ def main():
     plotData={'data0':arm['action']}
     plot_static('3d',plotData,labels,legend,colors)
 
-    labels=['Arm 1 Joint Angles','Points','Joint 1 (rad)','Joint 2 (rad)','Joint 3 (rad)']
+    labels=['Arm 1 Joint Angles','Points','Joint 1 (deg)','Joint 2 (deg)','Joint 3 (deg)']
     plotData={'data0':arm['jAngle']*rtd}
     plot_static('3d',plotData,labels,legend,colors)
 
-    labels=['Arm 1 Joint Rates','Points','Joint 1 (r/s)','Joint 2 (r/s)','Joint 3 (r/s)']
+    labels=['Arm 1 Joint Rates','Points','Joint 1 (d/s)','Joint 2 (d/s)','Joint 3 (d/s)']
     plotData={'data0':arm['jRate']*rtd}
     plot_static('3d',plotData,labels,legend,colors)
 

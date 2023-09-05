@@ -33,8 +33,9 @@ nSteps = int(stop_time/time_step)
 rollout_fragment_length = "auto"
 #rollout_fragment_length = int((stop_time/time_step)/2)
 
-#rollout_workers = 0
-rollout_workers = 5
+rollout_workers = 0
+#rollout_workers = 2
+#rollout_workers = 5
 
 save_step = 20 
 checkpoint_step = 50
@@ -56,7 +57,10 @@ env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAge
 train_batch_size = int(5000)
 sgd_minibatch_size = int(train_batch_size/100)
 nBatches = int(nSteps/train_batch_size)
-duration = nBatches*rollout_workers
+if rollout_workers == 0:
+    duration = nBatches
+else:
+    duration = nBatches*rollout_workers
 
 #num_sgd_iter = 1
 #clip_param = 0.3
@@ -159,7 +163,7 @@ time_steps = 0
 #algo.restore(checkpoint_dir)
 #nIter=200
 
-for Iter in range(algo.iteration,nIter): 
+for Iter in range(algo.iteration,nIter+1): 
     print('Iteration: ', Iter)
     train_results = algo.train()
     #if time_steps >= 3000:
