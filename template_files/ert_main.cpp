@@ -123,6 +123,9 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T*
   //(void)(argc);
   //(void)(argv);
 
+  double controlStepSize = 0.01;
+  double modelBaseStepSize = SatelliteServicing_Mission_M->Timing.stepSize0;
+  int nBaseSteps = int(controlStepSize/modelBaseStepSize);
 
   int agents = 3;
 
@@ -135,7 +138,7 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T*
 
   // Simulating the model step behavior (in non real-time) to
   //   simulate model behavior at stop time.
-  for (int s=0;s<1; s++) {
+  for (int s=0;s<nBaseSteps; s++) {
       rt_OneStep(SatelliteServicing_Mission_M);
   }
 
