@@ -75,16 +75,22 @@ class SatServiceEnv(MultiAgentEnv):
         # Define the action space
         self._action_space_in_preferred_format = True
         agent_dof = self.dof[1]
-        box_act_space = Box(low=-0.02, high=0.02,
+#        box_act_space = Box(low=-0.02, high=0.02,
+#                            shape=(agent_dof,), dtype=np.float32)
+        box_act_space1 = Box(low=np.array([-0.01,-0.003,-0.001]), high=np.array([0.01,0.003,0.001]),
+                            dtype=np.float32)
+        box_act_space2 = Box(low=-0.001, high=0.001,
                             shape=(agent_dof,), dtype=np.float32)
-#        self.action_space = Dict(
-#            {
-#                1: box_act_space,
-#                2: box_act_space,
-#                3: box_act_space,
-#            }
-#        )
-        self.action_space = Dict([(agent_id, box_act_space) for agent_id in self.agent_ids])
+        box_act_space3 = Box(low=-0.0005, high=0.0005,
+                            shape=(agent_dof,), dtype=np.float32)
+        self.action_space = Dict(
+            {
+                1: box_act_space1,
+                2: box_act_space2,
+                3: box_act_space3,
+            }
+        )
+        #self.action_space = Dict([(agent_id, box_act_space) for agent_id in self.agent_ids])
         
         # Define the observation space
         self._obs_space_in_preferred_format = True

@@ -12,17 +12,18 @@ from reference_trajectory import refTraj
 def main():
 
     rtd = 180/np.pi
-    time_step = 0.001
+    #time_step = 0.001
+    time_step = 0.01
 
     # Specify data
-    fileDate = '2023-09-01'
-    fileTime = '15-40'    # 
+    fileDate = '2023-09-07'
+    fileTime = '08-34'    # 
 
     scenario_type = 'eval_dv'
 
     file_path = os.path.dirname(sys.path[0])+"/data_storage/"+fileDate+"-"+fileTime
 
-    episode_number = 380
+    episode_number = 20
     nAgents = 1
 
     caseType='3d'

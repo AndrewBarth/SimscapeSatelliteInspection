@@ -26,15 +26,15 @@ stop_time = 20.0
 
 dof = {1: 3}
 
-time_step = 0.001    # This is fixed in the CPP code, do not change
+time_step = 0.01    # This is fixed in the CPP code, do not change
 nSteps = int(stop_time/time_step)
 
 #rollout_fragment_length = int(360)
 rollout_fragment_length = "auto"
 #rollout_fragment_length = int((stop_time/time_step)/2)
 
-rollout_workers = 0
-#rollout_workers = 2
+#rollout_workers = 0
+rollout_workers = 2
 #rollout_workers = 5
 
 save_step = 20 
@@ -54,8 +54,8 @@ env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAge
 #train_batch_size = int(stop_time/time_step)
 #sgd_minibatch_size = int(train_batch_size/1000)
 #train_batch_size = int(80000)
-train_batch_size = int(5000)
-sgd_minibatch_size = int(train_batch_size/100)
+train_batch_size = int(500)
+sgd_minibatch_size = int(train_batch_size/10)
 nBatches = int(nSteps/train_batch_size)
 if rollout_workers == 0:
     duration = nBatches
@@ -106,7 +106,7 @@ algoConfig = PPOConfig()\
     .training(
           train_batch_size=train_batch_size,
           sgd_minibatch_size=sgd_minibatch_size,
-          model={'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
+          model={'use_lstm':True,'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
           )\
     .evaluation(
             evaluation_num_workers=0,
