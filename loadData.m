@@ -37,6 +37,7 @@ elseif ARM_TYPE == 3
     General_7DOF_ArmAssembly_DataFile
 else
     ArmAssembly_DataFile
+    RigidBodyTree = load("3linkPlanarTree.mat");
 end
 
 ClientAssembly_DataFile
@@ -69,3 +70,5 @@ VSS_Playback         = Simulink.Variant('JOINT_COMMAND_SOURCE==1');
 if ARM_TYPE == 0
     configureArmJoints
 end
+
+%robotTree=importrobot('SatelliteServicing_Mission','ConvertJoints','convert-to-fixed');
