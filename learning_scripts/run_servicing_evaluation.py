@@ -19,18 +19,18 @@ initial_state = {}
 
 initial_state[1] = [80,90,20]
 
-stop_time = 20.0
+stop_time = 50.0
 
 dof = {1: 3}
 
-time_step = 0.001    # This is fixed in the CPP code, do not change
+time_step = 0.01   # This is the time step for training, CPP simulation may have different step size
 
 # Define the checkpoint for the trained algorithm
 #caseTitle = 'test_scenario'
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-09-01_14-18-258l94dnoc/checkpoint_000041'
+checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-10-29_20-52-436iwjtx0o/checkpoint_000501'
 
 # Register the enviroment with gym and create an instance of the environment
 register_env(

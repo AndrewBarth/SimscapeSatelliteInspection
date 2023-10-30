@@ -22,24 +22,24 @@ initial_state = {}
 initial_state[1] = [80,90,20]
 
 stop_time = 80.0
-stop_time = 20.0
+stop_time = 50.0
 
 dof = {1: 3}
 
-time_step = 0.01    # This is fixed in the CPP code, do not change
+time_step = 0.01    # This is the time step for training, CPP simulation may have different step size
 nSteps = int(stop_time/time_step)
 
 #rollout_fragment_length = int(360)
 rollout_fragment_length = "auto"
 #rollout_fragment_length = int((stop_time/time_step)/2)
 
-#rollout_workers = 0
-rollout_workers = 2
-#rollout_workers = 5
+rollout_workers = 0
+#rollout_workers = 2
+#rollout_workers = 6
 
-save_step = 20 
-checkpoint_step = 50
-nIter = 400 
+save_step = 50 
+checkpoint_step = 100
+nIter = 1000 
 
 caseName = 'agent_parameters'
 caseTitle = 'Agent Parameters'
@@ -159,9 +159,9 @@ for agent_id in env.agent_ids:
 time_steps = 0
 
 # Restore the old (checkpointed) state.
-#checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-08-07_12-01-16mj4fu0ny/checkpoint_000100'
+#checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-09-07_10-39-23ftxv4usc/checkpoint_000401'
 #algo.restore(checkpoint_dir)
-#nIter=200
+#nIter=800
 
 for Iter in range(algo.iteration,nIter+1): 
     print('Iteration: ', Iter)
