@@ -2,7 +2,7 @@
 ## Makefile generated for component 'rtwshared'. 
 ## 
 ## Makefile     : rtwshared.mk
-## Generated on : Wed May 24 14:13:02 2023
+## Generated on : Fri Sep 01 10:32:28 2023
 ## Final product: ./rtwshared.lib
 ## Product type : static library
 ## 
@@ -39,20 +39,25 @@ MODELLIB                  = rtwshared.lib
 
 # Toolchain Name:          GNU GCC Embedded Linux
 # Supported Version(s):    
-# ToolchainInfo Version:   2022b
+# ToolchainInfo Version:   2023a
 # Specification Revision:  1.0
 # 
+#-------------------------------------------
+# Macros assumed to be defined elsewhere
+#-------------------------------------------
+
+# LINUX_TGT_LIBS
 
 #-----------
 # MACROS
 #-----------
 
-CCOUTPUTFLAG = --output_file=
-LDOUTPUTFLAG = --output_file=
+CCOUTPUTFLAG   = --output_file=
+LDOUTPUTFLAG   = --output_file=
 
 TOOLCHAIN_SRCS = 
 TOOLCHAIN_INCS = 
-TOOLCHAIN_LIBS = -lm -lm -lstdc++
+TOOLCHAIN_LIBS = -lm -lrt -lpthread -ldl -lm -lstdc++ -lrt -lpthread -ldl
 
 #------------------------
 # BUILD TOOL COMMANDS
@@ -126,20 +131,21 @@ CFLAGS               = -c \
 CPPFLAGS             = -c \
                        -fPIC -MMD -MP -MF"$(@:%.o=%.dep)" -MT"$@"  \
                        -fpermissive  \
-                       -O2
-CPP_LDFLAGS          = -lrt -lpthread -ldl
+                       -O2 \
+                       $(CUSTOM_CPP_FLAGS)
+CPP_LDFLAGS          = -Wl,--no-as-needed
 CPP_SHAREDLIB_LDFLAGS  = -shared  \
-                         -lrt -lpthread -ldl
+                         -Wl,--no-as-needed
 DOWNLOAD_FLAGS       =
 EXECUTE_FLAGS        =
-LDFLAGS              = -lrt -lpthread -ldl
+LDFLAGS              = -Wl,--no-as-needed
 MEX_CPPFLAGS         =
 MEX_CPPLDFLAGS       =
 MEX_CFLAGS           =
 MEX_LDFLAGS          =
 MAKE_FLAGS           = -j$(($(nproc)+1)) -Otarget -f $(MAKEFILE)
 SHAREDLIB_LDFLAGS    = -shared  \
-                       -lrt -lpthread -ldl
+                       -Wl,--no-as-needed
 
 
 
@@ -173,7 +179,7 @@ DEFINES = $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_OPTS)
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)/slprj/ert/_sharedutils/binsearch_u32d.cpp $(START_DIR)/slprj/ert/_sharedutils/plook_u32d_bincka.cpp $(START_DIR)/slprj/ert/_sharedutils/rtGetInf.cpp $(START_DIR)/slprj/ert/_sharedutils/rtGetNaN.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_atan2d_snf.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_backsubrr_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_forwardsubrr_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_lu_real.c $(START_DIR)/slprj/ert/_sharedutils/rt_matrixlib_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_nonfinite.cpp
+SRCS = $(START_DIR)/slprj/ert/_sharedutils/binsearch_u32d.cpp $(START_DIR)/slprj/ert/_sharedutils/plook_u32d_bincka.cpp $(START_DIR)/slprj/ert/_sharedutils/rtGetInf.cpp $(START_DIR)/slprj/ert/_sharedutils/rtGetNaN.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_atan2d_snf.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_backsubrr_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_forwardsubrr_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_lu_real.c $(START_DIR)/slprj/ert/_sharedutils/rt_matrixlib_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_nonfinite.cpp $(START_DIR)/slprj/ert/_sharedutils/mldivide_ACSdhGwc.cpp $(START_DIR)/slprj/ert/_sharedutils/norm_NaTV2q6x.cpp $(START_DIR)/slprj/ert/_sharedutils/svd_7Gu53yjg.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_096mtG8b.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_DudtLs4O.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_WCvBBQc1.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_YEe4MFbz.cpp $(START_DIR)/slprj/ert/_sharedutils/xdotc_aDpSMZ8I.cpp $(START_DIR)/slprj/ert/_sharedutils/xdotc_hYsJecV0.cpp $(START_DIR)/slprj/ert/_sharedutils/xnrm2_Nr2corQP.cpp $(START_DIR)/slprj/ert/_sharedutils/xnrm2_wVr87xYl.cpp $(START_DIR)/slprj/ert/_sharedutils/xrot_PQNMFBbq.cpp $(START_DIR)/slprj/ert/_sharedutils/xrot_cHa9XTr0.cpp $(START_DIR)/slprj/ert/_sharedutils/xrotg_9ZHhnzNd.cpp $(START_DIR)/slprj/ert/_sharedutils/xswap_66dnrKDh.cpp $(START_DIR)/slprj/ert/_sharedutils/xswap_TC0Nd8XC.cpp
 
 ALL_SRCS = $(SRCS)
 
@@ -181,7 +187,7 @@ ALL_SRCS = $(SRCS)
 ## OBJECTS
 ###########################################################################
 
-OBJS = binsearch_u32d.cpp.o plook_u32d_bincka.cpp.o rtGetInf.cpp.o rtGetNaN.cpp.o rt_atan2d_snf.cpp.o rt_backsubrr_dbl.c.o rt_forwardsubrr_dbl.c.o rt_lu_real.c.o rt_matrixlib_dbl.c.o rt_nonfinite.cpp.o
+OBJS = binsearch_u32d.cpp.o plook_u32d_bincka.cpp.o rtGetInf.cpp.o rtGetNaN.cpp.o rt_atan2d_snf.cpp.o rt_backsubrr_dbl.c.o rt_forwardsubrr_dbl.c.o rt_lu_real.c.o rt_matrixlib_dbl.c.o rt_nonfinite.cpp.o mldivide_ACSdhGwc.cpp.o norm_NaTV2q6x.cpp.o svd_7Gu53yjg.cpp.o xaxpy_096mtG8b.cpp.o xaxpy_DudtLs4O.cpp.o xaxpy_WCvBBQc1.cpp.o xaxpy_YEe4MFbz.cpp.o xdotc_aDpSMZ8I.cpp.o xdotc_hYsJecV0.cpp.o xnrm2_Nr2corQP.cpp.o xnrm2_wVr87xYl.cpp.o xrot_PQNMFBbq.cpp.o xrot_cHa9XTr0.cpp.o xrotg_9ZHhnzNd.cpp.o xswap_66dnrKDh.cpp.o xswap_TC0Nd8XC.cpp.o
 
 ALL_OBJS = $(OBJS)
 
@@ -361,6 +367,70 @@ rt_nonfinite.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/rt_nonfinite.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 
+mldivide_ACSdhGwc.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/mldivide_ACSdhGwc.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+norm_NaTV2q6x.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/norm_NaTV2q6x.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+svd_7Gu53yjg.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/svd_7Gu53yjg.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xaxpy_096mtG8b.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xaxpy_096mtG8b.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xaxpy_DudtLs4O.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xaxpy_DudtLs4O.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xaxpy_WCvBBQc1.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xaxpy_WCvBBQc1.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xaxpy_YEe4MFbz.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xaxpy_YEe4MFbz.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xdotc_aDpSMZ8I.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xdotc_aDpSMZ8I.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xdotc_hYsJecV0.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xdotc_hYsJecV0.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xnrm2_Nr2corQP.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xnrm2_Nr2corQP.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xnrm2_wVr87xYl.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xnrm2_wVr87xYl.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xrot_PQNMFBbq.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xrot_PQNMFBbq.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xrot_cHa9XTr0.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xrot_cHa9XTr0.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xrotg_9ZHhnzNd.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xrotg_9ZHhnzNd.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xswap_66dnrKDh.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xswap_66dnrKDh.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xswap_TC0Nd8XC.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xswap_TC0Nd8XC.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
 ###########################################################################
 ## DEPENDENCIES
 ###########################################################################
@@ -402,7 +472,7 @@ info :
 
 
 clean : 
-	$(ECHO) "### Deleting all derived files..."
+	$(ECHO) "### Deleting all derived files ..."
 	$(RM) $(PRODUCT)
 	$(RM) $(ALL_OBJS)
 	$(RM) *.c.dep

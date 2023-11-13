@@ -16,14 +16,14 @@ def main():
     time_step = 0.01
 
     # Specify data
-    fileDate = '2023-10-29'
-    fileTime = '17-15'    # 
+    fileDate = '2023-11-13'
+    fileTime = '12-37'    # 
 
     scenario_type = 'eval_dv'
 
     file_path = os.path.dirname(sys.path[0])+"/data_storage/"+fileDate+"-"+fileTime
 
-    episode_number = 1
+    episode_number = 250
     nAgents = 1
 
     caseType='3d'
@@ -41,6 +41,7 @@ def main():
     cumOriReward = np.cumsum(reward['orierr_reward'],axis=0)
     cumCntReward = np.cumsum(reward['cnterr_reward'],axis=0)
     cumJntReward = np.cumsum(reward['jntlmt_reward'],axis=0)
+    cumSmoReward = np.cumsum(reward['smooth_reward'],axis=0)
     totalReward.append(np.sum(cumReward[npts-1]))
     all_reward.append(reward)
 
@@ -57,7 +58,7 @@ def main():
         current_time += time_step
         ref_time.append(current_time)
 
-    colors=['orange','green','red','blue','cyan']
+    colors=['orange','green','red','blue','cyan','olive']
     #labels=['Servicing Satellite Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
     #legend=['Sat']
     #plotData={'data0':sat['position']}
@@ -74,13 +75,13 @@ def main():
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Position Error','Points','X Position Error (m)','Y Position Error (m)','Z Position Error (m)']
-    legend=['EE']
-    plotData={'data0':ee['position_error']}
+    legend=['EE','Sim']
+    plotData={'data0':ee['position_error'],'data1':ee['sim_pos_error']}
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Orientation Error','Points','X Orientation Error (--)','Y Orientation Error (--)','Z Orientation Error (--)']
-    legend=['EE']
-    plotData={'data0':ee['orientation_error']}
+    legend=['EE','Sim']
+    plotData={'data0':ee['orientation_error'],'data1':ee['sim_ori_error']}
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['Arm 1 Joint Commands','Points','Joint 1 (Nm)','Joint 2 (Nm)','Joint 3 (Nm)']
@@ -105,8 +106,8 @@ def main():
     plot_static('1d',plotData,labels,legend,colors)
 
     labels=['Cumulative Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Total Reward']
-    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Total Reward']
-    plotData={'data0':cumPosReward,'data1':cumOriReward,'data2':cumCntReward,'data3':cumJntReward,'data4':cumReward}
+    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Smoothness Reward', 'Total Reward']
+    plotData={'data0':cumPosReward,'data1':cumOriReward,'data2':cumCntReward,'data3':cumJntReward,'data4':cumSmoReward,'data5':cumReward}
     plot_static('1d',plotData,labels,legend,colors)
 
     labels=['Sim Time','Points','Time (s)']

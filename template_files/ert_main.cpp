@@ -116,7 +116,7 @@ int_T sim_init(real_T* initial_conditions, real_T* joint_limits)
 // illustrates how you do this relative to initializing the model.
 //
 //int_T main(int_T argc, const char *argv[])
-int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T* dones, real_T* simTime)
+int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, real_T* errors, int_T* dones, real_T* simTime)
 {
 
   // Unused arguments
@@ -145,6 +145,11 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T*
   // Collect observations
   for (int i=0; i<33; i++) {
        observations[i] = SatelliteServicing_Mission_Y.Observations[i];
+  }
+
+  // Collect observations
+  for (int i=0; i<12; i++) {
+       errors[i] = SatelliteServicing_Mission_Y.ControlError[i];
   }
 
   double current_time = rtmGetT(SatelliteServicing_Mission_M);
@@ -181,7 +186,7 @@ int_T sim_terminate()
 
 // Declare external functions to be accessed from Python
 extern "C++" {
-    int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, int_T* dones, real_T* simTime);
+    int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, real_T* errors, int_T* dones, real_T* simTime);
     int_T sim_init(real_T* initial_conditions, real_T* joint_limits);
     int_T sim_terminate();
 }

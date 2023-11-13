@@ -66,9 +66,15 @@ class SatServiceEnv(MultiAgentEnv):
 
         self.reward_parameters['control_effort'] = {}
         #self.reward_parameters['control_effort']['scale_factor'] = -1e-1
-        #self.reward_parameters['control_effort']['scale_factor'] = -5
-        self.reward_parameters['control_effort']['scale_factor'] = -1
+        self.reward_parameters['control_effort']['scale_factor'] = -5
         self.reward_parameters['control_effort']['bias'] = 0
+
+        self.reward_parameters['smoothness'] = {}
+        self.reward_parameters['smoothness']['min_error'] = 0.0
+        self.reward_parameters['smoothness']['max_reward'] = 1.0
+        self.reward_parameters['smoothness']['scale_factor'] = 0.2
+        self.reward_parameters['smoothness']['exponent'] = -2.0
+        self.reward_parameters['smoothness']['bias'] = -0.2
 
         self.terminateds = set()
         self.truncateds = set()
@@ -130,6 +136,9 @@ class SatServiceEnv(MultiAgentEnv):
         # Create dictionary to store error states
         self.error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
 
+        # Create dictionary to store error states from simulation
+        self.sim_error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
+
         # Create dictionary to store actions
         self.action_states = dict([(agent_id, []) for agent_id in self.agent_ids])
 
@@ -177,6 +186,7 @@ class SatServiceEnv(MultiAgentEnv):
         self.output_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.joint_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
+        self.sim_error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.action_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.reward_states = dict([(agent_id, []) for agent_id in self.agent_ids])
 
@@ -300,13 +310,11 @@ class SatServiceEnv(MultiAgentEnv):
 
         smoothness_reward = 0
         if self.step_count > 1:
-#            delta_control = 0
-#        else:
-#            delta_control = np.linalg.norm(np.array(action_states[agent_id]) - np.array(self.prev_control))
+            params = self.reward_parameters['smoothness']
             pct_delta = np.abs(np.array(action_states[agent_id]) - np.array(self.prev_control[agent_id]))/np.array([0.005, 0.001, 0.0001])
             for i in range(self.dof[agent_id]):
-                if pct_delta[i] > 1.0:
-                    smoothness_reward = smoothness_reward - 0.1
+                value = params['scale_factor']*np.exp(params['exponent']*pct_delta[i])+params['bias']
+                smoothness_reward = smoothness_reward + value
    
         self.prev_control[agent_id] = action_states[agent_id]
 
@@ -357,7 +365,7 @@ class SatServiceEnv(MultiAgentEnv):
         self.step_count += 1
 
         # Execute one step of the CPP simulation and return a new state
-        states, dones, sim_time = self.cppWrapper.step_cpp(agent_ids,action,self.stop_time)
+        states, sim_errors, dones, sim_time = self.cppWrapper.step_cpp(agent_ids,action,self.stop_time)
 
         # Compute errors relative to reference trajectory
         errors = {i: self.compute_errors(i,sim_time,states[i]) for i in agent_ids}
@@ -378,6 +386,7 @@ class SatServiceEnv(MultiAgentEnv):
             quat_error = math_utils.MRPToQuat(np.array(errors[agent_id][3:6]))
             euler_error = math_utils.quatToEuler_321(math_utils.quatConj(quat_error))
             self.error_states[agent_id] = errors[agent_id].tolist()
+            self.sim_error_states[agent_id] = sim_errors[agent_id]
             #self.error_states[agent_id][3:6] = euler_error
             self.action_states[agent_id] = action[agent_id].tolist()
             self.info[agent_id]['obs'].append(observations[agent_id])

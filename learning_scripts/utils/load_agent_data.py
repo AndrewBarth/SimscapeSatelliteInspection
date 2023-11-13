@@ -40,6 +40,10 @@ def load_data(episode, agent, file_path):
         reward['jntlmt_reward'] = Data[:,53]
         reward['smooth_reward'] = Data[:,54]
         sim_time                = Data[:,55]
+        ee['sim_pos_error']     = Data[:,56:59]
+        ee['sim_ori_error']     = Data[:,59:62]
+        ee['sim_vel_error']     = Data[:,62:65]
+        ee['sim_rat_error']     = Data[:,65:68]
         #reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['velerr_reward']+reward['raterr_reward']+reward['cnterr_reward']
         reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']+reward['jntlmt_reward']+reward['smooth_reward']
     else:
@@ -68,6 +72,10 @@ def load_data(episode, agent, file_path):
         reward['jntlmt_reward'] = trajData[0,:,53]
         reward['smooth_reward'] = trajData[0,:,54]
         sim_time                = trajData[0,:,55]
+        ee['sim_pos_error']     = trajData[0,:,56:59]
+        ee['sim_ori_error']     = trajData[0,:,59:62]
+        ee['sim_vel_error']     = trajData[0,:,62:65]
+        ee['sim_rat_error']     = trajData[0,:,65:68]
         #reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['velerr_reward']+reward['raterr_reward']+reward['cnterr_reward']
         reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']+reward['jntlmt_reward']+reward['smooth_reward']
 

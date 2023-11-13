@@ -50,20 +50,22 @@ class cppWrapper(object):
 
         nActions = len(actions)
         nObservations = 33*nAgents
+        nErrors = 12*nAgents
         # Create variables using ctypes to pass actions and 
         # observations to and from C++
         # NOTE: Sizes are hardcoded in the C++ code so nAgents must match
         # the value used to generate the C++ code
-        lib._Z11sim_wrapperdPdS_PiS_.argtypes = [ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.c_double)]
+        lib._Z11sim_wrapperdPdS_S_PiS_.argtypes = [ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.c_double)]
         empty_var = []
         action_data = (ctypes.c_double * (nActions) )(*actions)
         observation_data = (ctypes.c_double  * (nObservations) )(*empty_var)
+        error_data = (ctypes.c_double  * (nErrors) )(*empty_var)
         done_data = (ctypes.c_int  * 2)(*empty_var)
         stoptime_data = (ctypes.c_double)(stop_time)
         simtime = (ctypes.c_double * 1)(*empty_var)
        
         # Call the CPP program
-        ret = lib._Z11sim_wrapperdPdS_PiS_(stoptime_data,action_data,observation_data,done_data,simtime)
+        ret = lib._Z11sim_wrapperdPdS_S_PiS_(stoptime_data,action_data,observation_data,error_data,done_data,simtime)
 
         # Extract the observations and place them in a python dictionary
         observations = {}
@@ -71,11 +73,15 @@ class cppWrapper(object):
             #observations[agent_id] = [observation_data[33*(agent_id-1)+i] for i in range(33)]
             observations[agent_id] = [observation_data[i] for i in range(33)]
 
+        errors = {}
+        for agent_id in agent_ids:
+            errors[agent_id] = [error_data[i] for i in range(12)]
+
         # Extract the dones and place them in a python dictionsary
         # Dones are shared between all agents
         dones = {}
         for agent_id in agent_ids:
             dones[agent_id] = any([bool(done_data[i]) for i in range(2)])
 
-        return observations, dones, simtime[0]
+        return observations, errors, dones, simtime[0]
     
