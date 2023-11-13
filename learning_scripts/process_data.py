@@ -16,22 +16,33 @@ def main():
     time_step = 0.01
 
     # Specify data
-    fileDate = '2023-09-07'
-    fileTime = '08-34'    # 
+    fileDate = '2023-10-29'
+    fileTime = '17-15'    # 
 
     scenario_type = 'eval_dv'
 
     file_path = os.path.dirname(sys.path[0])+"/data_storage/"+fileDate+"-"+fileTime
 
-    episode_number = 20
+    episode_number = 1
     nAgents = 1
 
     caseType='3d'
 
     # Load data for this run
-    npts,sat,ee,arm,reward = load_data(str(episode_number),'1',file_path)
+    npts,sat,ee,arm,reward,sim_time = load_data(str(episode_number),'1',file_path)
 
     stop_time = npts*time_step
+
+    # Process reward data
+    totalReward = []
+    all_reward = []
+    cumReward = np.cumsum(reward['total_reward'],axis=0)
+    cumPosReward = np.cumsum(reward['poserr_reward'],axis=0)
+    cumOriReward = np.cumsum(reward['orierr_reward'],axis=0)
+    cumCntReward = np.cumsum(reward['cnterr_reward'],axis=0)
+    cumJntReward = np.cumsum(reward['jntlmt_reward'],axis=0)
+    totalReward.append(np.sum(cumReward[npts-1]))
+    all_reward.append(reward)
 
     # Create the reference trajectory
     reference_trajectory = refTraj(stop_time)
@@ -46,11 +57,11 @@ def main():
         current_time += time_step
         ref_time.append(current_time)
 
-    colors=['orange','green','red']
-    labels=['Servicing Satellite Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
-    legend=['Sat']
-    plotData={'data0':sat['position']}
-    plot_static('3d',plotData,labels,legend,colors)
+    colors=['orange','green','red','blue','cyan']
+    #labels=['Servicing Satellite Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
+    #legend=['Sat']
+    #plotData={'data0':sat['position']}
+    #plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
     legend=['Actual','Reference']
@@ -87,6 +98,20 @@ def main():
     labels=['Arm 1 Joint Rates','Points','Joint 1 (d/s)','Joint 2 (d/s)','Joint 3 (d/s)']
     plotData={'data0':arm['jRate']*rtd}
     plot_static('3d',plotData,labels,legend,colors)
+
+    labels=['Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward']
+    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward']
+    plotData={'data0':reward['poserr_reward'],'data1':reward['orierr_reward'],'data3':reward['cnterr_reward'],'data4':reward['jntlmt_reward']}
+    plot_static('1d',plotData,labels,legend,colors)
+
+    labels=['Cumulative Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Total Reward']
+    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Total Reward']
+    plotData={'data0':cumPosReward,'data1':cumOriReward,'data2':cumCntReward,'data3':cumJntReward,'data4':cumReward}
+    plot_static('1d',plotData,labels,legend,colors)
+
+    labels=['Sim Time','Points','Time (s)']
+    plotData={'data0':sim_time}
+    plot_static('1d',plotData,labels,legend,colors)
 
     plt.show()
 

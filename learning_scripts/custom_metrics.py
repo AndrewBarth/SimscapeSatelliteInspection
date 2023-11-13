@@ -67,6 +67,7 @@ class MyCallbacks(DefaultCallbacks):
         episode.user_data["error_states"] = {}
         episode.user_data["action_states"] = {}
         episode.user_data["reward_states"] = {}
+        episode.user_data["sim_time"] = []
         for agent_key in worker.env.agent_ids:
             episode.user_data["output_states"][agent_key] = [] 
             episode.user_data["error_states"][agent_key] = []
@@ -95,6 +96,7 @@ class MyCallbacks(DefaultCallbacks):
             episode.user_data["error_states"][agent_key].append(worker.env.error_states[agent_key])
             episode.user_data["action_states"][agent_key].append(worker.env.action_states[agent_key])
             episode.user_data["reward_states"][agent_key].append(worker.env.reward_states[agent_key])
+            episode.user_data["sim_time"].append(worker.env.sim_time)
 
     def on_episode_end(
         self,
@@ -134,8 +136,8 @@ class MyCallbacks(DefaultCallbacks):
         #for metric_key, value in episode.user_data.items():
         for agent_key in agent_keys:
             combined_metrics = []
-            for (w,x,y,z) in zip(episode.user_data['output_states'][agent_key], episode.user_data['error_states'][agent_key], episode.user_data['action_states'][agent_key],episode.user_data['reward_states'][agent_key]):
-                combined_metrics.append(w+x+y+z)
+            for (v,w,x,y,z) in zip(episode.user_data['output_states'][agent_key], episode.user_data['error_states'][agent_key], episode.user_data['action_states'][agent_key],episode.user_data['reward_states'][agent_key], episode.user_data['sim_time']):
+                combined_metrics.append(v+w+x+y+z)
 
 #            for metric_key in episode.user_data.keys():
 #                #combined_metrics.append(np.array(episode.user_data[metric_key][agent_key]))
