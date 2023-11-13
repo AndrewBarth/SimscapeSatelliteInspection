@@ -3,7 +3,7 @@
 %% General parameters
 
 % Set the run time and step size of the simulation
-endTime = 20;
+endTime = 49;
 stepSize = 0.001;
 
 %% Rod Parameters
@@ -272,23 +272,42 @@ jointControlData.Kd = [1 1 1 1 1 1]*4;
 jointControlData.Ki = [1 1 1 1 1 1]*0.;
 
 % Use these with 3-Link Planar arm
-% jointControlData.Kp = [1 1 1 1 1 1]*0.7;   % when using angle erross
+% jointControlData.Kp = [1 1 1 1 1 1]*0.7;   % when using angle errors
+%jointControlData.Kd = [1 1 1 .8 .8 .8]*4;
 jointControlData.Kp = [1 1 1 .05 .05 .05]*0.7; % when using MRP errors
-jointControlData.Kd = [1 1 1 .8 .8 .8]*4;
-
+jointControlData.Kd = [1 1 1 .08 .08 .08]*4;
+% jointControlData.Kp = [1 1 1 .7 .7 .7]*0.7; % when using MRP errors
+jointControlData.Kp = [1 1 1 2.5 2.5 2.5]*0.7; % when using MRP errors
+% jointControlData.Kd = [1 1 1 4.0 4.0 4.0]*4;
+jointControlData.Kd = [1 1 1 5.0 5.0 5.0]*4;
+% jointControlData.Ki = [0 0 0 .08 .08 .08]*1.;
+jointControlData.Ki = [0 0 0 .18 .18 .18]*1.;
 % Used for joint control only (Joint control not implemented in Simulink)
 jointControlData.qCmdDot = [0 0 0];
 jointControlData.qCmd = [0 0 0]*pi/180;
 
 % Used for end effector control [pos, ang, vel, angRate]
 jointControlData.eeCmd = zeros(1,12);
-jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -40.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -40.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+%jointControlData.refTime = [0 20 30 50 70];
+
+% jointControlData.eeRefTraj(1,:) = [-0.236    0.0438     0.2710 90.0*dtr 0.0  -100.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(2,:) = [-0.236     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+% jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+
+jointControlData.eeRefTraj(1,:) = [-0.236    0.0438        0.2710 90.0*dtr 0.0  -100.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(2,:) = [-0.236    0.0438       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 
-jointControlData.refTime = [0 20 30 50 70];
+jointControlData.refTime = [0 50 60 70 80];
 jointControlData.jointControlMode = 0;
 jointControlData.jointControlModeVec = [2 2 2 2 2];   % 1 = hold position, 2 = EE control
 jointControlData.torqueLimit = 0.5*ones(1,nLink);
