@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Define the directories to work in
+current_dir=`pwd`
+util_dir='SimscapeSatelliteInspection/slprj/ert/_sharedutils'
+src_dir='SimscapeSatelliteInspection/SatelliteServicing_Mission_ert_rtw'
+build_dir='SimscapeSatelliteInspection'
+
+# Copy required template files
+cp template_files/rtwshared.mk $util_dir
+cp template_files/ert_main.cpp $src_dir
+cp template_files/SatelliteServicing_Mission.mk $build_dir
+
+# Make the utilities
+cd $util_dir
+make -f rtwshared.mk
+cd $current_dir
+
+# Make the shared object
+cd $build_dir
+make -f SatelliteServicing_Mission.mk
+cd $current_dir
