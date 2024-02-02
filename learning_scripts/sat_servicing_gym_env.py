@@ -37,16 +37,16 @@ class SatServiceEnv(MultiAgentEnv):
         self.reward_parameters['position_error']['min_error'] = 0.0
         self.reward_parameters['position_error']['max_reward'] = 1.0
 #        self.reward_parameters['position_error']['scale_factor'] = 0.02
-        self.reward_parameters['position_error']['scale_factor'] = 20.0
+        self.reward_parameters['position_error']['scale_factor'] = 80.0
         self.reward_parameters['position_error']['exponent'] = -2.0
 #        self.reward_parameters['position_error']['bias'] = -0.02
-        self.reward_parameters['position_error']['bias'] = -20.0
+        self.reward_parameters['position_error']['bias'] = -80.0
 
         self.reward_parameters['orientation_error'] = {}
         self.reward_parameters['orientation_error']['min_error'] = 0.0
         self.reward_parameters['orientation_error']['max_reward'] = 1.0
 #        self.reward_parameters['orientation_error']['scale_factor'] = -0.01
-        self.reward_parameters['orientation_error']['scale_factor'] = -300.0
+        self.reward_parameters['orientation_error']['scale_factor'] = -10000.0
         self.reward_parameters['orientation_error']['power'] = 2.0
         self.reward_parameters['orientation_error']['bias'] =  0.0
 
