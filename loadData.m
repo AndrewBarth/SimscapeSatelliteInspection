@@ -14,18 +14,20 @@ VSS_RoboticArmGeneral6DOF = Simulink.Variant('ARM_TYPE==2');
 VSS_RoboticArmGeneral7DOF = Simulink.Variant('ARM_TYPE==3');
 
 % Define path for required files
-addpath('ViperX_300');
-addpath('General_6DOF_Arm');
-addpath('General_7DOF_Arm');
-addpath('Planar_3Link_Arm');
+addpath('RoboticArm_Models')
+addpath('RoboticArm_Models/ViperX_300');
+addpath('RoboticArm_Models/General_6DOF_Arm');
+addpath('RoboticArm_Models/General_7DOF_Arm');
+addpath('RoboticArm_Models/Planar_3Link_Arm');
 addpath('Utilities');
 addpath('GNC')
-addpath('Planar_3Link_Arm');
 addpath('ClientSatellite');
+addpath('ServicingSatellite');
+addpath('ServicingSatellite/Camera');
 addpath('FlexibleBeam');
-addpath('Camera');
 addpath('ManipulatorControl');
 addpath('TestScenarios')
+addpath('DataProcessingScripts')
 
 
 % Load parameter data for each element
@@ -52,7 +54,7 @@ elseif ARM_TYPE == 3
     General7DOF_test
 end
 
-ARM_CONTROL_TYPE = 1;
+ARM_CONTROL_TYPE = 0;
 VSS_ModelBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==0');
 VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
 
