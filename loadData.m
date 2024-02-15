@@ -1,5 +1,5 @@
 clear
-clc
+%clc
 
 % Select robotic arm to use in the simulation
 ARM_TYPE = 0;    
@@ -69,8 +69,9 @@ VSS_Playback         = Simulink.Variant('JOINT_COMMAND_SOURCE==1');
 
 % Call routine to configure the joints in the arm model to accept the
 % chosen joint command type (only set up for planar 3 Link arm)
-if ARM_TYPE == 0
-    configureArmJoints
-end
+% Used for the inverse kinematic blocks when not commented out
+%if ARM_TYPE == 0
+%    configureArmJoints
+%end
 
 %robotTree=importrobot('SatelliteServicing_Mission','ConvertJoints','convert-to-fixed');

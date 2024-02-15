@@ -101,7 +101,7 @@ sat.service.IC.twist.linear.x = 0.0;
 sat.service.IC.twist.linear.y = 0.0;
 sat.service.IC.twist.linear.z = 0.0;
 % Attitude in rad Z-Y-X order and sequence
-sat.service.IC.pose.orientation = [0 0.0 0]*dtr;
+sat.service.IC.pose.orientation = [20.0 0.0 0.0]*dtr;
 % Angular velocity in rad/s
 sat.service.IC.twist.angular = [0.0 0.0 0.0]*dtr;
 
@@ -282,6 +282,9 @@ jointControlData.Kp = [1 1 1 2.5 2.5 2.5]*0.7; % when using MRP errors
 jointControlData.Kd = [1 1 1 5.0 5.0 5.0]*4;
 % jointControlData.Ki = [0 0 0 .08 .08 .08]*1.;
 jointControlData.Ki = [0 0 0 .18 .18 .18]*1.;
+jointControlData.Kp = [1.0 1.0 1.0 2.0 2.0 2.0]*1.0; % when using MRP errors
+jointControlData.Ki = [1.0 1.0 1.0 0.7 0.7 0.7]*0.1;
+jointControlData.Kd = [1 1 1 1.5 1.5 1.5]*8.0;
 % Used for joint control only (Joint control not implemented in Simulink)
 jointControlData.qCmdDot = [0 0 0];
 jointControlData.qCmd = [0 0 0]*pi/180;
@@ -306,6 +309,14 @@ jointControlData.eeRefTraj(2,:) = [-0.236    0.0438       0.2710 90.0*dtr 0.0 -1
 jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+
+jointControlData.eeRefTraj(1,:) = [-0.236    0.0438        0.2710 90.0*dtr 0.0  -60.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(2,:) = [-0.236    0.0438       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+
+jointControlData.eeRefTraj(1,:) = [-0.4    0.2        0.2710 90.0*dtr 0.0*dtr  -120.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 
 jointControlData.refTime = [0 50 60 70 80];
 jointControlData.jointControlMode = 0;

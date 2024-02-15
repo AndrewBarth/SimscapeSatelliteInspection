@@ -7,7 +7,7 @@ rtd = 180/pi;
 poserr_ee = squeeze(out.jointControlError.Data(1,1:3,:))';
 orierr_ee = squeeze(out.jointControlError.Data(1,4:6,:))';
 velerr_ee = squeeze(out.jointControlError.Data(1,7:9,:))';
-rateerr_ee = squeeze(out.jointControlError.Data(1,10:12,:))';
+rateerr_ee = squeeze(out.jointControlError.Data(1,10:12,:))'*rtd;
 
 
 % figure for ee position error
@@ -61,3 +61,20 @@ legend('EE Velocity Error z', 'location','best')
 grid on; grid minor
 xlabel('Time (s)')
 
+
+% figure for ee rate errors
+figure;
+subplot(3,1,1)
+plot(data_time,rateerr_ee(:,1)); ylabel('Angular Velocity  (deg/s)')
+title('EE Angular Velocity  Error')
+legend('EE Angular Velocity Error x', 'location','best')
+grid on; grid minor
+subplot(3,1,2)
+plot(data_time,rateerr_ee(:,2)); ylabel('Angular Velocity  (deg/s)')
+legend('EE Angular Velocity Error y', 'location','best')
+grid on; grid minor
+subplot(3,1,3)
+plot(data_time,rateerr_ee(:,3)); ylabel('Angular Velocity  (deg/s)')
+legend('EE Angular Velocity Error z', 'location','best')
+grid on; grid minor
+xlabel('Time (s)')
