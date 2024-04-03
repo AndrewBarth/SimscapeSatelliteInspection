@@ -4,6 +4,7 @@
 
 % Set the run time and step size of the simulation
 endTime = 49;
+% endTime = 5;
 stepSize = 0.001;
 
 %% Rod Parameters
@@ -228,6 +229,18 @@ elseif ARM_TYPE == 3
     arm1.Joint_Limits(6,:) = [-2*pi 2*pi];
     arm1.Joint_Limits(7,:) = [-2*pi 2*pi];
 
+elseif ARM_TYPE == 4
+    NLINKS.Value = 2;
+
+    % Data from Solidworks model (in m)
+    Link_Length(1) = 0.2;
+    Link_Length(2) = 0.08;
+    Link_CG(1,:) = [Link_Length(1)/2 0 0];
+    Link_CG(2,:) = [Link_Length(2)/2 0 0];
+
+    arm1.Joint_Limits(1,:) = [-120 120]*pi/180;
+    arm1.Joint_Limits(2,:) = [-120 120]*pi/180;
+
 else
     NLINKS.Value = 3;
 
@@ -282,9 +295,11 @@ jointControlData.Kp = [1 1 1 2.5 2.5 2.5]*0.7; % when using MRP errors
 jointControlData.Kd = [1 1 1 5.0 5.0 5.0]*4;
 % jointControlData.Ki = [0 0 0 .08 .08 .08]*1.;
 jointControlData.Ki = [0 0 0 .18 .18 .18]*1.;
-jointControlData.Kp = [1.0 1.0 1.0 2.0 2.0 2.0]*1.0; % when using MRP errors
-jointControlData.Ki = [1.0 1.0 1.0 0.7 0.7 0.7]*0.1;
-jointControlData.Kd = [1 1 1 1.5 1.5 1.5]*8.0;
+jointControlData.Kp = [0.1 0.1 0.1 1.0 1.0 1.0]*0.01; % when using quat errors
+jointControlData.Kp = [0.1 0.1 0.1 1.0 1.0 1.0]*10; % when using joint rate errors
+%jointControlData.Ki = [0.1 0.1 0.1 0.5 0.5 0.5]*0.1;
+jointControlData.Ki = [0.1 0.1 0.1 0.1 0.1 0.1]*0.0;
+jointControlData.Kd = [1 1 1 1.0 1.0 1.0]*0.0;
 % Used for joint control only (Joint control not implemented in Simulink)
 jointControlData.qCmdDot = [0 0 0];
 jointControlData.qCmd = [0 0 0]*pi/180;
@@ -317,18 +332,40 @@ jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.
 jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 
 jointControlData.eeRefTraj(1,:) = [-0.4    0.2        0.2710 90.0*dtr 0.0*dtr  -120.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(1,:) = [-0.4280    0.1395    0.2710 90.0*dtr 0.0*dtr   -125.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(1,:) = [-0.2785   0.4757    0.2710 90.0*dtr 0.0*dtr   -160.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];  % Joint 1 to 0 deg
 
 jointControlData.refTime = [0 50 60 70 80];
+
+% From Summer2022dev
+jointControlData.eeCmd = zeros(1,12);
+jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -80.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+%jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+%jointControlData.eeRefTraj(6,:) = [0.4       0.6       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(5,:) = [0.1    0.5       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(6,:) = [0.1    0.5       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+
+jointControlData.refTime = [0 20 30 50 70 100];
+jointControlData.Kp = [1 1 1 1 1 1]*0.7;
+jointControlData.Kd = [1 1 1 1 1 1]*4;
+jointControlData.Ki = [1 1 1 1 1 1]*0.;
+sat.service.IC.pose.orientation = [0.0 0.0 0.0]*dtr;
+
 jointControlData.jointControlMode = 0;
 jointControlData.jointControlModeVec = [2 2 2 2 2];   % 1 = hold position, 2 = EE control
 jointControlData.torqueLimit = 0.5*ones(1,nLink);
 % jointControlData.deadzone = 0.02*ones(1,nLink);
 % jointControlData.deadzone = 0.001*ones(1,nLink);
-jointControlData.deadzone = 0.0001*ones(1,nLink);
+jointControlData.deadzone = 0.00001*ones(1,nLink);
 
 jointControlData.angleLimit = arm1.Joint_Limits;
 jointControlData.rateLimit = 10*ones(1,nLink)*pi/180;
 
+% Increasing rate limit
+jointControlData.rateLimit = 20*ones(1,nLink)*pi/180;
 %% Satellite Control Parameters
 % Translational commands and gains
 %IC.rel_position = [-0.25 2.5 0.0];

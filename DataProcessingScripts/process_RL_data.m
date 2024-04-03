@@ -1,8 +1,8 @@
 
 % Define the run to be loaded
-runDate = '2023-10-20';
-runTime = '08-52';
+runDate = '2024-03-05';
+runTime = '15-09';
 
-episode = 1000;
+episode = 1;
 
 [agentData,prescribed_jointAngles] = loadRLCase(runDate,runTime,episode);

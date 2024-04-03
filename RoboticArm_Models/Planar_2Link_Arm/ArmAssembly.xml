@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<SimscapeMultibodyImportXML version="2.0" xmlns="urn:mathworks:SimscapeMultibody:import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Created by="" on="02/16/22||13:48:59" using="Simscape Multibody Link Version 7.0" from="SolidWorks 26.5.0"/>
+<ModelUnits mass="kilogram" length="millimeter"/>
+<DataUnits mass="kilogram" length="meter"/>
+<RootAssembly name="ArmAssembly" uid="ArmAssembly" version="457">
+<AssemblyFile name="ArmAssembly.SLDASM" type="SolidWorks Assembly"/>
+<InstanceTree>
+<Instance name="ArmSegmentAssembly-3" uid="ArmSegmentAssembly-3" entityUid="ArmSegmentAssembly">
+<Transform>
+<Rotation>0.99986597225311735 0 0.016371851768467151 0 1 0 -0.016371851768467151 0 0.99986597225311735</Rotation>
+<Translation>0.85842238484456701 -0.19114947045570091 -0.43651856082675472</Translation>
+</Transform>
+<Instance name="ArmSegment-1" uid="ArmSegment-1" entityUid="ArmSegment*:*Default">
+<Transform>
+<Rotation>0.9895164420380359 3.2760070546169668e-16 -0.14442025805400974 -3.3573217039080232e-16 1 0 0.14442025805400974 0 0.9895164420380359</Rotation>
+<Translation>-0.29653549148821479 0 0.26277830794473134</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Gripper-2" uid="Gripper-2" entityUid="Gripper*:*Default">
+<Transform>
+<Rotation>0.6144156559156444 0 -0.78898251043083889 7.7516758084022864e-16 1 5.6684142587692075e-16 0.78898251043083889 -9.5986991041625111e-16 0.6144156559156444</Rotation>
+<Translation>0.74005183574916944 -0.19114947045570074 -0.1003296816730252</Translation>
+</Transform>
+</Instance>
+<Instance name="ArmSegmentAssembly-2" uid="ArmSegmentAssembly-2" entityUid="ArmSegmentAssembly">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0.39252817530596146 -0.20431593418555444 -0.51166483126394791</Translation>
+</Transform>
+<Instance name="ArmSegment-1" uid="ArmSegment-1" entityUid="ArmSegment*:*Default">
+<Transform>
+<Rotation>0.58071871509673056 1.5690922849812086e-16 -0.81410427706553834 -2.8663868324787381e-16 1 0 0.81410427706553801 2.4016402222130314e-16 0.58071871509673056</Rotation>
+<Translation>0.011005002054703839 0.013166463729853611 0.22194305826051175</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="ArmBase-1" uid="ArmBase-1" grounded="true" entityUid="ArmBase*:*Default">
+<Transform>
+<Rotation>-0.95635474939335408 0 -0.29220813355000097 0 1 0 0.29220813355000097 0 -0.95635474939335408</Rotation>
+<Translation>0.22506419540933817 -0.15114947045570093 -0.31947253852475888</Translation>
+</Transform>
+</Instance>
+</InstanceTree>
+<Constraints>
+<Concentric name="Concentric3">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-2</Uid>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>0.13500000000000004 0 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-3</Uid>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>-0.08500000000000002 0 0</Position>
+<Axis>-2.0816681711721675e-16 1 0</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Concentric name="Concentric4">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-3</Uid>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>0.13500000000000012 0 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Gripper-2</Uid>
+</InstancePath>
+<Position>-0.065000000000000002 0 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Concentric name="Concentric5">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmBase-1</Uid>
+</InstancePath>
+<Position>-0.13500000000000006 -0.01999999999999999 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>ArmSegmentAssembly-2</Uid>
+<Uid>ArmSegment-1</Uid>
+</InstancePath>
+<Position>-0.08500000000000002 0 0</Position>
+<Axis>-2.081668171172168e-16 1 0</Axis>
+</ConstraintGeometry>
+</Concentric>
+</Constraints>
+</RootAssembly>
+<Assemblies>
+<Assembly name="ArmSegmentAssembly" uid="ArmSegmentAssembly" version="138">
+<ModelUnits mass="kilogram" length="inch"/>
+<AssemblyFile name="ArmSegmentAssembly.SLDASM" type="SolidWorks Assembly"/>
+<Constraints>
+</Constraints>
+</Assembly>
+</Assemblies>
+<Parts>
+<Part name="ArmBase" uid="ArmBase*:*Default" version="205">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="ArmBase.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.89654004214701999</Mass>
+<CenterOfMass>-0.057596190079756929 0 0</CenterOfMass>
+<Inertia>0.0011889458257704831 0.0018783055135726673 0.0015494878239453189 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="ArmBase_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0" g="0.043137254901960784" b="0.59215686274509804" a="1"/>
+<Diffuse r="0" g="0.043137254901960784" b="0.59215686274509804" a="1"/>
+<Specular r="0" g="0.021568627450980392" b="0.29607843137254902" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="ArmSegment" uid="ArmSegment*:*Default" version="386">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="ArmSegment.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.82035729338221286</Mass>
+<CenterOfMass>0.017378469671809883 0.040000000000000015 0</CenterOfMass>
+<Inertia>0.00068888077879603819 0.0029638095840714002 0.0032152206101712681 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="ArmSegment_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="Gripper" uid="Gripper*:*Default" version="196">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="Gripper.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.30581725123519321</Mass>
+<CenterOfMass>-0.021962107391557781 0.040227313216932604 0</CenterOfMass>
+<Inertia>0.0002841047976104604 0.00040592769832777868 0.00051986012486738512 0 0 -4.3073766425925938e-06</Inertia>
+</MassProperties>
+<GeometryFile name="Gripper_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+</Parts>
+</SimscapeMultibodyImportXML>

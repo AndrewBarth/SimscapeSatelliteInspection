@@ -19,6 +19,9 @@ function [mrp] = quatToMRP(q)
 % Modification History:
 %    Aug 08 2023 - Initial version
 %
+
+% Form Modified Rodrigues Parameters
 mrp = [q(2)/(1+q(1));...
        q(3)/(1+q(1));...
        q(4)/(1+q(1))];
+
