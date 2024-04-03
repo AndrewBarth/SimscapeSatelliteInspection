@@ -69,6 +69,35 @@ def quatConj(qin):
 
     return qout
 
+def quatnorm(qin):
+    '''
+    % Function to normalize a quaternion
+    %
+    % Inputs: qin       input quaternion 4x1
+    %
+    % Output: qout      output quaternion 4x1
+    %
+    % Assumptions and Limitations:
+    %    scalar is in first element of quaternion
+    %
+    % Dependencies:
+    %
+    % References:
+    %    Kuipers, Jack B. Quaternions and rotation sequences. Vol. 66. 
+    %    Princeton: Princeton university press, 1999.
+    %
+    % Author: Andrew Barth
+    %
+    % Modification History:
+    %    Jun 30 2019 - Initial version
+    %
+    '''
+
+    qnorm = np.sqrt(qin[0]**2 + qin[1]**2 + qin[2]**2 + qin[3]**2)
+
+    qout = qin/qnorm
+    return qout
+
 def quatmult(q1,q2):
     """
      Function to multiply two quaternions
@@ -150,6 +179,49 @@ def quatrotate(vin,q):
 
     return vout
 
+def computeErrorQuaternion(qState,qCmd):
+    '''
+    % Compute an error quaternion
+    %
+    % Inputs: qstate    current attitude quaternion 4x1
+    %         qCmd      desired attitude quaternion 4x1  
+    %
+    % Output: qError    error quaternion 4x1
+    %
+    % Assumptions and Limitations:
+    %    scalar is in first element of quaternion
+    %    
+    % Dependencies:
+    %    quatnorm
+    %
+    % References:
+    %    Wie, Bong. Space vehicle dynamics and control. 
+    %    American Institute of Aeronautics and Astronautics, 2008.
+    %    Section 7.3
+    %
+    % Author: Andrew Barth
+    %
+    % Modification History:
+    %    Jul 02 2019 - Initial version
+    '''
+
+
+    #% NEED TO RE_DERIVE THIS
+    qCmdtemp = np.array([qCmd[1], qCmd[2], qCmd[3], qCmd[0]])
+    qStatetemp = np.array([qState[1], qState[2], qState[3], qState[0]])
+
+    qmat = [ [ qCmdtemp[3],  qCmdtemp[2], -qCmdtemp[1],  qCmdtemp[0]], \
+             [-qCmdtemp[2],  qCmdtemp[3],  qCmdtemp[0],  qCmdtemp[1]], \
+             [ qCmdtemp[1], -qCmdtemp[0],  qCmdtemp[3],  qCmdtemp[2]], \
+             [-qCmdtemp[0], -qCmdtemp[1], -qCmdtemp[2],  qCmdtemp[3]]]
+     
+    qErrortemp = np.dot(qmat,qStatetemp.T)
+    qErrortemp = quatnorm(qErrortemp)
+ 
+    qError = np.array([qErrortemp[3], qErrortemp[0], qErrortemp[1], qErrortemp[2]])
+ 
+    return qError
+
 def quatToMRP(q):
     '''
     Function to convert a quaternion to a Modified Rodrigues Parameter representation
@@ -174,6 +246,10 @@ def quatToMRP(q):
     '''
 
     mrp = np.append(q[1]/(1+q[0]), (q[2]/(1+q[0]), q[3]/(1+q[0])))
+
+    #s = np.dot(mrp.T,mrp)
+    #if s > 0.98 and s < 1.02:
+    #    mrp = -mrp/s
 
     return mrp
 
@@ -272,7 +348,7 @@ def MRPError(MRPState,MRPCmd):
     Error formed by MRP composition operator Ref. 1, Eq. 257 
     Cmd comp State
     '''
-    MRPErrpr = np.zeros(3)
+    MRPError = np.zeros(3)
 
     # Compute the square of the norm for each MRP
     normSqrdState = np.linalg.norm(MRPState)**2
@@ -283,7 +359,34 @@ def MRPError(MRPState,MRPCmd):
     den = 1 + normSqrdCmd*normSqrdState - 2*np.matmul(MRPCmd,MRPState)
 
     MRPError = num/den
- 
+
+    if np.linalg.norm(MRPState) > 1e-3:
+        # Compute error using shadow set of MRP
+        MRPStateS = -MRPState / (np.dot(MRPState.T,MRPState))
+        normSqrdStateS = np.linalg.norm(MRPStateS)**2
+        numS = (1 - normSqrdStateS)*MRPCmd - (1 - normSqrdCmd)*MRPStateS - 2*np.matmul(skewMat(MRPCmd),MRPStateS)
+        denS = 1 + normSqrdCmd*normSqrdStateS - 2*np.matmul(MRPCmd,MRPStateS)
+        MRPErrorS = numS/denS
+
+        # Use the smallest error value between the originial MPR and shadow set 
+        if np.linalg.norm(MRPErrorS) < np.linalg.norm(MRPError):
+            MRPError = MRPErrorS
+
+    #s = np.dot(MRPError.T,MRPError)
+    #if s > 0.98 and s < 1.02:
+    #    MRPError = -MRPError/s
+
+    MRPError = MRPCmd - MRPState
+
+    if np.linalg.norm(MRPCmd) > 1/3:
+        # Compute error using shadow set of MRP
+        MRPCmdS = -MRPCmd / (np.dot(MRPCmd,MRPCmd))
+        MRPErrorS = MRPCmdS - MRPState
+
+        # Use the smallest error value between the originial MPR and shadow set
+        if np.linalg.norm(MRPErrorS) < np.linalg.norm(MRPError):
+            MRPError = MRPErrorS
+
     return MRPError
 
 def skewMat(vec):

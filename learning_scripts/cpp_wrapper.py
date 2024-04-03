@@ -49,8 +49,8 @@ class cppWrapper(object):
             actions.extend(action_dict[agent_id])
 
         nActions = len(actions)
-        nObservations = 33*nAgents
-        nErrors = 12*nAgents
+        nObservations = 34*nAgents
+        nErrors = 13*nAgents
         # Create variables using ctypes to pass actions and 
         # observations to and from C++
         # NOTE: Sizes are hardcoded in the C++ code so nAgents must match
@@ -70,12 +70,11 @@ class cppWrapper(object):
         # Extract the observations and place them in a python dictionary
         observations = {}
         for agent_id in agent_ids:
-            #observations[agent_id] = [observation_data[33*(agent_id-1)+i] for i in range(33)]
-            observations[agent_id] = [observation_data[i] for i in range(33)]
+            observations[agent_id] = [observation_data[i] for i in range(34)]
 
         errors = {}
         for agent_id in agent_ids:
-            errors[agent_id] = [error_data[i] for i in range(12)]
+            errors[agent_id] = [error_data[i] for i in range(13)]
 
         # Extract the dones and place them in a python dictionsary
         # Dones are shared between all agents

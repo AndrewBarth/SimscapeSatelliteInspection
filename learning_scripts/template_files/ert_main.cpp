@@ -143,12 +143,12 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, real_T
   }
 
   // Collect observations
-  for (int i=0; i<33; i++) {
+  for (int i=0; i<34; i++) {
        observations[i] = SatelliteServicing_Mission_Y.Observations[i];
   }
 
-  // Collect observations
-  for (int i=0; i<12; i++) {
+  // Collect errors
+  for (int i=0; i<13; i++) {
        errors[i] = SatelliteServicing_Mission_Y.ControlError[i];
   }
 

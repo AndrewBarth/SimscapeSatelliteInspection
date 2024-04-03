@@ -13,6 +13,7 @@ def load_data(episode, agent, file_path):
     ee = {}
     arm = {}
     reward = {}
+    ref = {}
     if len(trajData) > 1:
         npts = len(trajData[0])
         Data = np.array(trajData[0],dtype=object)
@@ -39,11 +40,15 @@ def load_data(episode, agent, file_path):
         reward['cnterr_reward'] = Data[:,52]
         reward['jntlmt_reward'] = Data[:,53]
         reward['smooth_reward'] = Data[:,54]
-        sim_time                = Data[:,55]
-        ee['sim_pos_error']     = Data[:,56:59]
-        ee['sim_ori_error']     = Data[:,59:62]
-        ee['sim_vel_error']     = Data[:,62:65]
-        ee['sim_rat_error']     = Data[:,65:68]
+        ref['position']         = Data[:,55:58]
+        ref['orientation']      = Data[:,58:61]
+        ref['velocity']         = Data[:,61:64]
+        ref['ang_rate']         = Data[:,64:67]
+        sim_time                = Data[:,67]
+        ee['sim_pos_error']     = Data[:,68:71]
+        ee['sim_ori_error']     = Data[:,71:74]
+        ee['sim_vel_error']     = Data[:,74:77]
+        ee['sim_rat_error']     = Data[:,77:80]
         #reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['velerr_reward']+reward['raterr_reward']+reward['cnterr_reward']
         reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']+reward['jntlmt_reward']+reward['smooth_reward']
     else:
@@ -71,12 +76,16 @@ def load_data(episode, agent, file_path):
         reward['cnterr_reward'] = trajData[0,:,52]
         reward['jntlmt_reward'] = trajData[0,:,53]
         reward['smooth_reward'] = trajData[0,:,54]
-        sim_time                = trajData[0,:,55]
-        ee['sim_pos_error']     = trajData[0,:,56:59]
-        ee['sim_ori_error']     = trajData[0,:,59:62]
-        ee['sim_vel_error']     = trajData[0,:,62:65]
-        ee['sim_rat_error']     = trajData[0,:,65:68]
+        ref['position']         = trajData[0,:,55:58]
+        ref['orientation']      = trajData[0,:,58:61]
+        ref['velocity']         = trajData[0,:,61:64]
+        ref['ang_rate']         = trajData[0,:,64:67]
+        sim_time                = trajData[0,:,67]
+        ee['sim_pos_error']     = trajData[0,:,68:71]
+        ee['sim_ori_error']     = trajData[0,:,71:74]
+        ee['sim_vel_error']     = trajData[0,:,74:77]
+        ee['sim_rat_error']     = trajData[0,:,77:80]
         #reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['velerr_reward']+reward['raterr_reward']+reward['cnterr_reward']
         reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']+reward['jntlmt_reward']+reward['smooth_reward']
 
-    return npts,sat,ee,arm,reward,sim_time
+    return npts,sat,ee,arm,reward,ref,sim_time

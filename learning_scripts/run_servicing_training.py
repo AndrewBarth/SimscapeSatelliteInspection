@@ -8,6 +8,8 @@ import numpy as np
 from ray.rllib.algorithms.algorithm_config import AlgorithmConfig
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.tune.registry import register_env
+from ray.tune.registry import get_trainable_cls
+from ray.train import RunConfig, CheckpointConfig
 from ray import air, tune
 from ray.tune.schedulers import PopulationBasedTraining
 from datetime import datetime
@@ -24,7 +26,7 @@ initial_state = {}
 initial_state[1] = [80,90,20]
 
 stop_time = 80.0
-stop_time = 50.0
+stop_time = 40.0
 
 hyperparameter_tuning = False
 
@@ -40,8 +42,9 @@ rollout_fragment_length = "auto"
 rollout_workers = 0
 #rollout_workers = 2
 #rollout_workers = 6
+rollout_workers = 30
 
-save_step = 50 
+save_step = 100
 checkpoint_step = 100
 nIter = 500 
 
@@ -66,14 +69,14 @@ if hyperparameter_tuning == True:
         return config
 
     hyperparam_mutations = {
-        "lambda": lambda: random.uniform(0.9, 1.0),
-        #"clip_param": lambda: random.uniform(0.1, 0.4),
+        "lambda": lambda: np.random.uniform(0.9, 1.0),
+        "clip_param": lambda: np.random.uniform(0.1, 0.4),
         "lr": [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],
-        "kl_coeff": lambda: random.uniform(0.3,1),
-        "entropy_coeff": lambda: random.uniform(0.0,0.01),
-        "num_sgd_iter": lambda: random.randint(1, 30),
-        "sgd_minibatch_size": lambda: random.randint(5, 50),
-        "train_batch_size": lambda: random.randint(50, 300),
+        "kl_coeff": lambda: np.random.uniform(0.3,1),
+        "entropy_coeff": lambda: np.random.uniform(0.0,0.01),
+        "num_sgd_iter": lambda: np.random.randint(1, 30),
+        "sgd_minibatch_size": lambda: np.random.randint(5, 50),
+        "train_batch_size": lambda: np.random.randint(50, 300),
     }
 
     pbt = PopulationBasedTraining(
@@ -120,6 +123,9 @@ else:
     else:
         duration = nBatches*rollout_workers
 
+#algoConfig = (\
+#    get_trainable_cls('PPO')
+#    .get_default_config()
 algoConfig = PPOConfig()\
     .environment('multi_agent_sat_servicing')\
     .multi_agent(
@@ -169,7 +175,7 @@ algoConfig = PPOConfig()\
                 #evaluation_duration=nSteps,
                 #evaluation_duration_unit='timesteps',
                 custom_evaluation_function=None,
-                horizon=nSteps,
+                #horizon=nSteps,
                 num_rollout_workers=0,
                 rollout_fragment_length=nSteps,
                 train_batch_size=nSteps,
@@ -245,10 +251,35 @@ else:
 
     time_steps = 0
 
+    check_dir = []
+    check_dir.append(os.path.dirname(sys.path[1])+"/data_storage/"+date_time+"/")
+
     # Restore the old (checkpointed) state.
     #checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-09-07_10-39-23ftxv4usc/checkpoint_000401'
     #algo.restore(checkpoint_dir)
     #nIter=800
+
+#    stop = {
+#        "training_iteration": nIter,
+#    }
+#
+#    tuner = tune.Tuner(
+#        'PPO',
+#        param_space=algoConfig.to_dict(),
+#        run_config=air.RunConfig(checkpoint_config=CheckpointConfig(
+#                                     num_to_keep=5,
+#                                     checkpoint_score_attribute='episode_reward_mean',
+#                                     checkpoint_score_order='max',
+#                                     checkpoint_frequency=50,
+#                                     checkpoint_at_end=True),
+#                                 stop=stop, verbose=1)
+#    )
+#    results = tuner.fit()
+#    data=results.get_dataframe()
+#    best_result = results.get_best_result(metric="episode_reward_mean", mode="max")
+#    best_checkpoint = best_result.checkpoint
+#    print('Best Checkpoint: '+best_checkpoint.path)
+
 
     for Iter in range(algo.iteration,nIter+1): 
         print('Iteration: ', Iter)
@@ -259,8 +290,11 @@ else:
         #print(results['timesteps_total'])
 
         if not Iter % checkpoint_step:
+            check_dir_inc = check_dir[0]+"checkpoint_"+str(Iter)
+            if not os.path.exists(check_dir_inc):
+                os.makedirs(check_dir_inc)
             # Save a training checkpoint
-            checkpoint = algo.save()
+            checkpoint = algo.save_checkpoint(check_dir_inc)
 
         # Store intermediate data from training
         if not Iter % save_step:

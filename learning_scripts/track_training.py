@@ -10,8 +10,8 @@ from utils.load_agent_data import load_data
 def main():
 
     # Specify data
-    fileDate = '2023-11-13'
-    fileTime = '12-37'    
+    fileDate = '2024-03-28'
+    fileTime = '13-26'
 
     scenario_type = 'eval_dv'
 
@@ -31,7 +31,7 @@ def main():
     all_reward = []
     for episode_number in episodes:
         # Load data for this episode
-        npts,sat,ee,arm,reward,time = load_data(str(episode_number),'1',file_path)
+        npts,sat,ee,arm,reward,ref,time = load_data(str(episode_number),'1',file_path)
 
         # Process reward data
         cumReward = np.cumsum(reward['total_reward'],axis=0)

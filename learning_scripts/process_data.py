@@ -16,20 +16,20 @@ def main():
     time_step = 0.01
 
     # Specify data
-    fileDate = '2023-11-13'
-    fileTime = '12-37'    # 
+    fileDate = '2024-03-26'
+    fileTime = '13-31'
 
     scenario_type = 'eval_dv'
 
     file_path = os.path.dirname(sys.path[0])+"/data_storage/"+fileDate+"-"+fileTime
 
-    episode_number = 250
+    episode_number = 1
     nAgents = 1
 
     caseType='3d'
 
     # Load data for this run
-    npts,sat,ee,arm,reward,sim_time = load_data(str(episode_number),'1',file_path)
+    npts,sat,ee,arm,reward,ref,sim_time = load_data(str(episode_number),'1',file_path)
 
     stop_time = npts*time_step
 
@@ -66,12 +66,19 @@ def main():
 
     labels=['End Effector Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
     legend=['Actual','Reference']
-    plotData={'data0':ee['position'],'data1':np.array(ref_position)}
+    #plotData={'data0':ee['position'],'data1':np.array(ref_position)}
+    plotData={'data0':ee['position'],'data1':ref['position']}
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Orientation','Points','X Orientation (deg)','Y Orientation (deg)','Z Orientation (deg)']
     legend=['Actual','Reference']
-    plotData={'data0':ee['orientation']*180.0/np.pi,'data1':np.array(ref_orientation)*180.0/np.pi}
+    #plotData={'data0':ee['orientation']*rtd,'data1':np.array(ref_orientation)*rtd}
+    plotData={'data0':ee['orientation']*rtd,'data1':ref['orientation']*rtd}
+    plot_static('3d',plotData,labels,legend,colors)
+
+    labels=['End Effector Angular Rates','Points','X Rate (deg/s)','Y Rate (deg/s)','Z Rate (deg/s)']
+    legend=['Actual']
+    plotData={'data0':ee['ang_rate']}
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Position Error','Points','X Position Error (m)','Y Position Error (m)','Z Position Error (m)']
@@ -79,9 +86,9 @@ def main():
     plotData={'data0':ee['position_error'],'data1':ee['sim_pos_error']}
     plot_static('3d',plotData,labels,legend,colors)
 
-    labels=['End Effector Orientation Error','Points','X Orientation Error (--)','Y Orientation Error (--)','Z Orientation Error (--)']
+    labels=['End Effector Orientation Error','Points','X Orientation Error (deg)','Y Orientation Error (deg)','Z Orientation Error (deg)']
     legend=['EE','Sim']
-    plotData={'data0':ee['orientation_error'],'data1':ee['sim_ori_error']}
+    plotData={'data0':ee['orientation_error']*rtd,'data1':ee['sim_ori_error']*rtd}
     plot_static('3d',plotData,labels,legend,colors)
 
     labels=['Arm 1 Joint Commands','Points','Joint 1 (Nm)','Joint 2 (Nm)','Joint 3 (Nm)']
