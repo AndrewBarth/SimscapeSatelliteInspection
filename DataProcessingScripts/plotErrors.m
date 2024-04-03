@@ -1,13 +1,18 @@
 %% ALWAYS RUN THIS SECTION AS A FIRST STEP (YOU ONLY NEED TO DO IT ONCE)
 
-errorData = out.jointControlError.Data;
-data_time = (0:endTime/(length(errorData)-1):endTime)';
+%errorData = out.jointControlError.Data;
+data_time = (0:endTime/(length(out.jointControlError.positionError.Data)-1):endTime)';
+npts=length(data_time);
 rtd = 180/pi;
 
-poserr_ee = squeeze(out.jointControlError.Data(1,1:3,:))';
-orierr_ee = squeeze(out.jointControlError.Data(1,4:6,:))';
-velerr_ee = squeeze(out.jointControlError.Data(1,7:9,:))';
-rateerr_ee = squeeze(out.jointControlError.Data(1,10:12,:))'*rtd;
+poserr_ee = squeeze(out.jointControlError.positionError.Data(1,:,:))';
+quaterr_ee = squeeze(out.jointControlError.quatError.Data(1,:,:))';
+orierr_ee = zeros(npts,3);
+for i=1:npts
+    orierr_ee(i,:) = quatToEuler_321(quaterr_ee(i,:));
+end
+velerr_ee = squeeze(out.jointControlError.VelocityError.Data(1,:,:))';
+rateerr_ee = squeeze(out.jointControlError.RateError.Data(1,:,:))'*rtd;
 
 
 % figure for ee position error
