@@ -2,10 +2,14 @@
 
 # Define the directories to work in
 current_dir=`pwd`
-util_dir='SimscapeSatelliteInspection/slprj/ert/_sharedutils'
-src_dir='SimscapeSatelliteInspection/SatelliteServicing_Mission_ert_rtw'
-build_dir='SimscapeSatelliteInspection'
+base_dir="${HOME}/SimscapeSatelliteInspection"
+util_dir="${base_dir}/SimscapeSatelliteInspection/slprj/ert/_sharedutils"
+src_dir="${base_dir}/SimscapeSatelliteInspection/SatelliteServicing_Mission_ert_rtw"
+build_dir="${base_dir}/SimscapeSatelliteInspection"
 
+echo $util_dir
+echo $src_dir
+echo $build_dir
 # Copy required template files
 cp template_files/rtwshared.mk $util_dir
 cp template_files/ert_main.cpp $src_dir
