@@ -3,7 +3,7 @@
 %% General parameters
 
 % Set the run time and step size of the simulation
-endTime = 49;
+endTime = 99;
 % endTime = 5;
 stepSize = 0.001;
 
@@ -341,14 +341,15 @@ jointControlData.refTime = [0 50 60 70 80];
 jointControlData.eeCmd = zeros(1,12);
 jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -80.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(3,:) = [-0.1       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 %jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 %jointControlData.eeRefTraj(6,:) = [0.4       0.6       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(5,:) = [0.1    0.5       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(6,:) = [0.1    0.5       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(5,:) = [-0.1    0.55       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(6,:) = [-0.1    0.55       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 
-jointControlData.refTime = [0 20 30 50 70 100];
+% jointControlData.refTime = [0 20 30 50 70 100];
+jointControlData.refTime = [0 20 30 100 110 120];
 jointControlData.Kp = [1 1 1 1 1 1]*0.7;
 jointControlData.Kd = [1 1 1 1 1 1]*4;
 jointControlData.Ki = [1 1 1 1 1 1]*0.;
@@ -359,7 +360,7 @@ jointControlData.jointControlModeVec = [2 2 2 2 2];   % 1 = hold position, 2 = E
 jointControlData.torqueLimit = 0.5*ones(1,nLink);
 % jointControlData.deadzone = 0.02*ones(1,nLink);
 % jointControlData.deadzone = 0.001*ones(1,nLink);
-jointControlData.deadzone = 0.00001*ones(1,nLink);
+jointControlData.deadzone = 1e-10*ones(1,nLink);
 
 jointControlData.angleLimit = arm1.Joint_Limits;
 jointControlData.rateLimit = 10*ones(1,nLink)*pi/180;
