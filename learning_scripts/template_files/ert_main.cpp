@@ -69,7 +69,7 @@ void rt_OneStep(RT_MODEL_SatelliteServicing_M_T *const
   // Enable interrupts here
 }
 
-int_T sim_init(real_T* initial_conditions, real_T* joint_limits)
+int_T sim_init(int_T missionType, real_T* initial_conditions, real_T* joint_limits, int_T* nFaces)
 {
   // Allocate model data
   SatelliteServicing_Mission_M = SatelliteServicing_Mission
@@ -89,22 +89,36 @@ int_T sim_init(real_T* initial_conditions, real_T* joint_limits)
   }
 
   // ADD INITIAL CONDITIONS HERE
-  SatelliteServicing_Mission_P.RTP_AE61E748_PositionTargetValu = initial_conditions[0];
-  SatelliteServicing_Mission_P.RTP_3768B6F2_PositionTargetValu = initial_conditions[1];
-  SatelliteServicing_Mission_P.RTP_406F8664_PositionTargetValu = initial_conditions[2];
+  if (missionType == 0) {
+    SatelliteServicing_Mission_P.RTP_AE61E748_PositionTargetValu = initial_conditions[0];
+    SatelliteServicing_Mission_P.RTP_3768B6F2_PositionTargetValu = initial_conditions[1];
+    SatelliteServicing_Mission_P.RTP_406F8664_PositionTargetValu = initial_conditions[2];
 
-  printf("ICs: %6.3f %6.3f %6.3f\n",SatelliteServicing_Mission_P.RTP_AE61E748_PositionTargetValu,SatelliteServicing_Mission_P.RTP_3768B6F2_PositionTargetValu,SatelliteServicing_Mission_P.RTP_406F8664_PositionTargetValu);
+    printf("ICs: %6.3f %6.3f %6.3f\n",SatelliteServicing_Mission_P.RTP_AE61E748_PositionTargetValu,SatelliteServicing_Mission_P.RTP_3768B6F2_PositionTargetValu,SatelliteServicing_Mission_P.RTP_406F8664_PositionTargetValu);
+  }
+
+
+  SatelliteServicing_Mission_M->Timing.stepSize0 = 0.1;
 
   // Initialize model
   SatelliteServicing_Mission_initialize(SatelliteServicing_Mission_M);
 
-  // Get joint limit data to return to Python
-  joint_limits[0] = SatelliteServicing_Mission_P.jointControlData.angleLimit[0];
-  joint_limits[1] = SatelliteServicing_Mission_P.jointControlData.angleLimit[1];
-  joint_limits[2] = SatelliteServicing_Mission_P.jointControlData.angleLimit[2];
-  joint_limits[3] = SatelliteServicing_Mission_P.jointControlData.angleLimit[3];
-  joint_limits[4] = SatelliteServicing_Mission_P.jointControlData.angleLimit[4];
-  joint_limits[5] = SatelliteServicing_Mission_P.jointControlData.angleLimit[5];
+  if (missionType == 0) {
+    // Get joint limit data to return to Python
+    joint_limits[0] = SatelliteServicing_Mission_P.jointControlData.angleLimit[0];
+    joint_limits[1] = SatelliteServicing_Mission_P.jointControlData.angleLimit[1];
+    joint_limits[2] = SatelliteServicing_Mission_P.jointControlData.angleLimit[2];
+    joint_limits[3] = SatelliteServicing_Mission_P.jointControlData.angleLimit[3];
+    joint_limits[4] = SatelliteServicing_Mission_P.jointControlData.angleLimit[4];
+    joint_limits[5] = SatelliteServicing_Mission_P.jointControlData.angleLimit[5];
+  } else {
+    joint_limits[6] = { };
+  }
+
+  // Get the number of faces on the inspection polyhedron
+  *nFaces = (int) sizeof(SatelliteServicing_Mission_Y.coverageCredit)/sizeof(*SatelliteServicing_Mission_Y.coverageCredit);
+  printf("Number of faces: %d\n",*nFaces);
+
 
   return(0);
 }
@@ -116,14 +130,35 @@ int_T sim_init(real_T* initial_conditions, real_T* joint_limits)
 // illustrates how you do this relative to initializing the model.
 //
 //int_T main(int_T argc, const char *argv[])
-int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, real_T* errors, int_T* dones, real_T* simTime)
+int_T sim_wrapper(int_T missionType, real_T stopTime, real_T controlStepSize, real_T* actions, real_T* observations, real_T* errors, int_T* coverage, int_T* dones, real_T* simTime, int_T nFaces)
 {
 
   // Unused arguments
   //(void)(argc);
   //(void)(argv);
 
-  double controlStepSize = 0.01;
+// External inputs (root inport signals with default storage)
+//struct ExtU_SatelliteServicing_Missi_T {
+//  real_T ManipulatorActions[3];        // '<Root>/ManipulatorActions'
+//};
+
+// External outputs (root outports fed by signals with default storage)
+//struct ExtY_SatelliteServicing_Missi_T {
+//  real_T Observations[34];             // '<Root>/Observations'
+//  real_T ControlError[13];             // '<Root>/ControlError'
+//};
+
+// External inputs (root inport signals with default storage)
+struct ExtU_SatelliteServicing_Missi_T {
+  real_T ManipulatorActions[3];        // '<Root>/ManipulatorActions'
+};
+
+// External outputs (root outports fed by signals with default storage)
+//struct ExtY_SatelliteServicing_Missi_T {
+//  real_T Observations[282];            // '<Root>/Observations'
+//  real_T ControlError;                 // '<Root>/ControlError'
+//};
+
   double modelBaseStepSize = SatelliteServicing_Mission_M->Timing.stepSize0;
   int nBaseSteps = int(controlStepSize/modelBaseStepSize);
 
@@ -152,6 +187,12 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, real_T
        errors[i] = SatelliteServicing_Mission_Y.ControlError[i];
   }
 
+  // collect inspection coverage information
+  for (int i=0; i<nFaces; i++) {
+      coverage[i] = (int) SatelliteServicing_Mission_Y.coverageCredit[i];
+  }
+
+
   double current_time = rtmGetT(SatelliteServicing_Mission_M);
   *simTime = current_time;
   if (int(*simTime*1e6) % int(10.0*1e6) == 0) {
@@ -160,6 +201,7 @@ int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, real_T
       printf("Joint Ang and Rate: %9.6f %9.6f %9.6f %9.6f %9.6f %9.6f\n",observations[24],observations[25],observations[26],observations[27],observations[28],observations[29]);
       printf("Joint Cmds: %6.3f %6.3f %6.3f\n",observations[30],observations[31],observations[32]);
       printf("End Effector Pos: %6.3f %6.3f %6.3f\n",observations[12],observations[13],observations[14]);
+      printf("Number of faces: %d\n",nFaces);
   }
 
   // Determine if simulation has reached its end time
@@ -186,8 +228,8 @@ int_T sim_terminate()
 
 // Declare external functions to be accessed from Python
 extern "C++" {
-    int_T sim_wrapper(real_T stopTime, real_T* actions, real_T* observations, real_T* errors, int_T* dones, real_T* simTime);
-    int_T sim_init(real_T* initial_conditions, real_T* joint_limits);
+    int_T sim_wrapper(int_T missionType, real_T stopTime, real_T controlStepSize, real_T* actions, real_T* observations, real_T* errors, int_T* coverage, int_T* dones, real_T* simTime, int_T nFaces);
+    int_T sim_init(int_T missionType, real_T* initial_conditions, real_T* joint_limits, int_T* nFaces);
     int_T sim_terminate();
 }
 

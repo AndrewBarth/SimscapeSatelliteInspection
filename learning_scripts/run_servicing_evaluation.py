@@ -24,7 +24,7 @@ stop_time = 40.0
 
 dof = {1: 3}
 
-time_step = 0.01   # This is the time step for training, CPP simulation may have different step size
+time_step = 0.1   # This is the time step for training, CPP simulation may have different step size
 
 # Define the checkpoint for the trained algorithm
 #caseTitle = 'test_scenario'
@@ -35,10 +35,10 @@ checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-03
 
 # Register the enviroment with gym and create an instance of the environment
 register_env(
-        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAgents=nAgents)
+        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,control_step_size=time_step,nAgents=nAgents)
     )
 
-env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAgents=nAgents)
+env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,control_step_size=time_step,nAgents=nAgents)
 
 # Set up a save directory
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M")

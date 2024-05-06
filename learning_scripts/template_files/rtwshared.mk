@@ -2,7 +2,7 @@
 ## Makefile generated for component 'rtwshared'. 
 ## 
 ## Makefile     : rtwshared.mk
-## Generated on : Fri Sep 01 10:32:28 2023
+## Generated on : Tue Apr 30 15:16:36 2024
 ## Final product: ./rtwshared.lib
 ## Product type : static library
 ## 
@@ -179,7 +179,7 @@ DEFINES = $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_OPTS)
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)/slprj/ert/_sharedutils/binsearch_u32d.cpp $(START_DIR)/slprj/ert/_sharedutils/plook_u32d_bincka.cpp $(START_DIR)/slprj/ert/_sharedutils/rtGetInf.cpp $(START_DIR)/slprj/ert/_sharedutils/rtGetNaN.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_atan2d_snf.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_backsubrr_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_forwardsubrr_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_lu_real.c $(START_DIR)/slprj/ert/_sharedutils/rt_matrixlib_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_nonfinite.cpp $(START_DIR)/slprj/ert/_sharedutils/mldivide_ACSdhGwc.cpp $(START_DIR)/slprj/ert/_sharedutils/norm_NaTV2q6x.cpp $(START_DIR)/slprj/ert/_sharedutils/svd_7Gu53yjg.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_096mtG8b.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_DudtLs4O.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_WCvBBQc1.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_YEe4MFbz.cpp $(START_DIR)/slprj/ert/_sharedutils/xdotc_aDpSMZ8I.cpp $(START_DIR)/slprj/ert/_sharedutils/xdotc_hYsJecV0.cpp $(START_DIR)/slprj/ert/_sharedutils/xnrm2_Nr2corQP.cpp $(START_DIR)/slprj/ert/_sharedutils/xnrm2_wVr87xYl.cpp $(START_DIR)/slprj/ert/_sharedutils/xrot_PQNMFBbq.cpp $(START_DIR)/slprj/ert/_sharedutils/xrot_cHa9XTr0.cpp $(START_DIR)/slprj/ert/_sharedutils/xrotg_9ZHhnzNd.cpp $(START_DIR)/slprj/ert/_sharedutils/xswap_66dnrKDh.cpp $(START_DIR)/slprj/ert/_sharedutils/xswap_TC0Nd8XC.cpp
+SRCS = $(START_DIR)/slprj/ert/_sharedutils/binsearch_u32d.cpp $(START_DIR)/slprj/ert/_sharedutils/plook_u32d_bincka.cpp $(START_DIR)/slprj/ert/_sharedutils/rtGetInf.cpp $(START_DIR)/slprj/ert/_sharedutils/rtGetNaN.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_atan2d_snf.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_backsubrr_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_forwardsubrr_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_lu_real.c $(START_DIR)/slprj/ert/_sharedutils/rt_matrixlib_dbl.c $(START_DIR)/slprj/ert/_sharedutils/rt_nonfinite.cpp $(START_DIR)/slprj/ert/_sharedutils/mldivide_ACSdhGwc.cpp $(START_DIR)/slprj/ert/_sharedutils/norm_NaTV2q6x.cpp $(START_DIR)/slprj/ert/_sharedutils/svd_7Gu53yjg.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_096mtG8b.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_DudtLs4O.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_WCvBBQc1.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_YEe4MFbz.cpp $(START_DIR)/slprj/ert/_sharedutils/xdotc_aDpSMZ8I.cpp $(START_DIR)/slprj/ert/_sharedutils/xdotc_hYsJecV0.cpp $(START_DIR)/slprj/ert/_sharedutils/xnrm2_Nr2corQP.cpp $(START_DIR)/slprj/ert/_sharedutils/xnrm2_wVr87xYl.cpp $(START_DIR)/slprj/ert/_sharedutils/xrot_PQNMFBbq.cpp $(START_DIR)/slprj/ert/_sharedutils/xrot_cHa9XTr0.cpp $(START_DIR)/slprj/ert/_sharedutils/xrotg_9ZHhnzNd.cpp $(START_DIR)/slprj/ert/_sharedutils/xswap_66dnrKDh.cpp $(START_DIR)/slprj/ert/_sharedutils/xswap_TC0Nd8XC.cpp $(START_DIR)/slprj/ert/_sharedutils/norm_zKsPGJdM.cpp $(START_DIR)/slprj/ert/_sharedutils/rt_powd_snf.cpp $(START_DIR)/slprj/ert/_sharedutils/svd_jndSmZ1I.cpp $(START_DIR)/slprj/ert/_sharedutils/xaxpy_fV4GNNBY.cpp $(START_DIR)/slprj/ert/_sharedutils/xnrm2_CZPEua86.cpp $(START_DIR)/slprj/ert/_sharedutils/xnrm2_ZLcWpb61.cpp
 
 ALL_SRCS = $(SRCS)
 
@@ -187,7 +187,7 @@ ALL_SRCS = $(SRCS)
 ## OBJECTS
 ###########################################################################
 
-OBJS = binsearch_u32d.cpp.o plook_u32d_bincka.cpp.o rtGetInf.cpp.o rtGetNaN.cpp.o rt_atan2d_snf.cpp.o rt_backsubrr_dbl.c.o rt_forwardsubrr_dbl.c.o rt_lu_real.c.o rt_matrixlib_dbl.c.o rt_nonfinite.cpp.o mldivide_ACSdhGwc.cpp.o norm_NaTV2q6x.cpp.o svd_7Gu53yjg.cpp.o xaxpy_096mtG8b.cpp.o xaxpy_DudtLs4O.cpp.o xaxpy_WCvBBQc1.cpp.o xaxpy_YEe4MFbz.cpp.o xdotc_aDpSMZ8I.cpp.o xdotc_hYsJecV0.cpp.o xnrm2_Nr2corQP.cpp.o xnrm2_wVr87xYl.cpp.o xrot_PQNMFBbq.cpp.o xrot_cHa9XTr0.cpp.o xrotg_9ZHhnzNd.cpp.o xswap_66dnrKDh.cpp.o xswap_TC0Nd8XC.cpp.o
+OBJS = binsearch_u32d.cpp.o plook_u32d_bincka.cpp.o rtGetInf.cpp.o rtGetNaN.cpp.o rt_atan2d_snf.cpp.o rt_backsubrr_dbl.c.o rt_forwardsubrr_dbl.c.o rt_lu_real.c.o rt_matrixlib_dbl.c.o rt_nonfinite.cpp.o mldivide_ACSdhGwc.cpp.o norm_NaTV2q6x.cpp.o svd_7Gu53yjg.cpp.o xaxpy_096mtG8b.cpp.o xaxpy_DudtLs4O.cpp.o xaxpy_WCvBBQc1.cpp.o xaxpy_YEe4MFbz.cpp.o xdotc_aDpSMZ8I.cpp.o xdotc_hYsJecV0.cpp.o xnrm2_Nr2corQP.cpp.o xnrm2_wVr87xYl.cpp.o xrot_PQNMFBbq.cpp.o xrot_cHa9XTr0.cpp.o xrotg_9ZHhnzNd.cpp.o xswap_66dnrKDh.cpp.o xswap_TC0Nd8XC.cpp.o norm_zKsPGJdM.cpp.o rt_powd_snf.cpp.o svd_jndSmZ1I.cpp.o xaxpy_fV4GNNBY.cpp.o xnrm2_CZPEua86.cpp.o xnrm2_ZLcWpb61.cpp.o
 
 ALL_OBJS = $(OBJS)
 
@@ -428,6 +428,30 @@ xswap_66dnrKDh.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xswap_66dnrKDh.cpp
 
 
 xswap_TC0Nd8XC.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xswap_TC0Nd8XC.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+norm_zKsPGJdM.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/norm_zKsPGJdM.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+rt_powd_snf.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/rt_powd_snf.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+svd_jndSmZ1I.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/svd_jndSmZ1I.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xaxpy_fV4GNNBY.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xaxpy_fV4GNNBY.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xnrm2_CZPEua86.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xnrm2_CZPEua86.cpp
+	$(CPP) $(CPPFLAGS) -o "$@" "$<"
+
+
+xnrm2_ZLcWpb61.cpp.o : $(START_DIR)/slprj/ert/_sharedutils/xnrm2_ZLcWpb61.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 

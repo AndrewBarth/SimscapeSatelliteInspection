@@ -32,7 +32,7 @@ stop_time = 40.0
 
 dof = {1: 3}
 
-time_step = 0.01    # This is the time step for training, CPP simulation may have different step size
+time_step = 0.1    # This is the time step for training, CPP simulation may have different step size
 nSteps = int(stop_time/time_step)
 
 save_step = 100
@@ -46,15 +46,28 @@ if debug:
     # Run everything on a local process
     ray.init(local_mode=True)
 
-# Instantiate the environment
-register_env(
-        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAgents=nAgents)
-    )
+mission = 'Task'
+init_type = 'fixed'
+scenario_type = 'train'
+case_type = 'Benchmark_2'
+nAgents = 3
 
-env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,nAgents=nAgents)
+# Instantiate the environment
+#Create the environment
+if mission == 'Transfer':
+    env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
+elif mission == 'Task':
+    env,task_type,caseName = create_task_env(init_type,scenario_type,case_type,nAgents)
+
+#register_env(
+#        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,control_step_size=time_step,nAgents=nAgents)
+#    )
+#
+#env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,control_step_size=time_step,nAgents=nAgents)
 
 # Fixed hyperparameters
 train_batch_size = int(500)
+train_batch_size = int(100)
 sgd_minibatch_size = int(train_batch_size/10)
 
 #num_sgd_iter = 1

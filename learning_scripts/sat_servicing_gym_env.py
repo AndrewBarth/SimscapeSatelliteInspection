@@ -25,11 +25,13 @@ class SatServiceEnv(MultiAgentEnv):
         self.agents = {1}
         self.agent_ids = set(self.agents)
         self._agent_ids = set(self.agents)
+        self.nFaces = 0
  
         # Process argements
         self.initial_state = kwargs['initial_state']
         self.dof = kwargs['dof']
         self.stop_time = kwargs['stop_time']
+        self.control_step_size = kwargs['control_step_size']
 
         # Define the reference trajectory
         self.reference_trajectory = {i: refTraj(self.stop_time) for i in self.agent_ids}
@@ -120,7 +122,7 @@ class SatServiceEnv(MultiAgentEnv):
             for agent_id in self.agent_ids:
                 initial_state[agent_id] = [0]*self.dof[agent_id]
         
-        joint_limit_data = self.cppWrapper.init_cpp(self.agent_ids,initial_state,self.dof)
+        [joint_limit_data, self.nFaces] = self.cppWrapper.init_cpp(self.agent_ids,initial_state,self.dof)
 
         # These parameters were extracted from the CPP code
         self.joint_limits = joint_limit_data
@@ -230,7 +232,7 @@ class SatServiceEnv(MultiAgentEnv):
         self.step_count += 1
 
         # Execute one step of the CPP simulation and return a new state
-        states, sim_errors, dones, sim_time = self.cppWrapper.step_cpp(agent_ids,action,self.stop_time)
+        states, sim_errors, coverage, dones, sim_time = self.cppWrapper.step_cpp(agent_ids,action,self.stop_time,self.control_step_size,self.nFaces)
 
         # Compute errors relative to reference trajectory
         #errors, ref_states = {i: self.compute_errors(i,sim_time,states[i]) for i in agent_ids}

@@ -12,7 +12,7 @@ echo $src_dir
 echo $build_dir
 # Copy required template files
 cp template_files/rtwshared.mk $util_dir
-cp template_files/ert_main.cpp $src_dir
+cp template_files/ert_main_inspection.cpp $src_dir/ert_main.cpp
 cp template_files/SatelliteServicing_Mission.mk $build_dir
 
 # Make the utilities
