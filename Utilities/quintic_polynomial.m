@@ -20,7 +20,7 @@ function p = quintic_coeffs(t0,tf,q0,qf,v0,vf,a0,af)
                     0 0  2      6*tf   12*tf^2 20*tf^3];
 
   v = [q0, v0, a0, qf, vf, af];
-  p = inv(quintic_matrix)*v';
+  p = quintic_matrix\v';
 end
 
 

@@ -7,6 +7,9 @@ endTime = 99;
 % endTime = 5;
 stepSize = 0.001;
 
+% endTime = 6000;
+% stepSize = 0.1;
+
 %% Rod Parameters
 % Properties of aluminum
 alu.rho = 2700; % kg*m^3
@@ -349,7 +352,7 @@ jointControlData.eeRefTraj(5,:) = [-0.1    0.55       0.2710 45.0*dtr 0.0   90.0
 jointControlData.eeRefTraj(6,:) = [-0.1    0.55       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 
 % jointControlData.refTime = [0 20 30 50 70 100];
-jointControlData.refTime = [0 20 30 100 110 120];
+jointControlData.refTime = [0 20 30 100 110 12000];
 jointControlData.Kp = [1 1 1 1 1 1]*0.7;
 jointControlData.Kd = [1 1 1 1 1 1]*4;
 jointControlData.Ki = [1 1 1 1 1 1]*0.;
@@ -396,3 +399,7 @@ satControlData_Rot.torqueLimit = 10;
 
 %% Navigation Parameters
 nav.CameraToBase.orientation = [-90 0 -45]*dtr;
+
+%% Inspection Parameters
+loadInspectionParams
+loadCubesatParams

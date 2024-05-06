@@ -1,6 +1,11 @@
 clear
 %clc
 
+MISSION_TYPE = 0;
+VSS_RoboticArmOperation = Simulink.Variant('MISSION_TYPE==0');
+VSS_CubeSatOperation = Simulink.Variant('MISSION_TYPE==1');
+
+
 % Select robotic arm to use in the simulation
 ARM_TYPE = 0;    
 % 0 = Planar3Link
@@ -61,9 +66,11 @@ elseif ARM_TYPE == 3
     General7DOF_test
 end
 
-ARM_CONTROL_TYPE = 0;
-VSS_ModelBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==0');
-VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
+ARM_CONTROL_TYPE = 1;
+VSS_NoControl = Simulink.Variant('ARM_CONTROL_TYPE==0');
+VSS_ModelBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
+VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==2');
+
 
 % Perfom initialization calculations based on parameter data
 AllCalcs
@@ -74,10 +81,13 @@ JOINT_COMMAND_SOURCE = 0;
 VSS_ComputedTorques = Simulink.Variant('JOINT_COMMAND_SOURCE==0');
 VSS_Playback         = Simulink.Variant('JOINT_COMMAND_SOURCE==1');
 
+% Load the Simulink model
+load_system('SatelliteServicing_Mission.slx');
+
 % Call routine to configure the joints in the arm model to accept the
 % chosen joint command type (only set up for planar 3 Link arm)
 % Used for playback mode
-if ARM_TYPE == 0
+if ARM_TYPE == 0 && MISSION_TYPE == 0
    configureArmJoints
 end
 

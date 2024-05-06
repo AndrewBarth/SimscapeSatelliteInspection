@@ -1,134 +1,97 @@
 
-clear all
-a = 6;
-b = 3;
-% a = 2;
-% b = 1;
-lSide = a^2 + b^2 + a*b;
+function [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(a,b,radius,makePlots)
 
-global ONE
-ONE = 1;
-
-% Begin with golden ratio
-PHI = (1+sqrt(5)) / 2;
-
-
-% Form the 20 vertices of the icosahedron
-icoData.V = [ [0, PHI, -1]; [-PHI, 1, 0]; [-1, 0, -PHI]; [1, 0, -PHI]; [PHI, 1, 0]; ...
-              [0, PHI, 1]; [-1, 0, PHI]; [-PHI, -1, 0]; [0, -PHI, -1]; [PHI, -1, 0]; ...
-               [1, 0, PHI]; [0, -PHI, 1]];
-icoData.F = [ [ 0, 2, 1 ]; [ 0, 3, 2 ]; [ 0, 4, 3 ]; [ 0, 5, 4 ]; [ 0, 1, 5 ]; ...
-              [ 7, 6, 1 ]; [ 8, 7, 2 ]; [ 9, 8, 3 ]; [ 10, 9, 4 ]; [ 6, 10, 5 ]; ...
-              [ 2, 7, 1 ]; [ 3, 8, 2 ];[ 4, 9, 3 ]; [ 5, 10, 4 ]; [ 1, 6, 5 ]; ...
-              [ 11, 6, 7 ]; [ 11, 7, 8 ]; [ 11, 8, 9 ]; [ 11, 9, 10 ]; [ 11, 10, 6 ]  ];
-
-%edgematch =  [ [1, "B"], [2, "B"], [3, "B"], [4, "B"], [0, "B"], [10, "O", 14, "A"], [11, "O", 10, "A"], [12, "O", 11, "A"], [13, "O", 12, "A"], [14, "O", 13, "A"],...
-%         [0, "O"], [1, "O"], [2, "O"], [3, "O"], [4, "O"], [19, "B", 5, "A"], [15, "B", 6, "A"], [16, "B", 7, "A"], [17, "B", 8, "A"], [18, "B", 9, "A"] ]; 
-
-icoData.edgematch  = [cell({[1 "B"]}); cell({[2 "B"]}); cell({[3 "B"]}); cell({[4 "B"]}); cell({[0 "B"]}); ...
-                      cell({[10 "O" 14 "A"]});  cell({[11 "O" 10 "A"]});  cell({[12 "O" 11 "A"]});  ...
-                      cell({[13 "O" 12 "A"]});  cell({[14 "O" 13 "A"]}); cell({[0 "O"]}); cell({[1 "O"]}); ...
-                      cell({[2 "O"]}); cell({[3 "O"]}); cell({[4 "O"]}); cell({[19 "B" 5 "A"]}); ...
-                      cell({[15 "B" 6 "A"]}); cell({[16 "B" 7 "A"]}); cell({[17 "B" 8 "A"]}); cell({[18 "B" 9 "A"]}) ];
-
-GDmnData.V = [ [0, PHI, -1]; [-PHI, 1, 0]; [-1, 0, -PHI]; [1, 0, -PHI]; [PHI, 1, 0]; ...
-               [0, PHI, 1]; [-1, 0, PHI]; [-PHI, -1, 0]; [0, -PHI, -1]; [PHI, -1, 0]; ...
-               [1, 0, PHI]; [0, -PHI, 1]];
-GDmnData.F = [];
-
-GPData.V = [];
-GPData.F = {};
-
-% Create the primary triangle
-P = CreatePrimary(a,b);
-
-% Set Indices
-vecToIdx = setIndices(icoData,P,a,b);
-
-innerFacets = InnerFacets(P,a,b);
-[vertexTypes, isoVecsABOB] = EdgeVecsABOB(P,a,b);
-
-isoVecsOBOA = ABOBtoOBOA(vertexTypes,isoVecsABOB,a,b);
-isoVecsBAOA = ABOBtoBAOA(vertexTypes,isoVecsABOB,a,b);
-
-% Calc coeffs
-coau = (a+b)/lSide;
-cobu = -b/lSide;
-coav = -sqrt(3)/3*(a-b)/lSide;
-cobv = sqrt(3)/3*(2*a+b)/lSide;
-
-% innerFacets = InnerFacets(P,a,b);
-
-for f = 0:20-1
-    [mapped(f+ONE,:,:),GDmnData] = MapToFace(icoData,GDmnData,f,P,vecToIdx,coau,coav,cobu,cobv);
-    GDmnData = InnerToGDmnData(GDmnData,innerFacets,vecToIdx,f);
-    if icoData.edgematch{f+ONE}{1+ONE} == 'B'
-        GDmnData = ABOBtoGDmnDATA(GDmnData,icoData,isoVecsABOB,vertexTypes,vecToIdx,f);
+    if nargin < 4
+        makePlots = 1;
+    else
+        makePlots = makePlots;
     end
-    if icoData.edgematch{f+ONE}{1+ONE} == 'O'
-        GDmnData = OBOAtoGDmnDATA(GDmnData,icoData,isoVecsOBOA,vertexTypes,vecToIdx,f);
-    end
-    if length(icoData.edgematch{f+ONE}) > 2
-        if icoData.edgematch{f+ONE}{3+ONE} == 'A'
-            GDmnData = BAOAtoGDmnDATA(GDmnData,icoData,isoVecsBAOA,vertexTypes,vecToIdx,f);
+    
+    lSide = a^2 + b^2 + a*b;
+    
+    global ONE
+    ONE = 1;
+    
+    % Begin with golden ratio
+    PHI = (1+sqrt(5)) / 2;
+    
+    
+    % Form the 20 vertices of the icosahedron
+    icoData.V = [ [0, PHI, -1]; [-PHI, 1, 0]; [-1, 0, -PHI]; [1, 0, -PHI]; [PHI, 1, 0]; ...
+                  [0, PHI, 1]; [-1, 0, PHI]; [-PHI, -1, 0]; [0, -PHI, -1]; [PHI, -1, 0]; ...
+                   [1, 0, PHI]; [0, -PHI, 1]];
+    icoData.F = [ [ 0, 2, 1 ]; [ 0, 3, 2 ]; [ 0, 4, 3 ]; [ 0, 5, 4 ]; [ 0, 1, 5 ]; ...
+                  [ 7, 6, 1 ]; [ 8, 7, 2 ]; [ 9, 8, 3 ]; [ 10, 9, 4 ]; [ 6, 10, 5 ]; ...
+                  [ 2, 7, 1 ]; [ 3, 8, 2 ];[ 4, 9, 3 ]; [ 5, 10, 4 ]; [ 1, 6, 5 ]; ...
+                  [ 11, 6, 7 ]; [ 11, 7, 8 ]; [ 11, 8, 9 ]; [ 11, 9, 10 ]; [ 11, 10, 6 ]  ];
+    
+    %edgematch =  [ [1, "B"], [2, "B"], [3, "B"], [4, "B"], [0, "B"], [10, "O", 14, "A"], [11, "O", 10, "A"], [12, "O", 11, "A"], [13, "O", 12, "A"], [14, "O", 13, "A"],...
+    %         [0, "O"], [1, "O"], [2, "O"], [3, "O"], [4, "O"], [19, "B", 5, "A"], [15, "B", 6, "A"], [16, "B", 7, "A"], [17, "B", 8, "A"], [18, "B", 9, "A"] ]; 
+    
+    icoData.edgematch  = [cell({[1 "B"]}); cell({[2 "B"]}); cell({[3 "B"]}); cell({[4 "B"]}); cell({[0 "B"]}); ...
+                          cell({[10 "O" 14 "A"]});  cell({[11 "O" 10 "A"]});  cell({[12 "O" 11 "A"]});  ...
+                          cell({[13 "O" 12 "A"]});  cell({[14 "O" 13 "A"]}); cell({[0 "O"]}); cell({[1 "O"]}); ...
+                          cell({[2 "O"]}); cell({[3 "O"]}); cell({[4 "O"]}); cell({[19 "B" 5 "A"]}); ...
+                          cell({[15 "B" 6 "A"]}); cell({[16 "B" 7 "A"]}); cell({[17 "B" 8 "A"]}); cell({[18 "B" 9 "A"]}) ];
+    
+    GDmnData.V = [ [0, PHI, -1]; [-PHI, 1, 0]; [-1, 0, -PHI]; [1, 0, -PHI]; [PHI, 1, 0]; ...
+                   [0, PHI, 1]; [-1, 0, PHI]; [-PHI, -1, 0]; [0, -PHI, -1]; [PHI, -1, 0]; ...
+                   [1, 0, PHI]; [0, -PHI, 1]];
+    GDmnData.F = [];
+    
+    GPData.V = [];
+    GPData.F = {};
+    
+    % Create the primary triangle
+    P = CreatePrimary(a,b);
+    
+    % Set Indices
+    vecToIdx = setIndices(icoData,P,a,b);
+    
+    innerFacets = InnerFacets(P,a,b);
+    [vertexTypes, isoVecsABOB] = EdgeVecsABOB(P,a,b);
+    
+    isoVecsOBOA = ABOBtoOBOA(vertexTypes,isoVecsABOB,a,b);
+    isoVecsBAOA = ABOBtoBAOA(vertexTypes,isoVecsABOB,a,b);
+    
+    % Calc coeffs
+    coau = (a+b)/lSide;
+    cobu = -b/lSide;
+    coav = -sqrt(3)/3*(a-b)/lSide;
+    cobv = sqrt(3)/3*(2*a+b)/lSide;
+    
+    for f = 0:20-1
+        [mapped(f+ONE,:,:),GDmnData] = MapToFace(icoData,GDmnData,f,P,vecToIdx,coau,coav,cobu,cobv);
+        GDmnData = InnerToGDmnData(GDmnData,innerFacets,vecToIdx,f);
+        if icoData.edgematch{f+ONE}{1+ONE} == 'B'
+            GDmnData = ABOBtoGDmnDATA(GDmnData,icoData,isoVecsABOB,vertexTypes,vecToIdx,f);
+        end
+        if icoData.edgematch{f+ONE}{1+ONE} == 'O'
+            GDmnData = OBOAtoGDmnDATA(GDmnData,icoData,isoVecsOBOA,vertexTypes,vecToIdx,f);
+        end
+        if length(icoData.edgematch{f+ONE}) > 2
+            if icoData.edgematch{f+ONE}{3+ONE} == 'A'
+                GDmnData = BAOAtoGDmnDATA(GDmnData,icoData,isoVecsBAOA,vertexTypes,vecToIdx,f);
+            end
         end
     end
-end
-
-GPData = GDtoGP(GDmnData,GPData);
-
-
-% Scale the size of the icosahedron
-sf = 3;
-V2 = icoData.V./norm(icoData.V(1,:))*sf;
-figure;
-    hold on; 
-    axis equal;
-    view(3);
     
-    patch('Vertices', icoData.V, 'Faces', icoData.F+ONE, 'FaceColor', [0 1 1]);
-    %patch('Vertices', V2, 'Faces', icoData.F+ONE, 'FaceColor', [0 .5 1]);
+    % Create Goldberg polyhedron
+    GPData = GDtoGP(GDmnData,GPData);
     
-    % k=1;
-    % for i=1:size(mapped,1)
-    %     for j = 1:size(mapped,2)
-    %         scatter3(mapped(i,j,1),mapped(i,j,2),mapped(i,j,3),'ro')
-    %         k=k+1;
-    %     end
-    % end
-
-figure;
-    hold on; 
-    axis equal;
-    view(3);
-    
-    radius = 2;
-    for i=1:length(GDmnData.V)
-        sf = norm(GDmnData.V(i,:));
-        scaledV(i,:) = GDmnData.V(i,:)*radius/sf;
-    end
-    %patch('Vertices', GDmnData.V, 'Faces', GDmnData.F+ONE, 'FaceColor', [0 1 1]);
-    patch('Vertices', scaledV, 'Faces', GDmnData.F+ONE, 'FaceColor', [0 1 1]);
-    k=1;
-    for i=1:size(mapped,1)
-        for j = 1:size(mapped,2)
-            scatter3(mapped(i,j,1),mapped(i,j,2),mapped(i,j,3),'ro')
-            k=k+1;
-        end
-    end
-
-% Plot the Goldberg Polyhedron
-figure;
-    hold on; 
-    axis equal;
-    view(3);
-    
-    radius = 2;
+    %radius = norm([PHI 1 0]);
     for i=1:length(GPData.V)
         sf = norm(GPData.V(i,:));
         scaledV(i,:) = GPData.V(i,:)*radius/sf;
     end
-
+    
+    % Determine the centers and radius of each hexagon and pentagon of 
+    % the Goldberg polyhedron
+    for i=1:length(GPData.F)
+        faceCenter(i,:) = sum(scaledV(GPData.F{i}+1,:),1)/length(GPData.F{i});
+        faceRadius(i)= mean(vecnorm(scaledV(GPData.F{i}+1,:)-faceCenter(i,:),2,2));
+    end
+    
     for i=1:length(GPData.F)
         % Separate pentagons and hexagons
         if length(GPData.F{i}) == 5           
@@ -137,9 +100,76 @@ figure;
             Hexagons.F(i,:) = GPData.F{i};
         end
     end
-    patch('Vertices', scaledV, 'Faces', Pentagons.F+ONE, 'FaceColor', [0 1 1]);
-    patch('Vertices', scaledV, 'Faces', Hexagons.F+ONE, 'FaceColor', [0 0 1]);
+    
+    if makePlots == 1
+        % Scale the size of the icosahedron
+        sf = 1;
+        V2 = icoData.V./norm(icoData.V(1,:))*sf;
+        figure;
+            hold on; 
+            axis equal;
+            view(3);
+            
+            patch('Vertices', icoData.V, 'Faces', icoData.F+ONE, 'FaceColor', [.5 .5 .5]);
+            %patch('Vertices', V2, 'Faces', icoData.F+ONE, 'FaceColor', [0 .5 1]);
+            
+            k=1;
+            for i=1:size(mapped,1)
+                for j = 1:size(mapped,2)
+                    scatter3(mapped(i,j,1),mapped(i,j,2),mapped(i,j,3),'bo','MarkerFaceColor','b')
+                    k=k+1;
+                end
+            end
+            for i=1:size(icoData.V,1)
+                scatter3(icoData.V(i,1),icoData.V(i,2),icoData.V(i,3),'ro','MarkerFaceColor','r')
+            end
+            xlabel('x');ylabel('y');zlabel('z');title('Subdivided Icosahedron')
+        
+        figure;
+            hold on; 
+            axis equal;
+            view(3);
+            
+            % radius = 2;
+            radius = norm([PHI 1 0]);
+            for i=1:length(GDmnData.V)
+                sf = norm(GDmnData.V(i,:));
+                scaledGDV(i,:) = GDmnData.V(i,:)*radius/sf;
+            end
+            %patch('Vertices', GDmnData.V, 'Faces', GDmnData.F+ONE, 'FaceColor', [0 1 1]);
+            patch('Vertices', scaledGDV, 'Faces', GDmnData.F+ONE, 'FaceColor', [.5 .5 .5]);
+            k=1;
+            for i=1:size(mapped,1)
+                for j = 1:size(mapped,2)
+                    scatter3(mapped(i,j,1),mapped(i,j,2),mapped(i,j,3),'ro','MarkerFaceColor','r')
+                    k=k+1;
+                end
+            end
+            xlabel('x');ylabel('y');zlabel('z');title('Geodesic Mesh about Icosahedron')
+        
+        % Plot the Goldberg Polyhedron
+        figure;
+            hold on; 
+            axis equal;
+            view(3);
+            
 
+        
+           
+            patch('Vertices', scaledV, 'Faces', Pentagons.F+ONE, 'FaceColor', [0 1 1]);
+            patch('Vertices', scaledV, 'Faces', Hexagons.F+ONE, 'FaceColor', [0 0 1]);
+            for i=1:size(mapped,1)
+                for j = 1:size(mapped,2)
+            %        scatter3(mapped(i,j,1),mapped(i,j,2),mapped(i,j,3),'ro','MarkerFaceColor','r')
+                    k=k+1;
+                end
+            end
+            for i=1:size(faceCenter,1)
+                scatter3(faceCenter(i,1),faceCenter(i,2),faceCenter(i,3),'yo','MarkerFaceColor','y')
+            end
+            xlabel('x');ylabel('y');zlabel('z');title('Goldberg Polyhedron G(2,2)')
+    end
+end
 
 function P = CreatePrimary(m,n)
     global ONE
