@@ -3,7 +3,7 @@ import numpy as np
 import copy
 import gymnasium as gym
 from gymnasium import spaces
-from gymnasium.spaces import Discrete, Box, Tuple, Dict
+from gymnasium.spaces import Discrete, Box, Tuple, Dict, Sequence
 from ray.rllib.env.multi_agent_env import MultiAgentEnv
 from ray.rllib.utils.typing import MultiAgentDict
 
@@ -15,19 +15,25 @@ from utils import orbit_utils
 from utils import OEToCartesian
 
 
-class CubesatTaskEnv(MultiAgentEnv):
+class CubesatInspectionEnv(MultiAgentEnv):
 
 
     def __init__(self,  *args, **kwargs):
 
         super().__init__()
 
-        self.nAgents = kwargs['nAgents']
         self.agent_ids = {1} 
         self._agent_ids = {1}  # Later version of Ray require a private variable
+# Agent ids stay at only 1, nAgents is the number of active cubesats
+#        for i in range(2,self.nAgents+1):
+#            self.agent_ids.add(i)
+#            self._agent_ids.add(i)
+
+         
+        self.nAgents = kwargs['nAgents']
+        self.active_agents = {1}
         for i in range(2,self.nAgents+1):
-            self.agent_ids.add(i)
-            self._agent_ids.add(i)
+            self.active_agents.add(i)
 
         self.maxAgents = 4
         self.total_agents = {1}
@@ -65,7 +71,7 @@ class CubesatTaskEnv(MultiAgentEnv):
             self.chief_state = np.array(kwargs['chief_state'])
             # All agents assumed to be on the same orbit as target
             self.ref_altitude = {}
-            for agent_id in self.agent_ids:
+            for agent_id in self.active_agents:
                 self.ref_altitude[agent_id] = kwargs['altitude']
 
         # Define the parameters used in the reward equations
@@ -91,23 +97,34 @@ class CubesatTaskEnv(MultiAgentEnv):
 
         # Define the action space
         self._action_space_in_preferred_format = True
-        box_act_space = {}
-        disc_act_space = {}
+#        box_act_space = {}
+#        disc_act_space = {}
+#        combined_space = {}
         #for agent_id in self.agent_ids:
-        for agent_id in self.total_agents:
-            box_act_space[agent_id] = Box(low=np.array([self.task_semimajor_bounds[agent_id][0], \
-                                                        self.task_eccentricity_bounds[agent_id][0], \
-                                                        self.task_inc_bounds[agent_id][0], \
-                                                        self.task_period_bounds[agent_id][0]],dtype=np.float32), \
-                                         high=np.array([self.task_semimajor_bounds[agent_id][1], \
-                                                        self.task_eccentricity_bounds[agent_id][1], \
-                                                        self.task_inc_bounds[agent_id][1], \
-                                                        self.max_period],dtype=np.float32))
-            disc_act_space[agent_id] = Discrete(2)
+#        for agent_id in self.total_agents:
+#            box_act_space[agent_id] = Box(low=np.array([self.task_semimajor_bounds[agent_id][0], \
+#                                                        self.task_inc_bounds[agent_id][0]], \
+#                                                        dtype=np.float32), \
+#                                          high=np.array([self.task_semimajor_bounds[agent_id][1], \
+#                                                        self.task_inc_bounds[agent_id][1]], \
+#                                                        dtype=np.float32))
+#            disc_act_space[agent_id] = Discrete(2)
+        bound_act_space = Box(low=np.array([self.task_semimajor_bounds[1][0], \
+                                            self.task_inc_bounds[1][0]], \
+                                            dtype=np.float32), \
+                              high=np.array([self.task_semimajor_bounds[1][1], \
+                                             self.task_inc_bounds[1][1]], \
+                                             dtype=np.float32))
+        incSign_act_space = Discrete(2)
+        nSat_act_space = Discrete(self.maxAgents)
 
         #self.action_space = Dict([(agent_id, box_act_space[agent_id]) for agent_id in self.agent_ids])
         #self.action_space = Dict([(agent_id, box_act_space[agent_id]) for agent_id in self.total_agents])
-        self.action_space = Dict([(agent_id, Tuple((box_act_space[agent_id], disc_act_space[agent_id]))) for agent_id in self.total_agents])
+        #self.action_space = Dict([(agent_id, Tuple((box_act_space[agent_id], disc_act_space[agent_id]))) for agent_id in self.total_agents])
+        #self.action_space = Sequence(Tuple(((box_act_space[agent_id], disc_act_space[agent_id]))),seed=self.nAgents)
+        #self.action_space = Dict({1: Sequence(Tuple((bound_act_space,incSign_act_space,nSat_act_space)), seed=self.nAgents)})
+        agent_action_space = Dict([(agent_id, Tuple((bound_act_space,incSign_act_space,nSat_act_space))) for agent_id in self.active_agents])
+        self.action_space = Dict({1: agent_action_space})
         
         # Define the observation space
         self._obs_space_in_preferred_format = True
@@ -128,7 +145,8 @@ class CubesatTaskEnv(MultiAgentEnv):
 #             }
 #        )
         #self.observation_space = Dict([(agent_id, box_obs_space) for agent_id in self.agent_ids])
-        self.observation_space = Dict([(agent_id, box_obs_space) for agent_id in self.total_agents])
+        #self.observation_space = Dict([(agent_id, box_obs_space) for agent_id in self.total_agents])
+        self.observation_space = Dict({1: box_obs_space})
 
         # Create object from cpp wrapper class
         self.cppWrapper = cppWrapper()
@@ -148,7 +166,7 @@ class CubesatTaskEnv(MultiAgentEnv):
             self.ref_period = {}
             self.ref_mean_motion = {}
             self.ref_altitude = {}
-            for agent_id in self.agent_ids:
+            for agent_id in self.active_agents:
                 # All agents assumed to be on the same orbit as target
                 self.ref_altitude[agent_id] = altitude
                 self.ref_period[agent_id] = period
@@ -158,7 +176,7 @@ class CubesatTaskEnv(MultiAgentEnv):
             # for the reference orbit
             self.ref_mean_motion = {}
             self.ref_period = {}
-            for agent_id in self.agent_ids:
+            for agent_id in self.active_agents:
                 # All agents assumed to be on the same orbit as target
                 self.ref_period[agent_id] = orbit_utils.compute_period(self.ref_altitude[agent_id]+self.earth_radius)
                 self.ref_mean_motion[agent_id] = orbit_utils.compute_mean_motion(self.ref_period[agent_id])
@@ -179,36 +197,39 @@ class CubesatTaskEnv(MultiAgentEnv):
             # Select random values to define the state
 
             # Select the semi-major axis, eccentricity, and inclination for the desired orbit 
-            self.task_semimajor = dict([(agent_id, self.random_state.select_semimajor(self.task_semimajor_bounds[agent_id])) for agent_id in self.agent_ids])
-            self.task_ecc = dict([(agent_id, self.random_state.select_eccentricity(self.task_eccentricity_bounds[agent_id])) for agent_id in self.agent_ids])
-            self.task_inc = dict([(agent_id, self.random_state.select_inclination(self.task_inc_bounds[agent_id])) for agent_id in self.agent_ids])
-            self.task_period = dict([(agent_id, self.random_state.select_period(self.task_period_bounds[agent_id])) for agent_id in self.agent_ids])
+            self.task_semimajor = dict([(agent_id, self.random_state.select_semimajor(self.task_semimajor_bounds[agent_id])) for agent_id in self.active_agents])
+            self.task_ecc = dict([(agent_id, self.random_state.select_eccentricity(self.task_eccentricity_bounds[agent_id])) for agent_id in self.active_agents])
+            self.task_inc = dict([(agent_id, self.random_state.select_inclination(self.task_inc_bounds[agent_id])) for agent_id in self.active_agents])
+            self.task_period = dict([(agent_id, self.random_state.select_period(self.task_period_bounds[agent_id])) for agent_id in self.active_agents])
             # Define initial state for the chief
             self.chief_state = self.random_state.select_chief_state(self.task_semimajor[1], self.chief_bounds)
 
         else:
-            # Assume task orbit parameters have been defined for the fixed case
-            pass
+            # Task period and eccentricity must be defined below for the orbit type
+            self.task_period = {}
+            self.task_ecc = {}
 
-        # Define initial state for the PRO reference orbit
         self.task_initial_state = {}
+        
       
-        for agent_id in self.agent_ids:
+        for agent_id in self.active_agents:
             if self.task_type[agent_id] == 'PRO':
+                # Define initial state for the PRO reference orbit
                 self.y0 = -1*self.task_semimajor[agent_id]
                 #self.y0 = dict([(agent_id, -1*self.ref_semimajor[agent_id]) for agent_id in self.agent_ids])
                 self.task_initial_state[agent_id] = [0, self.y0, 0, 0.5*self.y0*self.ref_mean_motion[agent_id], 0, np.tan(self.task_inc[agent_id]*np.pi/180.0)*0.5*self.y0*self.ref_mean_motion[agent_id]]
                 # For a PRO, the task orbit period is the same as the refernece orbit
                 self.task_period[agent_id] = self.ref_period[agent_id]
                 self.task_period_bounds[agent_id] = [self.min_period, self.max_period]
+                self.task_ecc[agent_id] = 0.5
                 
 
         # Set the task trajectory class based on the above parameters
-        self.task_trajectory = {i: taskTraj(self.task_semimajor[i],self.task_ecc[i],self.task_inc[i],self.task_period[i],self.task_type[i]) for i in self.agent_ids}
+        self.task_trajectory = {i: taskTraj(self.task_semimajor[i],self.task_ecc[i],self.task_inc[i],self.task_period[i],self.task_type[i]) for i in self.active_agents}
 
 
         self.initial_state_Hill = {}
-        for agent_id in self.agent_ids:
+        for agent_id in self.active_agents:
             pos_Hill = self.task_initial_state[agent_id][0:3]
             vel_Hill = self.task_initial_state[agent_id][3:6]
             self.initial_state_Hill[agent_id] = np.concatenate((pos_Hill, vel_Hill))
@@ -219,44 +240,55 @@ class CubesatTaskEnv(MultiAgentEnv):
         self.info = dict([(agent_id, {'obs': []}) for agent_id in self.agent_ids])
 
         # Create dictionary to store output states, error states, actions, rewards, and orbit
-        self.output_states = dict([(agent_id, []) for agent_id in self.agent_ids])
-        self.error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
-        self.sim_error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
-        self.action_states = dict([(agent_id, []) for agent_id in self.agent_ids])
-        self.reward_states = dict([(agent_id, []) for agent_id in self.agent_ids])
-        self.orbit_states = dict([(agent_id, []) for agent_id in self.agent_ids])
-        self.ref_states = dict([(agent_id, []) for agent_id in self.agent_ids])
+        self.output_states = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.error_states = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.sim_error_states = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.action_states = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.reward_states = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.orbit_states = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.ref_states = dict([(agent_id, []) for agent_id in self.active_agents])
 
         # Update the action space based on the period
         box_act_space = {}
         disc_act_space = {}
         #for agent_id in self.agent_ids:
-        for agent_id in self.total_agents:
-            if self.task_type == 'PRO':
-                # For PRO, eccentricity and period are fixed
-                box_act_space[agent_id] = Box(low=np.array([self.task_semimajor_bounds[agent_id][0], \
-                                                            0.4999, \
-                                                            self.task_inc_bounds[agent_id][0], \
-                                                            self.ref_period[agent_id]],dtype=np.float32), \
-                                             high=np.array([self.task_semimajor_bounds[agent_id][1], \
-                                                            0.5001, \
-                                                            self.task_inc_bounds[agent_id][1], \
-                                                            self.ref_period[agent_id]],dtype=np.float32))
-                disc_act_space[agent_id] = Discrete(2)
-            else:
-                box_act_space[agent_id] = Box(low=np.array([self.task_semimajor_bounds[agent_id][0], \
-                                                            self.task_eccentricity_bounds[agent_id][0], \
-                                                            self.task_inc_bounds[agent_id][0], \
-                                                            self.task_period_bounds[agent_id][0]],dtype=np.float32), \
-                                             high=np.array([self.task_semimajor_bounds[agent_id][1], \
-                                                            self.task_eccentricity_bounds[agent_id][1], \
-                                                            self.task_inc_bounds[agent_id][1], \
-                                                            self.task_period_bounds[agent_id][1]],dtype=np.float32))
-                disc_act_space[agent_id] = Discrete(2)
+        #for agent_id in self.total_agents:
+        #    if self.task_type == 'PRO':
+        #        # For PRO, eccentricity and period are fixed
+        #        box_act_space[agent_id] = Box(low=np.array([self.task_semimajor_bounds[agent_id][0], \
+        #                                                    0.4999, \
+        #                                                    self.task_inc_bounds[agent_id][0], \
+        #                                                    self.ref_period[agent_id]],dtype=np.float32), \
+        #                                     high=np.array([self.task_semimajor_bounds[agent_id][1], \
+        #                                                    0.5001, \
+        #                                                    self.task_inc_bounds[agent_id][1], \
+        #                                                    self.ref_period[agent_id]],dtype=np.float32))
+        #        disc_act_space[agent_id] = Discrete(2)
+        #    else:
+        #        box_act_space[agent_id] = Box(low=np.array([self.task_semimajor_bounds[agent_id][0], \
+        #                                                    self.task_eccentricity_bounds[agent_id][0], \
+        #                                                    self.task_inc_bounds[agent_id][0], \
+        #                                                    self.task_period_bounds[agent_id][0]],dtype=np.float32), \
+        #                                     high=np.array([self.task_semimajor_bounds[agent_id][1], \
+        #                                                    self.task_eccentricity_bounds[agent_id][1], \
+        #                                                    self.task_inc_bounds[agent_id][1], \
+        #                                                    self.task_period_bounds[agent_id][1]],dtype=np.float32))
+        #        disc_act_space[agent_id] = Discrete(2)
 
         #self.action_space = Dict([(agent_id, box_act_space[agent_id]) for agent_id in self.agent_ids])
         #self.action_space = Dict([(agent_id, box_act_space[agent_id]) for agent_id in self.total_agents])
-        self.action_space = Dict([(agent_id, Tuple((box_act_space[agent_id], disc_act_space[agent_id]))) for agent_id in self.total_agents])
+        #self.action_space = Dict([(agent_id, Tuple((box_act_space[agent_id], disc_act_space[agent_id]))) for agent_id in self.total_agents])
+        bound_act_space = Box(low=np.array([self.task_semimajor_bounds[1][0], \
+                                            self.task_inc_bounds[1][0]], \
+                                            dtype=np.float32), \
+                              high=np.array([self.task_semimajor_bounds[1][1], \
+                                             self.task_inc_bounds[1][1]], \
+                                             dtype=np.float32))
+        incSign_act_space = Discrete(2)
+        nSat_act_space = Discrete(self.maxAgents)
+        #self.action_space = Dict({1: Sequence(Tuple((bound_act_space,incSign_act_space,nSat_act_space)), seed=self.nAgents)})
+        agent_action_space = Dict([(agent_id, Tuple((bound_act_space,incSign_act_space,nSat_act_space))) for agent_id in self.active_agents])
+        self.action_space = Dict({1: agent_action_space})
 
         #print('Initializing State for New Propagation')
 
@@ -264,8 +296,8 @@ class CubesatTaskEnv(MultiAgentEnv):
 
         self.sim_time = 0
         self.step_count = 0
-        self.coveredFaces = dict([(agent_id, []) for agent_id in self.agent_ids])
-        self.nCoveredFaces = dict([(agent_id, []) for agent_id in self.agent_ids])
+        self.coveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.nCoveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
 
         # Define the target state
         self.init_target()
@@ -274,7 +306,7 @@ class CubesatTaskEnv(MultiAgentEnv):
         # which haven't been computed yet
         obs = 0
         obs = np.append(obs,0)
-        for agent_id in self.agent_ids:
+        for agent_id in self.active_agents:
             obs = np.append(obs,0)
             obs = np.append(obs,0)
             obs = np.append(obs,0)
@@ -292,14 +324,17 @@ class CubesatTaskEnv(MultiAgentEnv):
 
         return observations, info
 
+    def compute_coverage(self, agent_id, coverage):
+        # Store the coverage output and determine the number of faces currently covered
+        self.coveredFaces[agent_id] = np.nonzero(np.array(coverage[agent_id]))
+        self.nCoveredFaces[agent_id] = np.count_nonzero(np.array(coverage[agent_id]))
+
     def get_observation(self, agent_id, coverage, sim_time):
         # Form the observation dictionary that will be used for training
 
         # Should the observations be normalized
         normalized_obs = 0
 
-        self.coveredFaces[agent_id] = np.nonzero(np.array(coverage[agent_id]))
-        self.nCoveredFaces[agent_id] = np.count_nonzero(np.array(coverage[agent_id]))
 
         if normalized_obs == 1:            
             obsFace = self.normalize_obs(self.nCoveredFaces[agent_id],0,self.nInspectionFaces)
@@ -312,7 +347,7 @@ class CubesatTaskEnv(MultiAgentEnv):
         # The number of values here must match what was used to define the observation space
         obs = obsFace
         obs = np.append(obs,obsTime)
-        for agent_id in self.agent_ids:
+        for agent_id in self.active_agents:
             obs = np.append(obs,self.task_semimajor[agent_id])
             obs = np.append(obs,self.task_ecc[agent_id])
             obs = np.append(obs,self.task_inc[agent_id])
@@ -364,11 +399,12 @@ class CubesatTaskEnv(MultiAgentEnv):
         return np.array(error_state)
 
     def step(self, action):
-        agent_ids = action.keys()
+        #agent_ids = action.keys()
 
+        agent_action = action[1]
         incSign = {}
-        for agent_id in self.agent_ids:
-            if action[agent_id][1] < 1:
+        for agent_id in self.active_agents:
+            if agent_action[agent_id][1] < 1:
                 incSign[agent_id]=-1
             else:
                 incSign[agent_id]=1
@@ -379,16 +415,14 @@ class CubesatTaskEnv(MultiAgentEnv):
         if self.step_count == 1:
 
             # Select the semi-major axis, eccentricity, and inclination for the desired orbit  from the actions
-            self.task_semimajor = dict([(agent_id, action[agent_id][0][0]) for agent_id in self.agent_ids])
-            self.task_ecc = dict([(agent_id, action[agent_id][0][1]) for agent_id in self.agent_ids])
-            self.task_inc = dict([(agent_id, action[agent_id][0][2]*incSign[agent_id]) for agent_id in self.agent_ids])
-            self.task_period = dict([(agent_id, action[agent_id][0][3]) for agent_id in self.agent_ids])
+            self.task_semimajor = dict([(agent_id, agent_action[agent_id][0][0]) for agent_id in self.active_agents])
+            self.task_inc = dict([(agent_id, agent_action[agent_id][0][1]*incSign[agent_id]) for agent_id in self.active_agents])
 
             # Initialize the agents based on the chosen task orbits
             self.init_state()
             
             # Initialize the cpp simulation
-            self.nInspectionFaces = self.cppWrapper.init_cpp_inspection(self.step_size,self.agent_ids,self.ref_mean_motion[1],self.initial_state_Hill)
+            self.nInspectionFaces = self.cppWrapper.init_cpp_inspection(self.step_size,self.active_agents,self.ref_mean_motion[1],self.initial_state_Hill)
 
             self.inspectionComplete = False
 
@@ -400,17 +434,17 @@ class CubesatTaskEnv(MultiAgentEnv):
         dones = {}
         any_dones = {}
         # Info must only have keys for active agents because it is returned from step
-        self.info = dict([(agent_id, {'obs': []}) for agent_id in agent_ids])
+        self.info = dict([(agent_id, {'obs': []}) for agent_id in self.agent_ids])
 
         # Propagate the orbit with zero delta-V
-        for agent_id in agent_ids:
+        for agent_id in self.active_agents:
             current_action[agent_id] = [0]*3
 
         # Determine the number of steps to propagate the environment
         if self.scenario_type == 'train':
 
             # Proapgation time determined by learning algorithm
-            self.propSteps = [(int((self.ref_period[agent_id]+self.step_size) / self.step_size)) for agent_id in self.agent_ids]
+            self.propSteps = [(int((self.ref_period[agent_id]+self.step_size) / self.step_size)) for agent_id in self.active_agents]
 
         elif self.scenario_type == 'eval':
 
@@ -432,14 +466,18 @@ class CubesatTaskEnv(MultiAgentEnv):
         #sim_time = {}
         for i in range(max(self.propSteps)):
             #current_states, current_coverage, current_dones, current_sim_time = self.cppWrapper.step_cpp_inspection(agent_ids,self.nInspectionFaces,self.stop_time,self.control_step_size,current_action)
-            current_coverage, current_dones, current_sim_time = self.cppWrapper.step_cpp_inspection(agent_ids,self.nInspectionFaces,self.stop_time,self.control_step_size,current_action)
+            current_coverage, current_dones, current_sim_time = self.cppWrapper.step_cpp_inspection(self.active_agents,self.nInspectionFaces,self.stop_time,self.control_step_size,current_action)
             coverage = current_coverage
+
+            # Get the coverage stats for this step
+            for agent_id in self.active_agents:
+                self.compute_coverage(agent_id,current_coverage)
 
             # Get the observations for this step
             observations = {i: self.get_observation(i,current_coverage,current_sim_time) for i in self.agent_ids}
 
             # Record the states when each agent completes its propagation time
-            for agent_id in agent_ids:
+            for agent_id in self.active_agents:
                 #states[agent_id] = current_states[agent_id]
                 dones[agent_id] = current_dones[agent_id]
                 if self.nCoveredFaces[agent_id] == self.nInspectionFaces:
@@ -459,39 +497,43 @@ class CubesatTaskEnv(MultiAgentEnv):
             # one step
             if not all(any_dones.values()):
                 self.cppWrapper.terminate_cpp()
-            for agent_id in agent_ids:
+            for agent_id in self.active_agents:
                 dones[agent_id][0] = bool(1)
  
 
         # Compute errors relative to reference trajectory
-        errors = {i: self.compute_errors(i,coverage[i]) for i in agent_ids}
+        errors = {i: self.compute_errors(i,coverage[i]) for i in self.active_agents}
 
         # Collect states and errors
-        for agent_id in agent_ids:
+        for agent_id in self.active_agents:
 #            self.output_states[agent_id] = states[agent_id]
             self.error_states[agent_id] = errors[agent_id].tolist()
 #            self.action_states[agent_id] = action[agent_id].tolist()
-            self.action_states[agent_id] = [action[agent_id][0][0], action[agent_id][0][1], action[agent_id][0][2], action[agent_id][0][3],action[agent_id][1]]
+#            self.action_states[agent_id] = [action[agent_id][0][0], action[agent_id][0][1], action[agent_id][0][2], action[agent_id][0][3],action[agent_id][1]]
             self.orbit_states[agent_id] = [self.ref_altitude[agent_id],self.ref_period[agent_id],self.task_semimajor[agent_id],self.task_inc[agent_id],self.task_ecc[agent_id],self.task_period[agent_id]]
 #            self.orbit_states[agent_id].extend(self.chief_state.tolist())
 
         # Compute rewards for this step 
-        step_rewards = {i: self.get_reward(i,self.nCoveredFaces,self.sim_time) for i in agent_ids}
+        step_rewards = {i: self.get_reward(i,self.nCoveredFaces,self.sim_time) for i in self.active_agents}
+
         rewards = {}
         # Collect rewards
-        for agent_id in agent_ids:
+        for agent_id in self.active_agents:
             self.reward_states[agent_id] = [step_rewards[agent_id]['success_reward'],step_rewards[agent_id]['coverage_reward'],step_rewards[agent_id]['time_reward']]
-            rewards[agent_id] = step_rewards[agent_id]['total']
+
+        # Single agent reward
+        rewards[1] = step_rewards[1]['total']
         
         # Not used, but required to return
-        truncateds = {i: False for i in agent_ids}
+        truncateds = {i: False for i in self.agent_ids}
         truncateds["__all__"] = all(truncateds.values())
 
         # Dones must be returned from step as a list of bools, not a dictionary
-        for agent_id in agent_ids:
-            dones[agent_id] = any([bool(dones[agent_id][i]) for i in range(2)])
-        dones["__all__"] = all(dones.values())
-        terminateds = dones
+        terminateds = {}
+        for agent_id in self.agent_ids:
+        #    dones[agent_id] = any([bool(dones[agent_id][i]) for i in range(2)])
+            terminateds[agent_id] = any(any_dones)
+        terminateds["__all__"] = all(any_dones)
 
 
         return observations, rewards, terminateds, truncateds, self.info

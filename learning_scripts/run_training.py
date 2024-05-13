@@ -6,20 +6,22 @@ import gc
 import psutil
 import numpy as np
 import ray
+import faulthandler; faulthandler.enable()
 from ray.tune.registry import register_env
 from ray.tune.registry import get_trainable_cls
 from ray.train import RunConfig, CheckpointConfig
 from ray import air, tune
 from datetime import datetime
 from sat_servicing_gym_env import SatServiceEnv
+from create_task_env import create_task_env
 from training_config import PPOAlgorithmConfig
 from hyperparameter_tuning import HyperparameterTuning
 from utils import data_utils
 from utils.format_mat_data import format_mat_data
 
-nAgents=1
+nAgents=3
 perform_hyperparameter_tuning = False
-debug = True    # You also need to give the -m -pdb arguments to python on command line
+debug = False    # You also need to give the -m -pdb arguments to python on command line
 
 # Set initial conditions
 initial_state = {}
@@ -32,12 +34,12 @@ stop_time = 40.0
 
 dof = {1: 3}
 
-time_step = 0.1    # This is the time step for training, CPP simulation may have different step size
+time_step = 0.5    # This is the time step for training, CPP simulation may have different step size
 nSteps = int(stop_time/time_step)
 
-save_step = 100
-checkpoint_step = 100
-nIter = 800 
+save_step = 40
+checkpoint_step = 40
+nIter = 400 
 
 caseName = 'agent_parameters'
 caseTitle = 'Agent Parameters'
@@ -46,17 +48,16 @@ if debug:
     # Run everything on a local process
     ray.init(local_mode=True)
 
-mission = 'Task'
+mission = 'Inspection'
 init_type = 'fixed'
 scenario_type = 'train'
-case_type = 'Benchmark_2'
-nAgents = 3
+case_type = 'Benchmark2'
 
 # Instantiate the environment
 #Create the environment
 if mission == 'Transfer':
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
-elif mission == 'Task':
+elif mission == 'Inspection':
     env,task_type,caseName = create_task_env(init_type,scenario_type,case_type,nAgents)
 
 #register_env(
@@ -68,7 +69,7 @@ elif mission == 'Task':
 # Fixed hyperparameters
 train_batch_size = int(500)
 train_batch_size = int(100)
-sgd_minibatch_size = int(train_batch_size/10)
+sgd_minibatch_size = int(train_batch_size/5)
 
 #num_sgd_iter = 1
 #clip_param = 0.3
@@ -94,8 +95,16 @@ if perform_hyperparameter_tuning == True:
 
 else:
 
-    algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.99, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
+#    algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.99, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
+#})
+    algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.0, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
 })
+#    algoConfig.policies.update({'policy_2': (None, env.observation_space[2], env.action_space[2], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.0, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
+#})
+#    algoConfig.policies.update({'policy_3': (None, env.observation_space[3], env.action_space[3], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.0, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
+#})
+#    algoConfig.policies.update({'policy_4': (None, env.observation_space[4], env.action_space[4], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.0, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
+#})
     algoConfig.training(
           train_batch_size=train_batch_size,
           sgd_minibatch_size=sgd_minibatch_size,
@@ -108,7 +117,7 @@ else:
     # Setup directory to store ouptut
     date_time = datetime.now().strftime("%Y-%m-%d-%H-%M")
     save_dir = []
-    for agent_id in env.agent_ids:
+    for agent_id in env.active_agents:
         # Specify model save path
         save_dir.append(os.path.dirname(sys.path[1])+"/data_storage/"+date_time+"/"+str(agent_id))
 
@@ -180,7 +189,7 @@ else:
                     # Save as mat file, first must place in dictionary
                     Data = np.array(eval_results['evaluation']['custom_metrics'][agent_id])
 
-                    matData = format_mat_data(Data,caseTitle,caseName,time_step)
+                    matData = format_mat_data(Data,caseTitle,caseName,mission,time_step)
 
                     # Create mat file
                     fileName = caseName + '.mat'

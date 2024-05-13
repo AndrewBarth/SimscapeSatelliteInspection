@@ -89,3 +89,37 @@ def load_data(episode, agent, file_path):
         reward['total_reward'] = reward['poserr_reward']+reward['orierr_reward']+reward['cnterr_reward']+reward['jntlmt_reward']+reward['smooth_reward']
 
     return npts,sat,ee,arm,reward,ref,sim_time
+
+def load_data_inspection(episode, agent, file_path):
+    traj_file = 'agent_parameters.pkl'
+
+    trajfile_fullpath = file_path + '/' + agent + '_' + episode + '/' + traj_file
+    trajData_raw = np.array(pickle.load(open(trajfile_fullpath, "rb")),dtype=object)
+    if trajData_raw.ndim > 2:
+        trajData = np.squeeze(trajData_raw)
+    else:
+        trajData = trajData_raw
+
+
+    npts = len(trajData)
+    position       = trajData[:,0:3]
+    velocity       = trajData[:,3:6]
+    sim_time       = trajData[:,0]
+    nFaces         = trajData[:,1].astype(int)
+    nInspected     = trajData[:,2].astype(int)
+    #coverage       = trajData[:,2:284]
+    startIdx       = 3
+    endIdx         = 3+nFaces[-1]
+    coverage       = trajData[:,startIdx:endIdx].astype(int)
+    startIdx = endIdx 
+    endIdx = endIdx+5
+    action         = trajData[:,startIdx:endIdx]
+    startIdx = endIdx 
+    endIdx = endIdx+3
+    reward         = trajData[:,startIdx:endIdx]
+    startIdx = endIdx 
+    endIdx = endIdx+6
+    orbit          = trajData[:,startIdx:endIdx]
+
+    return npts,position,velocity,sim_time,nInspected,coverage,action,reward,orbit
+

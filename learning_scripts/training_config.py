@@ -34,26 +34,30 @@ def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
 #                    None, env.observation_space[1], env.action_space[1], {"gamma": 0.98}
 #                ),
                 "policy_1": (
-                    None, env.observation_space[1], env.action_space[1], {"gamma": 0.99}
+                    None, env.observation_space[1], env.action_space[1], {"gamma": 0.0}
                 ),
 #                "policy_2": (
-#                    None, env.observation_space[2], env.action_space[2], {"gamma": 0.99}
+#                    None, env.observation_space[2], env.action_space[2], {"gamma": 0.0}
 #                ),
 #                "policy_3": (
-#                   None, env.observation_space[3], env.action_space[3], {"entropy_coeff": 0.005, "gamma": 0.98}
+#                   None, env.observation_space[3], env.action_space[3], {"gamma": 0.0}
+#                ),
+#                "policy_4": (
+#                   None, env.observation_space[4], env.action_space[4], {"gamma": 0.0}
 #                ),
             },
             policy_mapping_fn = lambda agent_id,episode, worker, **kw: f"policy_{agent_id}",
             )\
         .framework(framework='tf',eager_tracing=True)\
+        .callbacks(MyCallbacks)\
+        .reporting(keep_per_episode_custom_metrics=True)\
         .rollouts(
               create_env_on_local_worker=True,
               num_rollout_workers=rollout_workers,
-              batch_mode="truncate_episodes",
+              #batch_mode="truncate_episodes",
+              batch_mode="complete_episodes",
               rollout_fragment_length=rollout_fragment_length
               )\
-        .callbacks(MyCallbacks)\
-        .reporting(keep_per_episode_custom_metrics=True)\
         .evaluation(
             evaluation_num_workers=0,
             # Will  evaluate after training.
@@ -61,7 +65,8 @@ def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
             evaluation_parallel_to_training=False,
 
             # Run 1 episodes each time evaluation runs
-            evaluation_duration=duration,
+            #evaluation_duration=duration,
+            evaluation_duration=1,
             evaluation_duration_unit='episodes',
             #evaluation_duration=nSteps,
             #evaluation_duration_unit='timesteps',
