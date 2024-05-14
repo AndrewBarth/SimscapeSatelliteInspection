@@ -3,12 +3,14 @@
 %% General parameters
 
 % Set the run time and step size of the simulation
-endTime = 99;
+if MISSION_TYPE == 0
+    endTime = 99;
 % endTime = 5;
-stepSize = 0.001;
-
-% endTime = 6000;
-% stepSize = 0.1;
+    stepSize = 0.001;
+elseif MISSION_TYPE == 1
+    endTime = 6000;
+    stepSize = 0.1;
+end
 
 %% Rod Parameters
 % Properties of aluminum
@@ -100,6 +102,9 @@ sat.service.panel_mount.dim = [0.05 0.01 0.01];
 sat.service.IC.pose.position.x = 0.0;
 sat.service.IC.pose.position.y = 0.0;
 sat.service.IC.pose.position.z = 0.0;
+sat.service.IC.pose.position.x = 0.05;
+sat.service.IC.pose.position.y = -1.5;
+sat.service.IC.pose.position.z = -0.25;
 % Velocity in m/s
 sat.service.IC.twist.linear.x = 0.0;
 sat.service.IC.twist.linear.y = 0.0;
@@ -117,13 +122,13 @@ sat.service.camera.attachOrientation = [-90 0 22.5]*dtr;
 % Angles in rad Z-Y-X order and sequence
 sat.service.camera.bodyOrientation = [45 0 90]*dtr;
 
-sat.client.mass = 1000;
-sat.client.dim = [1.0 0.5 1.0];
-IC.rel_position = [-0.25 2 0.0] - [-0.2 0.5 -0.25];
+% Setup client state
+client.IC.rel_position = [-0.25 2 0.0] - [-0.2 0.5 -0.25];
+client.IC.rel_position = [0 0 0];
 % Attitude in rad Z-Y-X order and sequence
-IC.rel_orientation = [0 0 0]*dtr;
+client.IC.rel_orientation = [0 0 0]*dtr;
 % Angular velocity in rad/s
-sat.client.IC.twist.angular = [0.0 0.0 0.0]*dtr;
+client.IC.twist.angular = [0.0 0.0 0.0]*dtr;
 
 %% Joint Control Parameters
 % Script to define parameters used in the joint control algorithm.

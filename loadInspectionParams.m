@@ -1,13 +1,14 @@
 
 % Size of Goldberg polyhedron
 a = 4;
+a = 2;
 b = 2;
 
 % Use golden ratio for radius
 PHI = (1+sqrt(5)) / 2;
 radius = norm([PHI 1 0]);
 
-makePlots = 0;
+makePlots = 1;
 [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(a,b,radius,makePlots);
 
 % Store parameters in client data structure

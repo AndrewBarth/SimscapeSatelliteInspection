@@ -362,7 +362,7 @@ busInfo = Simulink.Bus.createObject(jointControlData);
 jointControlDataBus = evalin('base',busInfo.busName);
 %% Satellite Control Calculations
 % This is a relative position and velocity to the client
-satControlData_Trans.cmdPos = IC.rel_position;
+satControlData_Trans.cmdPos = -1*[sat.service.IC.pose.position.x sat.service.IC.pose.position.y sat.service.IC.pose.position.z];
 
 % Create Simulink Bus
 busInfo = Simulink.Bus.createObject(satControlData_Trans);

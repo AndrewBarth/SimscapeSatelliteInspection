@@ -1,7 +1,7 @@
 clear
 %clc
 
-MISSION_TYPE = 0;
+MISSION_TYPE = 1;
 VSS_RoboticArmOperation = Simulink.Variant('MISSION_TYPE==0');
 VSS_CubeSatOperation = Simulink.Variant('MISSION_TYPE==1');
 
