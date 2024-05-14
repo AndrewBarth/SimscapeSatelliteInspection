@@ -37,7 +37,7 @@ case_type = 'Benchmark2'
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-05-09-23-24/checkpoint_500'
+checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-05-13-15-21/checkpoint_400'
 
 # Instantiate the environment
 #Create the environment
@@ -56,7 +56,8 @@ elif mission == 'Inspection':
 # Set up a save directory
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M")
 save_dir = []
-for agent_id in env.agent_ids:
+#for agent_id in env.agent_ids:
+for agent_id in env.active_agents:
         # Specify model save path
         save_dir.append(os.path.dirname(sys.path[1])+"/data_storage/"+date_time+"/"+str(agent_id))
 

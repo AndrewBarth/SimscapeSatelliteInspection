@@ -531,10 +531,8 @@ class CubesatInspectionEnv(MultiAgentEnv):
         # Dones must be returned from step as a list of bools, not a dictionary
         terminateds = {}
         for agent_id in self.agent_ids:
-        #    dones[agent_id] = any([bool(dones[agent_id][i]) for i in range(2)])
-            terminateds[agent_id] = any(any_dones)
-        terminateds["__all__"] = all(any_dones)
-
+            terminateds[agent_id] = any(any_dones.values())
+        terminateds["__all__"] = all(any_dones.values())
 
         return observations, rewards, terminateds, truncateds, self.info
 

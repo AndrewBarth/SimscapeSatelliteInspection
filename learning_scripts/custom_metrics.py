@@ -60,9 +60,6 @@ class MyCallbacks(DefaultCallbacks):
 #            "after env reset!"
 #        )
         print("episode {} (env-idx={}) started.".format(episode.episode_id, env_index))
-#        episode.user_data["output_states"] = {}
-#        episode.user_data["pole_angles"] = []
-#        episode.hist_data["pole_angles"] = []
         episode.user_data["output_states"] = {}
         episode.user_data["error_states"] = {}
         episode.user_data["sim_error_states"] = {}
@@ -136,17 +133,18 @@ class MyCallbacks(DefaultCallbacks):
 #            )
 #        )
         # log the sum of scalar metrics over an episode as metric
+        #agent_keys = episode.user_data['output_states']
         agent_keys = episode.user_data['output_states']
 #        output_states = episode.user_data['output_states']
 #        error_states = episode.user_data['error_states']
 #        action_states = episode.user_data['action_states']
 #        reward_states = episode.user_data['reward_states']
         
-        #for metric_key, value in episode.user_data.items():
         for agent_key in agent_keys:
             combined_metrics = []
             for (s,t,u,v,w,x,y,z) in zip(episode.user_data['output_states'][agent_key], episode.user_data['error_states'][agent_key], episode.user_data['action_states'][agent_key],episode.user_data['reward_states'][agent_key], episode.user_data['ref_states'][agent_key], episode.user_data['orbit_states'][agent_key], episode.user_data['sim_time'],episode.user_data['sim_error_states'][agent_key]):
                 combined_metrics.append(s+t+u+v+w+x+y+z)
+
 
 #            for metric_key in episode.user_data.keys():
 #                #combined_metrics.append(np.array(episode.user_data[metric_key][agent_key]))
@@ -156,11 +154,6 @@ class MyCallbacks(DefaultCallbacks):
             #episode.custom_metrics[agent_key] = np.array(combined_metrics,dtype=object)
 
             episode.custom_metrics[agent_key] = combined_metrics
-
-#        for key, value in episode.user_data['output_states'].items():
-#            episode.custom_metrics[key] = value
-        #episode.custom_metrics["output_states"] = worker.env.output_states
-        #episode.custom_metrics["output_states"] = [5,6]
 
     def on_sample_end(self, *, worker: RolloutWorker, samples: SampleBatch, **kwargs):
         print("returned sample batch of size {}".format(samples.count))

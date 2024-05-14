@@ -16,8 +16,8 @@ def main():
     fileDate = '2023-07-18'
     fileTime = '13-36'    # 1000 episodes of varied LEO evaluation
 
-    fileDate = '2024-05-10'
-    fileTime = '15-22'
+    fileDate = '2024-05-13'
+    fileTime = '15-21'
     #scenario_type = 'Train'
     scenario_type = 'Eval'
     #mission = 'Transfer'
@@ -28,29 +28,29 @@ def main():
 
     file_path = os.path.dirname(sys.path[0])+storageLocation+fileDate+"-"+fileTime
 
-    episode_number = 1
+    episode_number = 40
     nAgents = 3
 
     caseType='3d'
 
     if mission == 'Inspection':
-        npts1,position1,velocity1,sim_time1,nInspected1,coverage1,action1,reward1,orbit1 = load_data_inspection(str(episode_number),'1',file_path)
+        npts1,position1,velocity1,sim_time1,nInspected1,coverage1,reward1,orbit1 = load_data_inspection(str(episode_number),'1',file_path)
         if nAgents == 1:
-            npts2,position2,velocity2,sim_time2,nInspected2,coverage2,action2,reward2,orbit2 = load_data_inspection(str(episode_number),'1',file_path)
-            npts3,position3,velocity3,sim_time3,nInspected3,coverage3,action3,reward3,orbit3 = load_data_inspection(str(episode_number),'1',file_path)
-            npts4,position4,velocity4,sim_time4,nInspected4,coverage4,action4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
+            npts2,position2,velocity2,sim_time2,nInspected2,coverage2,reward2,orbit2 = load_data_inspection(str(episode_number),'1',file_path)
+            npts3,position3,velocity3,sim_time3,nInspected3,coverage3,reward3,orbit3 = load_data_inspection(str(episode_number),'1',file_path)
+            npts4,position4,velocity4,sim_time4,nInspected4,coverage4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
         elif nAgents == 2:
-            npts2,position2,velocity2,sim_time2,nInspected2,coverage2,action2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,sim_time3,nInspected3,coverage3,action3,reward3,orbit3 = load_data_inspection(str(episode_number),'2',file_path)
-            npts4,position4,velocity4,sim_time4,nInspected4,coverage4,action4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
+            npts2,position2,velocity2,sim_time2,nInspected2,coverage2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
+            npts3,position3,velocity3,sim_time3,nInspected3,coverage3,reward3,orbit3 = load_data_inspection(str(episode_number),'2',file_path)
+            npts4,position4,velocity4,sim_time4,nInspected4,coverage4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
         elif nAgents == 3:
-            npts2,position2,velocity2,sim_time2,nInspected2,coverage2,action2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,sim_time3,nInspected3,coverage3,action3,reward3,orbit3 = load_data_inspection(str(episode_number),'3',file_path)
-            npts4,position4,velocity4,sim_time4,nInspected4,coverage4,action4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
+            npts2,position2,velocity2,sim_time2,nInspected2,coverage2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
+            npts3,position3,velocity3,sim_time3,nInspected3,coverage3,reward3,orbit3 = load_data_inspection(str(episode_number),'3',file_path)
+            npts4,position4,velocity4,sim_time4,nInspected4,coverage4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
         else:
-            npts2,position2,velocity2,sim_time2,nInspected2,coverage2,action2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,sim_time3,nInspected3,coverage3,action3,reward3,orbit3 = load_data_inspection(str(episode_number),'3',file_path)
-            npts4,position4,velocity4,sim_time4,nInspected4,coverage4,action4,reward4,orbit4 = load_data_inspection(str(episode_number),'4',file_path)
+            npts2,position2,velocity2,sim_time2,nInspected2,coverage2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
+            npts3,position3,velocity3,sim_time3,nInspected3,coverage3,reward3,orbit3 = load_data_inspection(str(episode_number),'3',file_path)
+            npts4,position4,velocity4,sim_time4,nInspected4,coverage4,reward4,orbit4 = load_data_inspection(str(episode_number),'4',file_path)
     elif mission == 'Transfer':
         npts1,position1,velocity1,poserror1,velerror1,action1,reward1,transfer_time1,orbit1 = load_data_dv(str(episode_number),'1',file_path)
         if nAgents == 1:
@@ -200,9 +200,9 @@ def main():
         plotData={'data0':cumReward1,'data1':cumReward2,'data2':cumReward3}
         plot_static('3d',plotData,labels,legend,colors)
 
-        print('Orbit for Cubesat 1 = ',action1[0,0:3])
-        print('Orbit for Cubesat 2 = ',action2[0,0:3])
-        print('Orbit for Cubesat 3 = ',action3[0,0:3])
+        print('Orbit for Cubesat 1 = ',orbit1[0,0:6])
+        print('Orbit for Cubesat 2 = ',orbit2[0,0:6])
+        print('Orbit for Cubesat 3 = ',orbit3[0,0:6])
     if mission == 'Transfer':
         labels=['Reference Trajectory','X Position (m)', 'Y Position (m)']
         xData = {}
