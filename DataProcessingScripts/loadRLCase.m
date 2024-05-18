@@ -3,7 +3,7 @@ function [agentData,prescribed_jointAngles] = loadRLCase(runDate,runTime,episode
 % Form the path to the data files
 agent = '1';
 % dataDir = '\\wsl.localhost\Ubuntu-20.04\home\barthal\SimscapeSatelliteInspection\data_storage';
-dataDir = '..\data_storage';
+dataDir = 'data_storage';
 
 %filePath = '';
 filePath = append(dataDir,'\',runDate,'-',runTime,'\',num2str(agent),'_',num2str(episode),'\');

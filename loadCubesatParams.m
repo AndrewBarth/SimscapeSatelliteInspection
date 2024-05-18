@@ -6,10 +6,10 @@ Earth.radius = 6378*1000; % meters
 Earth.mu = 398600*1000^3; % m^3/s^2
 
 % Set orbit parameters
-orbit.altitude = 500*1000; % kilometers
+orbit.altitude = 800*1000; % kilometers
 orbit.mean_motion = sqrt(Earth.mu/(Earth.radius+orbit.altitude)^3); % seconds^(-1)
 orbit.period = 2*pi/orbit.mean_motion; % seconds
-
+endTime = orbit.period;
 
 %% Define Cubesat initial conditions
 nsat=4;
@@ -18,6 +18,9 @@ nsat=4;
 b = 2.5;
 y0 = -2*b;
 inc = 45*dtr;
+b = 50/2;
+y0 = -2*b;
+inc = -79.85713958740234*dtr;
 % Initialize at chief
 % [rinteci, vinteci] = hill2eci(client.IC_Position, client.IC_Velocity, [0  -100 0], [0  0 0]);
 % initialize in PRO
@@ -39,6 +42,9 @@ cubesat(1).IC.rel_orientation = [0 0 0]*dtr;
 b = 5;
 y0 = -2*b;
 inc = 0*dtr;
+b = 5/2;
+y0 = -2*b;
+inc = --67.03803253173828*dtr;
 % Initialize at chief
 % [rinteci, vinteci] = hill2eci(client.IC_Position, client.IC_Velocity, [0  -100 0], [0  0 0]);
 % initialize in PRO
@@ -57,6 +63,9 @@ cubesat(2).IC.rel_orientation = [0 0 0]*dtr;
 b = 10;
 y0 = -2*b;
 inc = 75*dtr;
+b = 48.57678/2;
+y0 = -2*b;
+inc = 25.473949432373047*dtr;
 % Initialize at chief
 % [rinteci, vinteci] = hill2eci(client.IC_Position, client.IC_Velocity, [0  -100 0], [0  0 0]);
 % initialize in PRO
@@ -75,6 +84,9 @@ cubesat(3).IC.rel_orientation = [0 0 0]*dtr;
 b = 20;
 y0 = -2*b;
 inc = 70*dtr;
+b = 50.0/2;
+y0 = -2*b;
+inc = -59.0098876953125*dtr;
 % Initialize at chief
 % [rinteci, vinteci] = hill2eci(client.IC_Position, client.IC_Velocity, [0  -100 0], [0  0 0]);
 % initialize in PRO

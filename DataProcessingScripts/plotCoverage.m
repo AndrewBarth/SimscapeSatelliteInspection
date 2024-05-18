@@ -1,7 +1,7 @@
 
 %coverage = out.coverageOut.Data(:,1,end);
-%credit = out.creditOut.Data(:,1,end);
-credit = out.creditOut.Data(end,:)';
+credit = out.creditOut.Data(:,1,end);
+%credit = out.creditOut.Data(end,:)';
 
 if ~exist('GPData')
     loadInspectionParams;
@@ -37,10 +37,11 @@ figure;
     view(3);
     C=colororder;
 
-%    plot3(out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,3),'color',C(1,:))
-%    plot3(out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,3),'color',C(2,:))
-%    plot3(out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,3),'color',C(3,:))
-%    plot3(out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,3),'color',C(4,:))
+
+   plot3(out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,3),'color',C(1,:))
+   plot3(out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,3),'color',C(2,:))
+   plot3(out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,3),'color',C(3,:))
+   plot3(out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,3),'color',C(4,:))
     for i=1:client.nFaces
         if credit(i) > 0
             patch('Vertices', scaledV, 'Faces', GPData.F{i}+ONE, 'FaceColor', C(credit(i),:));

@@ -9,7 +9,7 @@ if MISSION_TYPE == 0
     stepSize = 0.001;
 elseif MISSION_TYPE == 1
     endTime = 6000;
-    stepSize = 0.1;
+    stepSize = 0.5;
 end
 
 %% Rod Parameters
