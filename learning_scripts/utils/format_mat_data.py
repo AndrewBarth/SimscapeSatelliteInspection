@@ -37,9 +37,24 @@ def format_mat_data(Data,caseTitle,caseName,mission,time_step):
         outdata[caseName]['Title'] = caseTitle
         outdata[caseName]['time'] = time_vec
         outdata[caseName]['cubesat'] = {}
-        outdata[caseName]['cubesat']['nInspected'] = Data[0,:,1]
-        outdata[caseName]['cubesat']['coverage'] = Data[0,:,2:124]
-        outdata[caseName]['cubesat']['action'] = Data[0,:,124:128]
+        outdata[caseName]['cubesat']['position']      = Data[:,0:3]
+        outdata[caseName]['cubesat']['velocity']      = Data[:,3:6]
+        outdata[caseName]['cubesat']['acceleration']  = Data[:,6:9]
+        outdata[caseName]['cubesat']['sim_time']      = Data[:,9]
+        outdata[caseName]['cubesat']['nFaces']        = Data[:,10].astype(int)
+        outdata[caseName]['cubesat']['nInspected']    = Data[:,11].astype(int)
+        startIdx       = 12
+        endIdx         = 12+outdata[caseName]['cubesat']['nFaces'][-1]
+        outdata[caseName]['cubesat']['coverage ']     = Data[:,startIdx:endIdx].astype(int)
+#        startIdx = endIdx
+#        endIdx = endIdx+5
+#        action         = trajData[:,startIdx:endIdx]
+        startIdx = endIdx
+        endIdx = endIdx+3
+        outdata[caseName]['cubesat']['reward ']       = Data[:,startIdx:endIdx]
+        startIdx = endIdx
+        endIdx = endIdx+6
+        outdata[caseName]['cubesat']['orbit']         = Data[:,startIdx:endIdx]
 
     return outdata
 

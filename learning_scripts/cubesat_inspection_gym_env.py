@@ -77,7 +77,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
         # Define the parameters used in the reward equations
         self.reward_parameters = {}
         self.reward_parameters['success'] = {}
-        self.reward_parameters['success']['threshold'] = 1.0
+        self.reward_parameters['success']['threshold'] = 0.99
         self.reward_parameters['success']['reward_value'] = 10.0
 
         self.reward_parameters['coverage'] = {}
@@ -131,9 +131,9 @@ class CubesatInspectionEnv(MultiAgentEnv):
         #box_obs_space = Box(low=np.float32(-1e5), high=np.float32(1e5),shape=(22,))
          
         obsLow  = [0, 0]
-        obsLow.extend(4*self.nAgents*[-1e5])
+        obsLow.extend(3*self.nAgents*[-1e5])
         obsHigh = [1e4, 1e5]
-        obsHigh.extend(4*self.nAgents*[1e5])
+        obsHigh.extend(3*self.nAgents*[1e5])
         box_obs_space = Box(low=np.array(obsLow,dtype=np.float32),high=np.array(obsHigh,dtype=np.float32))
         #box_obs_space = Box(low=np.array([0.0,0.0],dtype=np.float32),high=np.array([self.nInspectionFaces, 1e5]))
          
@@ -296,8 +296,9 @@ class CubesatInspectionEnv(MultiAgentEnv):
 
         self.sim_time = 0
         self.step_count = 0
-        self.coveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.totalCoveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
         self.nCoveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
+        self.coveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
 
         # Define the target state
         self.init_target()
@@ -307,7 +308,6 @@ class CubesatInspectionEnv(MultiAgentEnv):
         obs = 0
         obs = np.append(obs,0)
         for agent_id in self.active_agents:
-            obs = np.append(obs,0)
             obs = np.append(obs,0)
             obs = np.append(obs,0)
             obs = np.append(obs,0)
@@ -326,8 +326,12 @@ class CubesatInspectionEnv(MultiAgentEnv):
 
     def compute_coverage(self, agent_id, coverage):
         # Store the coverage output and determine the number of faces currently covered
-        self.coveredFaces[agent_id] = np.nonzero(np.array(coverage[agent_id]))
-        self.nCoveredFaces[agent_id] = np.count_nonzero(np.array(coverage[agent_id]))
+        self.totalCoveredFaces[agent_id] = np.count_nonzero(np.array(coverage[agent_id]))
+
+        self.coveredFaces[agent_id] = np.where(np.array(coverage[agent_id]).astype(int) == agent_id)[0].tolist()
+        self.nCoveredFaces[agent_id] = np.count_nonzero(np.array(self.coveredFaces[agent_id])+1)  # add 1 because index starts at 0
+
+       
 
     def get_observation(self, agent_id, coverage, sim_time):
         # Form the observation dictionary that will be used for training
@@ -337,10 +341,10 @@ class CubesatInspectionEnv(MultiAgentEnv):
 
 
         if normalized_obs == 1:            
-            obsFace = self.normalize_obs(self.nCoveredFaces[agent_id],0,self.nInspectionFaces)
+            obsFace = self.normalize_obs(self.totalCoveredFaces[agent_id],0,self.nInspectionFaces)
             obsTime = self.normalize_obs(self.sim_time,0,self.ref_period[agent_id])
         else:
-            obsFace = self.nCoveredFaces[agent_id]
+            obsFace = self.totalCoveredFaces[agent_id]
             obsTime = self.sim_time
 
         # Set the observation values
@@ -348,10 +352,9 @@ class CubesatInspectionEnv(MultiAgentEnv):
         obs = obsFace
         obs = np.append(obs,obsTime)
         for agent_id in self.active_agents:
+            obs = np.append(obs,self.nCoveredFaces[agent_id]) 
             obs = np.append(obs,self.task_semimajor[agent_id])
-            obs = np.append(obs,self.task_ecc[agent_id])
             obs = np.append(obs,self.task_inc[agent_id])
-            obs = np.append(obs,self.task_period[agent_id])
 
         # Observations must match the type from the observation space
         obs = obs.astype('float32')
@@ -365,9 +368,9 @@ class CubesatInspectionEnv(MultiAgentEnv):
         value = (data - lower_bound) / delta
         return value
 
-    def get_reward(self, agent_id, nCovered, sim_time):
+    def get_reward(self, agent_id, nTotalCovered, nCovered, sim_time):
 
-        pct_coverage = nCovered[agent_id] / self.nInspectionFaces
+        pct_coverage = nTotalCovered[agent_id] / self.nInspectionFaces
         pct_period = sim_time/self.ref_period[agent_id]
 
         params = self.reward_parameters['success']
@@ -376,14 +379,22 @@ class CubesatInspectionEnv(MultiAgentEnv):
         params = self.reward_parameters['coverage']
         coverage_reward = reward_utils.exp_reward(params,pct_coverage)
 
+        #param = self.reward_parameters['sharing']
+        sharing_reward = 0
+        #for agent in self.active_agents:
+        #    if nTotalCovered[agent] > 0:
+        #        pct_total = nCovered[agent] / nTotalCovered[agent]
+        #        sharing_reward = sharing_rweard + reward_utils.exp_reward(params,pct_total[agent])
+
         params = self.reward_parameters['time']
         time_reward = reward_utils.power_reward(params,pct_period)
 
         reward = {}
         reward['success_reward'] = success_reward
         reward['coverage_reward'] = coverage_reward
+        #reward['sharing_reward'] = sharing_reward
         reward['time_reward'] = time_reward
-        reward['total'] = success_reward + coverage_reward + time_reward
+        reward['total'] = success_reward + coverage_reward + sharing_reward + time_reward
         
         return reward
 
@@ -393,7 +404,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
     def compute_errors(self, agent_id, coverage):
 
         # These aren't actually errors, but rather stats on the inspection coverage
-        error_state = [self.sim_time, self.nInspectionFaces, self.nCoveredFaces[agent_id]]
+        error_state = [self.sim_time, self.nInspectionFaces, self.totalCoveredFaces[agent_id]]
         error_state.extend(coverage)
 
         return np.array(error_state)
@@ -466,8 +477,9 @@ class CubesatInspectionEnv(MultiAgentEnv):
         #sim_time = {}
         for i in range(max(self.propSteps)):
             #current_states, current_coverage, current_dones, current_sim_time = self.cppWrapper.step_cpp_inspection(agent_ids,self.nInspectionFaces,self.stop_time,self.control_step_size,current_action)
-            current_coverage, current_dones, current_sim_time = self.cppWrapper.step_cpp_inspection(self.active_agents,self.nInspectionFaces,self.stop_time,self.control_step_size,current_action)
+            current_states, current_coverage, current_dones, current_sim_time = self.cppWrapper.step_cpp_inspection(self.active_agents,self.nInspectionFaces,self.stop_time,self.control_step_size,current_action)
             coverage = current_coverage
+            states = current_states
 
             # Get the coverage stats for this step
             for agent_id in self.active_agents:
@@ -480,7 +492,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
             for agent_id in self.active_agents:
                 #states[agent_id] = current_states[agent_id]
                 dones[agent_id] = current_dones[agent_id]
-                if self.nCoveredFaces[agent_id] == self.nInspectionFaces:
+                if self.totalCoveredFaces[agent_id] == self.nInspectionFaces:
                     self.inspectionComplete = True
                     dones[agent_id][0] = True
                 any_dones[agent_id] = any([bool(dones[agent_id][i]) for i in range(2)])
@@ -506,7 +518,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
 
         # Collect states and errors
         for agent_id in self.active_agents:
-#            self.output_states[agent_id] = states[agent_id]
+            self.output_states[agent_id] = states[agent_id]
             self.error_states[agent_id] = errors[agent_id].tolist()
 #            self.action_states[agent_id] = action[agent_id].tolist()
 #            self.action_states[agent_id] = [action[agent_id][0][0], action[agent_id][0][1], action[agent_id][0][2], action[agent_id][0][3],action[agent_id][1]]
@@ -514,7 +526,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
 #            self.orbit_states[agent_id].extend(self.chief_state.tolist())
 
         # Compute rewards for this step 
-        step_rewards = {i: self.get_reward(i,self.nCoveredFaces,self.sim_time) for i in self.active_agents}
+        step_rewards = {i: self.get_reward(i,self.totalCoveredFaces,self.nCoveredFaces,self.sim_time) for i in self.active_agents}
 
         rewards = {}
         # Collect rewards

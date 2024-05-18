@@ -108,7 +108,7 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
       // 1st agent is being trained
       SatelliteServicing_Mission_P.cubesat[0].IC.rel_position[0] = initial_conditions[0];
       SatelliteServicing_Mission_P.cubesat[0].IC.rel_position[1] = initial_conditions[1];
-      SatelliteServicing_Mission_P.cubesat[0].IC.rel_position[2] = initial_conditions[1];
+      SatelliteServicing_Mission_P.cubesat[0].IC.rel_position[2] = initial_conditions[2];
       SatelliteServicing_Mission_P.cubesat[0].IC.rel_velocity[0] = initial_conditions[3];
       SatelliteServicing_Mission_P.cubesat[0].IC.rel_velocity[1] = initial_conditions[4];
       SatelliteServicing_Mission_P.cubesat[0].IC.rel_velocity[2] = initial_conditions[5];
@@ -141,12 +141,16 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
       SatelliteServicing_Mission_P.cubesat[3].IC.rel_velocity[2] = initial_conditions[23];
   }
 
+  SatelliteServicing_Mission_P.orbit.mean_motion = mean_motion;
+
 
   SatelliteServicing_Mission_M->Timing.stepSize0 = simStepSize;
 
   // Initialize model
   SatelliteServicing_Mission_initialize(SatelliteServicing_Mission_M);
 
+  //printf("Mass: %9.5f\n",SatelliteServicing_Mission_P.cubesat[0].mass);
+  //printf("Mean Motion: %9.5f\n",mean_motion);
 
   // Get the number of faces on the inspection polyhedron
   *nFaces = (int) sizeof(SatelliteServicing_Mission_Y.ControlError)/sizeof(*SatelliteServicing_Mission_Y.ControlError);
@@ -164,8 +168,6 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
 // illustrates how you do this relative to initializing the model.
 //
 //int_T main(int_T argc, const char *argv[])for (int i=3*nAgents; i<3*ncppAgents; i++) {
-//int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime)
-//int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime)
 extern "C" int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime)
 {
 
@@ -213,15 +215,15 @@ struct ExtU_SatelliteServicing_Missi_T {
   }
 
   // Collect observations
-//  for (int i=0; i<24; i++) {
-//       observations[i] = SatelliteServicing_Mission_Y.Observations[i];
-//  }
+  for (int i=0; i<36; i++) {
+       observations[i] = SatelliteServicing_Mission_Y.Observations[i];
+  }
 
   // Collect coverage data 
   for (int i=0; i<nFaces; i++) {
        coverage[i] = (int) SatelliteServicing_Mission_Y.ControlError[i];
-       //observations[i] = (int) SatelliteServicing_Mission_Y.ControlError[i];
   }
+  //printf("Observations: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n",SatelliteServicing_Mission_Y.Observations[0],SatelliteServicing_Mission_Y.Observations[1],SatelliteServicing_Mission_Y.Observations[2],SatelliteServicing_Mission_Y.Observations[3],SatelliteServicing_Mission_Y.Observations[4],SatelliteServicing_Mission_Y.Observations[5],SatelliteServicing_Mission_Y.Observations[6],SatelliteServicing_Mission_Y.Observations[7],SatelliteServicing_Mission_Y.Observations[8]);
 
   double current_time = rtmGetT(SatelliteServicing_Mission_M);
   *simTime = current_time;
@@ -229,6 +231,7 @@ struct ExtU_SatelliteServicing_Missi_T {
       //printf("Current Time: %6.3f\n",*simTime);
       //printf("Actions: %6.3f %6.3f %6.3f\n",actions[0],actions[1],actions[2]);
   }
+  //printf("Current Time: %6.3f\n",*simTime);
 
   // Determine if simulation has reached its end time
   if (rtmGetT(SatelliteServicing_Mission_M) >= stopTime) {
@@ -253,12 +256,8 @@ extern "C" int_T sim_terminate()
 }
 
 // Declare external functions to be accessed from Python
-//extern "C++" {
 extern "C" {
-//int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* dones, real_T* simTime);
-//int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime);
-int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime);
-//int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime);
+    int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime);
     int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_conditions, real_T mean_motion, int_T* nFaces);
     int_T sim_terminate();
 }

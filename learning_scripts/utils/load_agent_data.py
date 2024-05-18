@@ -104,12 +104,12 @@ def load_data_inspection(episode, agent, file_path):
     npts = len(trajData)
     position       = trajData[:,0:3]
     velocity       = trajData[:,3:6]
-    sim_time       = trajData[:,0]
-    nFaces         = trajData[:,1].astype(int)
-    nInspected     = trajData[:,2].astype(int)
-    #coverage       = trajData[:,2:284]
-    startIdx       = 3
-    endIdx         = 3+nFaces[-1]
+    acceleration   = trajData[:,6:9]
+    sim_time       = trajData[:,9]
+    nFaces         = trajData[:,10].astype(int)
+    nInspected     = trajData[:,11].astype(int)
+    startIdx       = 12 
+    endIdx         = 12+nFaces[-1]
     coverage       = trajData[:,startIdx:endIdx].astype(int)
 #    startIdx = endIdx 
 #    endIdx = endIdx+5
@@ -121,5 +121,5 @@ def load_data_inspection(episode, agent, file_path):
     endIdx = endIdx+6
     orbit          = trajData[:,startIdx:endIdx]
 
-    return npts,position,velocity,sim_time,nInspected,coverage,reward,orbit
+    return npts,position,velocity,acceleration,sim_time,nInspected,coverage,reward,orbit
 

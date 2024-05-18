@@ -187,7 +187,7 @@ else:
 #                    rospy.logerr("agent: "+name+" Q-net stored")
 
                     # Save as mat file, first must place in dictionary
-                    Data = np.array(eval_results['evaluation']['custom_metrics'][agent_id])
+                    Data = np.squeeze(np.array(eval_results['evaluation']['custom_metrics'][agent_id]))
 
                     matData = format_mat_data(Data,caseTitle,caseName,mission,time_step)
 

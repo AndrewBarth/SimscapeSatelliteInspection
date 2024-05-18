@@ -37,7 +37,7 @@ case_type = 'Benchmark2'
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-05-13-15-21/checkpoint_400'
+checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-05-17-16-03/checkpoint_400'
 
 # Instantiate the environment
 #Create the environment
@@ -77,7 +77,7 @@ for i in range(env.nAgents):
     data_utils.save_pkl(content=eval_results['evaluation']['custom_metrics'][agent_id], fdir=save_dir_inc, fname="agent_parameters.pkl")
     
     # Save as mat file, first must place in dictionary
-    Data = np.array(eval_results['evaluation']['custom_metrics'][agent_id])
+    Data = np.squeeze(np.array(eval_results['evaluation']['custom_metrics'][agent_id]))
 
     matData = format_mat_data(Data,caseTitle,caseName,mission,time_step)
 

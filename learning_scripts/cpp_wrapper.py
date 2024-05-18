@@ -135,7 +135,7 @@ class cppWrapper(object):
         stoptime_data = (ctypes.c_double)(stop_time)
         controlStepSize_data = (ctypes.c_double)(control_step_size)
         action_data = (ctypes.c_double * (nActions) )(*actions)
-        state_data = (ctypes.c_double  * (6*nAgents) )(*empty_var)
+        state_data = (ctypes.c_double  * (9*4) )(*empty_var)
         coverage_data = (ctypes.c_int  * (nFaces) )(*empty_var)
         done_data = (ctypes.c_int  * 2)(*empty_var)
         simtime = (ctypes.c_double * 1)(*empty_var)
@@ -144,13 +144,12 @@ class cppWrapper(object):
         #ret = lib._Z11sim_wrapperiiddPdPiS0_S_(nAgent_data,nFaces_data,stoptime_data,controlStepSize_data,action_data,state_data,coverage_data,done_data,simtime)
 #        ret = lib._Z11sim_wrapperiiddPdPiS0_S_(nAgent_data,nFaces_data,stoptime_data,controlStepSize_data,action_data,coverage_data,done_data,simtime)
         ret = lib.sim_wrapper(nAgent_data,nFaces_data,stoptime_data,controlStepSize_data,action_data,state_data,coverage_data,done_data,simtime)
-#        ret = lib._Z11sim_wrapperiiddPdS_PiS_(nAgent_data,nFaces_data,stoptime_data,controlStepSize_data,action_data,coverage_data,done_data,simtime)
 
         # Extract the observations and place them in a python dictionary
         states = {}
         coverage = {}
         for agent_id in agent_ids:
-            states[agent_id] = [state_data[6*(agent_id-1)+i] for i in range(6)]
+            states[agent_id] = [state_data[9*(agent_id-1)+i] for i in range(9)]
             coverage[agent_id] = [coverage_data[i] for i in range(nFaces)]
 
         # Extract the dones and place them in a python dictionsary
@@ -162,4 +161,4 @@ class cppWrapper(object):
 
 
         #return states, coverage, dones, simtime[0]
-        return coverage, dones, simtime[0]
+        return states, coverage, dones, simtime[0]
