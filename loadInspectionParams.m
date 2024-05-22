@@ -8,7 +8,7 @@ b = 2;
 PHI = (1+sqrt(5)) / 2;
 radius = norm([PHI 1 0]);
 
-makePlots = 1;
+makePlots = 0;
 [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(a,b,radius,makePlots);
 
 % Store parameters in client data structure
