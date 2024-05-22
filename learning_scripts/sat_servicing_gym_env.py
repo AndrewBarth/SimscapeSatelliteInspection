@@ -18,19 +18,20 @@ class SatServiceEnv(MultiAgentEnv):
 
     def __init__(self,  *args, **kwargs):
 
-
-        #self.nAgents = 3
-        #self.agents = {1, 2, 3}
         self.nAgents = kwargs['nAgents']
         self.agents = {1}
         self.agent_ids = set(self.agents)
         self._agent_ids = set(self.agents)
-        self.nFaces = 0
+
+        self.active_agents = {1}
+        for i in range(2,self.nAgents+1):
+            self.active_agents.add(i)
  
         # Process argements
         self.initial_state = kwargs['initial_state']
         self.dof = kwargs['dof']
         self.stop_time = kwargs['stop_time']
+        self.sim_step_size = kwargs['sim_step_size']
         self.control_step_size = kwargs['control_step_size']
 
         # Define the reference trajectory
@@ -94,6 +95,7 @@ class SatServiceEnv(MultiAgentEnv):
         self.sim_error_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.action_states = dict([(agent_id, []) for agent_id in self.agent_ids])
         self.reward_states = dict([(agent_id, []) for agent_id in self.agent_ids])
+        self.orbit_states = dict([(agent_id, []) for agent_id in self.active_agents])
         self.ref_states = dict([(agent_id, []) for agent_id in self.agent_ids])
 
         # Create dictionary to store previous states
@@ -122,7 +124,7 @@ class SatServiceEnv(MultiAgentEnv):
             for agent_id in self.agent_ids:
                 initial_state[agent_id] = [0]*self.dof[agent_id]
         
-        [joint_limit_data, self.nFaces] = self.cppWrapper.init_cpp(self.agent_ids,initial_state,self.dof)
+        joint_limit_data = self.cppWrapper.init_cpp_robotics(self.agent_ids,initial_state,self.dof,self.sim_step_size)
 
         # These parameters were extracted from the CPP code
         self.joint_limits = joint_limit_data
@@ -232,7 +234,7 @@ class SatServiceEnv(MultiAgentEnv):
         self.step_count += 1
 
         # Execute one step of the CPP simulation and return a new state
-        states, sim_errors, coverage, dones, sim_time = self.cppWrapper.step_cpp(agent_ids,action,self.stop_time,self.control_step_size,self.nFaces)
+        states, sim_errors, dones, sim_time = self.cppWrapper.step_cpp_robotics(agent_ids,action,self.stop_time,self.control_step_size)
 
         # Compute errors relative to reference trajectory
         #errors, ref_states = {i: self.compute_errors(i,sim_time,states[i]) for i in agent_ids}
@@ -289,7 +291,7 @@ class SatServiceEnv(MultiAgentEnv):
             self.info[agent_id]['obs'].append(observations[agent_id])
 
             quat_error = np.array(errors[agent_id][3:7])
-        self.sim_time = [sim_time]
+        self.sim_time = sim_time
 
         # Compute rewards for this step 
         step_rewards = {i: self.get_reward(i,self.joint_states,self.error_states,errors,states,self.action_states,self.prev_control) for i in agent_ids}

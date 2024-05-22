@@ -12,30 +12,17 @@ from ray.tune.registry import get_trainable_cls
 from ray.train import RunConfig, CheckpointConfig
 from ray import air, tune
 from datetime import datetime
-from sat_servicing_gym_env import SatServiceEnv
 from create_task_env import create_task_env
+from create_robotics_env import create_robotics_env
 from training_config import PPOAlgorithmConfig
 from hyperparameter_tuning import HyperparameterTuning
 from utils import data_utils
 from utils.format_mat_data import format_mat_data
 
-nAgents=3
+nAgents=1
 perform_hyperparameter_tuning = False
 debug = False    # You also need to give the -m -pdb arguments to python on command line
 
-# Set initial conditions
-initial_state = {}
-
-initial_state[1] = [80,90,20]
-
-stop_time = 80.0
-stop_time = 40.0
-
-
-dof = {1: 3}
-
-time_step = 0.5    # This is the time step for training, CPP simulation may have different step size
-nSteps = int(stop_time/time_step)
 
 save_step = 40
 checkpoint_step = 40
@@ -49,6 +36,7 @@ if debug:
     ray.init(local_mode=True)
 
 mission = 'Inspection'
+mission = 'Robotics'
 init_type = 'fixed'
 scenario_type = 'train'
 case_type = 'Benchmark2'
@@ -59,17 +47,22 @@ if mission == 'Transfer':
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Inspection':
     env,task_type,caseName = create_task_env(init_type,scenario_type,case_type,nAgents)
+elif mission == 'Robotics':
+    env,caseName = create_robotics_env(scenario_type,nAgents)
 
-#register_env(
-#        "multi_agent_sat_servicing", lambda _: SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,control_step_size=time_step,nAgents=nAgents)
-#    )
-#
-#env = SatServiceEnv(initial_state=initial_state,dof=dof,stop_time=stop_time,control_step_size=time_step,nAgents=nAgents)
+learning_step_size = env.control_step_size
+nSteps = int(env.stop_time/learning_step_size)
 
 # Fixed hyperparameters
-train_batch_size = int(500)
-train_batch_size = int(100)
-sgd_minibatch_size = int(train_batch_size/5)
+# Cubesat inspection values
+if mission == 'Inspection':
+    train_batch_size = int(400)
+    sgd_minibatch_size = int(train_batch_size/5)
+
+elif mission == 'Robotics':
+    train_batch_size = int(500)
+    #train_batch_size = nSteps
+    sgd_minibatch_size = int(train_batch_size/10)
 
 #num_sgd_iter = 1
 #clip_param = 0.3
@@ -85,6 +78,7 @@ lr_endtime = 0.8*nIter*train_batch_size
 
 nBatches = int(nSteps/train_batch_size)
 duration = nBatches
+print(duration)
 
 # Get the algorithm configuration settings
 algoConfig = PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug)
@@ -189,7 +183,7 @@ else:
                     # Save as mat file, first must place in dictionary
                     Data = np.squeeze(np.array(eval_results['evaluation']['custom_metrics'][agent_id]))
 
-                    matData = format_mat_data(Data,caseTitle,caseName,mission,time_step)
+                    matData = format_mat_data(Data,caseTitle,caseName,mission,learning_step_size)
 
                     # Create mat file
                     fileName = caseName + '.mat'

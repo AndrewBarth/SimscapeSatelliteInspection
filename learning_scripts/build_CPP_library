@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#mission='inspection'
+mission='robotics'
+
 # Define the directories to work in
 current_dir=`pwd`
 base_dir="${HOME}/SimscapeSatelliteInspection"
@@ -8,12 +11,16 @@ src_dir="${base_dir}/SimscapeSatelliteInspection/SatelliteServicing_Mission_ert_
 build_dir="${base_dir}/SimscapeSatelliteInspection"
 
 echo $util_dir
-echo $src_dir
+SatelliteServicing_Mission_robotics.mkecho $src_dir
 echo $build_dir
 # Copy required template files
-cp template_files/rtwshared.mk $util_dir
-cp template_files/ert_main_inspection.cpp $src_dir/ert_main.cpp
-cp template_files/SatelliteServicing_Mission.mk $build_dir
+rtwfile='rtwshared.mk'
+mkfile='SatelliteServicing_Mission_'$mission'.mk'
+cppfile='ert_main_'$mission'.cpp'
+
+cp template_files/$rtwfile $util_dir
+cp template_files/$cppfile $src_dir/ert_main.cpp
+cp template_files/$mkfile $build_dir/SatelliteServicing_Mission.mk
 
 # Make the utilities
 cd $util_dir

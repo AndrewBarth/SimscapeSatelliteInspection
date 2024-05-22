@@ -13,6 +13,7 @@ def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
 
     #rollout_fragment_length = int(360)
     rollout_fragment_length = "auto"
+    #rollout_fragment_length = nSteps
 
     if debug:
         rollout_workers = 0
@@ -54,8 +55,8 @@ def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
         .rollouts(
               create_env_on_local_worker=True,
               num_rollout_workers=rollout_workers,
-              #batch_mode="truncate_episodes",
-              batch_mode="complete_episodes",
+              batch_mode="truncate_episodes",
+              #batch_mode="complete_episodes",
               rollout_fragment_length=rollout_fragment_length
               )\
         .evaluation(
@@ -65,8 +66,8 @@ def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
             evaluation_parallel_to_training=False,
 
             # Run 1 episodes each time evaluation runs
-            #evaluation_duration=duration,
-            evaluation_duration=1,
+            evaluation_duration=duration,
+            #evaluation_duration=1,
             evaluation_duration_unit='episodes',
             #evaluation_duration=nSteps,
             #evaluation_duration_unit='timesteps',
