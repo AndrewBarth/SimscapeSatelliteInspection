@@ -1,5 +1,5 @@
 
-function [linkInertia,momentum,Hstar,Jstar,cstar] = armKinematics(x0,geometry,nLink,Link_Length,massProperties)
+function [linkInertia,momentum,Hstar,Jstar,cstar,Hm] = armKinematics(x0,geometry,nLink,Link_Length,massProperties)
 % Function to compute the inverse kinematics of the arm
 %
 % Inputs: x0:             state vector [position eulerAngles jointAngles
