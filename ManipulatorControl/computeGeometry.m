@@ -52,7 +52,8 @@ Tmat = zeros(nLink+2,4,4);
 PoseMats = zeros(4,4,nLink+1);
 
 % Extract elements from state vector
-rcm = x0(1:3)';
+% rcm = x0(1:3)';
+rBase = x0(1:3)';
 eulerAng = x0(4:6)';
 q = x0(7:7+nLink-1);
 
@@ -126,10 +127,11 @@ msum = [0 0 0];
 for i=1:nLink
     msum = msum + massVec(i+1)*rVec0(i,1:3,1);
 end
-rcmBase = msum / mt;
+% rcmBase = msum / mt;
+rcmSys = rBase + msum / mt;  % Ref 1 Eq. 12
 
 % Define location of base in the Inertial frame
-rBase = rcm - rcmBase;
+% rBase = rcm - rcmBase;
 
 % Define location of joints with respect to origin
 for i = 1:nLink+1

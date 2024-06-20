@@ -86,7 +86,8 @@ rod_base.rotation = [ 0 90 0]*pi/180;
 dtr = pi/180;
 
 % Mass Properties of servicing satellite
-sat.service.mass = 150;
+% sat.service.mass = 150;
+sat.service.mass = 20;
 sat.service.radius = 0.25;
 sat.service.length = 0.5;
 % The following mass properties are derived from simscape
@@ -342,26 +343,52 @@ elseif ARM_TYPE == 5
     arm(2).Joint_Limits(5,:) = [-2*pi 2*pi];
     arm(2).Joint_Limits(6,:) = [-2*pi 2*pi];
     arm(2).Joint_Limits(7,:) = [-2*pi 2*pi];
+
+elseif ARM_TYPE == 6
+    NLINKS.Value = 3;
+    arm(1).nLink = 3;
+
+    % Data from Solidworks model (in m)
+    arm(1).Link_Length(1) = 0.2;
+    arm(1).Link_Length(2) = 0.2;
+    arm(1).Link_Length(3) = 0.08;
+
+    arm(1).Link_CG(1,:) = [arm(1).Link_Length(1)/2 0 0];
+    arm(1).Link_CG(2,:) = [arm(1).Link_Length(2)/2 0 0];
+    arm(1).Link_CG(3,:) = [arm(1).Link_Length(3)/2 0 0];
+
+    arm(1).Joint_Limits(1,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(2,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(3,:) = [-120 120]*pi/180;
+
+
+    arm(2).nLink = 3;
+    % Data from Solidworks model (in m)
+    arm(2).Link_Length(1) = 0.2;
+    arm(2).Link_Length(2) = 0.2;
+    arm(2).Link_Length(3) = 0.08;
+
+    arm(2).Link_CG(1,:) = [arm(2).Link_Length(1)/2 0 0];
+    arm(2).Link_CG(2,:) = [arm(2).Link_Length(2)/2 0 0];
+    arm(2).Link_CG(3,:) = [arm(2).Link_Length(3)/2 0 0];
+
+    arm(2).Joint_Limits(1,:) = [-120 120]*pi/180;
+    arm(2).Joint_Limits(2,:) = [-120 120]*pi/180;
+    arm(2).Joint_Limits(3,:) = [-120 120]*pi/180;
 else
     NLINKS.Value = 3;
     arm(1).nLink = 3;
     arm(2).nLink = 0;
 
     % Data from Solidworks model (in m)
-    Link_Length(1) = 0.2;
-    Link_Length(2) = 0.2;
-    Link_Length(3) = 0.08;
+    arm(1).Link_Length(1) = 0.2;
+    arm(1).Link_Length(2) = 0.2;
+    arm(1).Link_Length(3) = 0.08;
 
-%     Link_CG(1,:) = [0 0 Link_Length(1)/2];
-%     Link_CG(2,:) = [0 0 Link_Length(2)/2];
-%     Link_CG(3,:) = [0 0 Link_Length(3)/2];
-    Link_CG(1,:) = [Link_Length(1)/2 0 0];
-    Link_CG(2,:) = [Link_Length(2)/2 0 0];
-    Link_CG(3,:) = [Link_Length(3)/2 0 0];
+    arm(1).Link_CG(1,:) = [arm(1).Link_Length(1)/2 0 0];
+    arm(1).Link_CG(2,:) = [arm(1).Link_Length(2)/2 0 0];
+    arm(1).Link_CG(3,:) = [arm(1).Link_Length(3)/2 0 0];
 
-    arm(1).Link_Length = Link_Length;
-    arm(1).Link_CG = Link_CG;
-    
     arm(1).Joint_Limits(1,:) = [-120 120]*pi/180;
     arm(1).Joint_Limits(2,:) = [-120 120]*pi/180;
     arm(1).Joint_Limits(3,:) = [-120 120]*pi/180;
@@ -457,14 +484,22 @@ jointControlData.Kp = [1 1 1 1 1 1]*0.7;
 jointControlData.Kd = [1 1 1 1 1 1]*4;
 jointControlData.Ki = [1 1 1 1 1 1]*0.;
 
-% jointControlData.Kp = [1 1 1 1 1 1 1]*50.0;
-% jointControlData.Kd = [1 .5 .1 .05 .01 .005 .001]*0.01;
-% jointControlData.Ki = [1 1 1 1 1 1 1]*10.;
-% 
-% massPct = [0.2746    0.2216    0.2055    0.1288    0.1128    0.0365    0.0203];
-% jointControlData.Kp = massPct*200;
-% jointControlData.Kd = massPct*0.1;
-% jointControlData.Ki = massPct*40;
+if ARM_TYPE == 5
+    % jointControlData.Kp = [1 1 1 1 1 1 1]*50.0;
+    % jointControlData.Kd = [1 .5 .1 .05 .01 .005 .001]*0.01;
+    % jointControlData.Ki = [1 1 1 1 1 1 1]*10.;
+    % 
+    massPct = [0.2746    0.2216    0.2055    0.1288    0.1128    0.0365  0.0203]; 
+    jointControlData.Kp = massPct*200; 
+    jointControlData.Kd = massPct*0.1;
+    jointControlData.Ki = massPct*40;
+
+elseif ARM_TYPE == 6
+    massPct = [1.0  0.5785 0.1571];
+    jointControlData.Kp = massPct*1.5;
+    jointControlData.Kd = massPct*0;
+    jointControlData.Ki = massPct*1.0;
+end
 
 jointControlData.jointControlMode = 0;
 jointControlData.jointControlModeVec = [2 2 2 2 2];   % 1 = hold position, 2 = EE control

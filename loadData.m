@@ -8,20 +8,22 @@ VSS_CubeSatOperation = Simulink.Variant('MISSION_TYPE==1');
 
 
 % Select robotic arm to use in the simulation
-ARM_TYPE = 0;    
+ARM_TYPE = 6;    
 % 0 = Planar3Link
 % 1 = ViperX300 (5-DOF)
 % 2 = General6DOF (6-DOF)
 % 3 = General7DOF (7-DOF)
 % 4 = Planar2Link
-% 5 = Dual Arm
+% 5 = Dual Arm (Both 7-DOF)
+% 6 = Dual Arm (Both 3-DOF)
 
 VSS_RoboticArmPlanar3Link = Simulink.Variant('ARM_TYPE==0');
 VSS_RoboticArmViperX300   = Simulink.Variant('ARM_TYPE==1');
 VSS_RoboticArmGeneral6DOF = Simulink.Variant('ARM_TYPE==2');
 VSS_RoboticArmGeneral7DOF = Simulink.Variant('ARM_TYPE==3');
 VSS_RoboticArmPlanar2Link = Simulink.Variant('ARM_TYPE==4');
-VSS_RoboticArmDualArm     = Simulink.Variant('ARM_TYPE==5');
+VSS_RoboticArmDualArm7DOF = Simulink.Variant('ARM_TYPE==5');
+VSS_RoboticArmDualArm3DOF = Simulink.Variant('ARM_TYPE==6');
 
 % Define path for required files
 addpath('RoboticArm_Models')
@@ -74,16 +76,41 @@ elseif ARM_TYPE == 5
    arm(2).smiData = smiData; clear smiData
    arm(2).rigidBodyTree = load("General7DOF_RigidBodyTree.mat");
 
+elseif ARM_TYPE == 6
+    % Set up arm 1
+    ArmAssembly_DataFile
+    arm(1).smiData = smiData; clear smiData
+    arm(1).rigidBodyTree = load("3linkPlanarTree.mat");
+
+    i=0;
+    for t=0:.001:49
+        i=i+1;
+        a(i) = 0.00088;
+        v(i) = a(i)*t;
+        ang(i) = 0.5*a(i)*t^2;
+    end
+   tVec=0:.001:49;
+   zeroVec=zeros(1,length(tVec));
+
+   angles=[ang; zeroVec; zeroVec];
+   rates=[v; zeroVec; zeroVec];
+   % times = [0 49];
+   prescribed_jointAngles = timeseries(angles,tVec);
+   prescribed_jointRates = timeseries(rates,tVec);
+   % Set up arm 2
+   ArmAssembly_DataFile
+   arm(2).smiData = smiData; clear smiData
+   arm(2).rigidBodyTree = load("3linkPlanarTree.mat");
+
 else
     ArmAssembly_DataFile
     arm(1).smiData = smiData; clear smiData
     RigidBodyTree = load("3linkPlanarTree.mat");
 end
-%smiData.RevoluteJoint(2).Rz.Pos = 45.0;  % deg
 
 ClientAssembly_DataFile
 AllParams
-% endTime = 5;
+endTime = 10;
 
 % Load parameter override data from TestScenarios directory
 if ARM_TYPE == 1
@@ -97,7 +124,7 @@ elseif ARM_TYPE == 5
 end
 
 
-ARM_CONTROL_TYPE = 1;
+ARM_CONTROL_TYPE = 3;
 VSS_NoControl = Simulink.Variant('ARM_CONTROL_TYPE==0');
 VSS_ModelBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
 VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==2');
@@ -108,7 +135,7 @@ AllCalcs
 loadBusData
 
 % Set the source of the joint commands (computed or playback)
-JOINT_COMMAND_SOURCE = 0;
+JOINT_COMMAND_SOURCE = 1;
 VSS_ComputedTorques = Simulink.Variant('JOINT_COMMAND_SOURCE==0');
 VSS_Playback         = Simulink.Variant('JOINT_COMMAND_SOURCE==1');
 
@@ -118,7 +145,7 @@ load_system('SatelliteServicing_Mission.slx');
 % Call routine to configure the joints in the arm model to accept the
 % chosen joint command type (only set up for planar 3 Link arm and Dual Arms)
 % Used for playback mode
-if (ARM_TYPE == 0 || ARM_TYPE == 5) && MISSION_TYPE == 0
+if (ARM_TYPE == 0 || ARM_TYPE == 5 || ARM_TYPE == 6) && MISSION_TYPE == 0
    configureArmJoints
 end
 

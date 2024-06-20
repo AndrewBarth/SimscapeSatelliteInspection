@@ -170,121 +170,15 @@ elseif ARM_TYPE == 3
 %     armAttachAngles = [-45 0 90]*dtr;
 
 
-    armAttachPnt = [0
-                    sat.service.length/2-Base_dia/2
-                    sat.service.radius*cos(pi/8)*sin(pi/4)];
-    armAttachAngles = [0 0 90]*dtr;
+    arm(1).armAttachPnt = [0
+                          sat.service.length/2-Base_dia/2
+                          sat.service.radius*cos(pi/8)*sin(pi/4)];
+    arm(1).armAttachAngles = [0 0 90]*dtr;
+    arm_data = configure7DOFArm(arm(1),q,sat);
 
-
-    thetaOffset = [0 0 0 0 0 0 -90]*dtr;
-%     DHparams(1,:) = [ Link_Length(1) 0.0              90.0*dtr q(1)+thetaOffset(1)];
-%     DHparams(2,:) = [ Link_Length(2) 0.0             -90.0*dtr q(2)+thetaOffset(2)];
-%     DHparams(3,:) = [ Link_Length(3) 0.0              90.0*dtr q(3)+thetaOffset(3)];
-%     DHparams(4,:) = [-Link_Length(4) 0.0             -90.0*dtr q(4)+thetaOffset(4)];
-%     DHparams(5,:) = [ Link_Length(5) 0.0              90.0*dtr q(5)+thetaOffset(5)];
-%     DHparams(6,:) = [-Link_Length(6) 0.0             -90.0*dtr q(6)+thetaOffset(6)];
-%     DHparams(7,:) = [ Link_Length(7) 0.0              90.0*dtr q(7)+thetaOffset(7)];
-
-    DHparams(1,:) = [0 0 0 0];
-    DHparams(2,:) = [ Link_Length(1) 0.0              90.0*dtr q(1)+thetaOffset(1)];
-    DHparams(3,:) = [ Link_Length(2) 0.0             -90.0*dtr q(2)+thetaOffset(2)];
-    DHparams(4,:) = [ Link_Length(3) 0.0              90.0*dtr q(3)+thetaOffset(3)];
-    DHparams(5,:) = [-Link_Length(4) 0.0             -90.0*dtr q(4)+thetaOffset(4)];
-    DHparams(6,:) = [ Link_Length(5) 0.0              90.0*dtr q(5)+thetaOffset(5)];
-    DHparams(7,:) = [-Link_Length(6) 0.0             -90.0*dtr q(6)+thetaOffset(6)];
-    DHparams(8,:) = [ Link_Length(7) 0.0               0.0*dtr q(7)+thetaOffset(7)];
-    % Set up mass properties
-    % THESE ARE PROBABLY INCORRECT. NEED TO MATCH THIS WITH ARM MODEL
-    m_base = sat.service.mass + smiData.Solid(1).mass;  % Sum satellite base and arm base
-
-    baseIdx = [11 9];
-%     linkIdx{1} = [7];
-%     linkIdx{2} = [8];
-%     linkIdx{3} = [10 1];
-%     linkIdx{4} = [4];
-%     linkIdx{5} = [2 3];
-%     linkIdx{6} = [5];
-%     linkIdx{7} = [6 12];
-
-%     linkIdx{1} = [7 8];
-    linkIdx{1} = [7];
-    linkIdx{2} = [10];
-%     linkIdx{3} = [1 4];
-    linkIdx{3} = [1];
-    linkIdx{4} = [2];
-%     linkIdx{5} = [3 5];
-    linkIdx{5} = [3];
-    linkIdx{6} = [6];
-    linkIdx{7} = [12];
-
-    inertiaRot(11,:,:) = XRot(-pi/2);
-    inertiaRot(9,:,:)  = XRot(-pi/2);
-%     inertiaRot(7,:,:)  = XRot(-pi/2);
-    inertiaRot(7,:,:)  = XRot(0);
-    inertiaRot(8,:,:)  = XRot(0);
-    inertiaRot(10,:,:) = XRot(-pi/2);
-%     inertiaRot(1,:,:)  = XRot(-pi/2);
-    inertiaRot(1,:,:)  = XRot(0);
-    inertiaRot(4,:,:)  = XRot(0);
-    inertiaRot(2,:,:)  = XRot(-pi/2);
-%     inertiaRot(3,:,:)  = XRot(-pi/2);
-    inertiaRot(3,:,:)  = XRot(0);
-    inertiaRot(5,:,:)  = XRot(0);
-    inertiaRot(6,:,:)  = XRot(-pi/2);
-    inertiaRot(12,:,:) = XRot(-pi/2);
-
-    m_base = sat.service.mass;
-    for j=1:length(baseIdx)
-        m_base = m_base + smiData.Solid(baseIdx(j)).mass;
-    end
-    for i = 1:nLink
-        m_link(i) = 0;
-        for j=1:length(linkIdx{i})
-            m_link(i) = m_link(i) + smiData.Solid(linkIdx{i}(j)).mass;
-        end
-    end
-    mt = m_base + sum(m_link);
-    massVec = [m_base m_link];
-    
-    % NEED TO ADD IN INERTIA OF ARM BASE (also check order of PoI variables)
-    inertiaMatBase = [sat.service.MoI(1) sat.service.PoI(1) sat.service.PoI(2); ... 
-                      sat.service.PoI(1) sat.service.MoI(2) sat.service.PoI(3); ...
-                      sat.service.PoI(2) sat.service.PoI(3) sat.service.MoI(3)];
-
-    for i = 1:nLink
-        modelInertia(i,:,:) = zeros(3,3);
-        modelInertia(i,:,:) = [smiData.Solid(linkIdx{i}).MoI(1) smiData.Solid(linkIdx{i}).PoI(1) smiData.Solid(linkIdx{i}).PoI(2); ... 
-                               smiData.Solid(linkIdx{i}).PoI(1) smiData.Solid(linkIdx{i}).MoI(2) smiData.Solid(linkIdx{i}).PoI(3); ...
-                               smiData.Solid(linkIdx{i}).PoI(2) smiData.Solid(linkIdx{i}).PoI(3) smiData.Solid(linkIdx{i}).MoI(3)];
-    end
-%     modelInertia(1,:,:) = [0.1523 0.005 0;  0.005 0.0709 0; 0 0 0.1301];
-    modelInertia(1,:,:) = [0.1301 0 0; 0 0.1523 -0.005; 0 -0.005 0.709];
-    modelInertia(3,:,:) = [1.5782 -0.0298 0.0003; -0.0298 0.0446 0.0137; 0.0003 0.0137 1.5691];
-    modelInertia(5,:,:) = [1.5552 -0.014 0.0001; -0.014 0.0441 0.0136; 0.0001 0.0136 1.5509];
-    for i = 1:nLink
-        inertiaMat(i,:,:) = zeros(3,3);
-        for j=1:length(linkIdx{i})
-            linkI = linkIdx{i}(j);
-            % THIS CALC IS NOT ACCURATE. CANNOT JUST ADD INERTIAS LIKE
-            % THIS. NEED TO USE PARALLEL AXIS THEOREM
-%             inertiaMat(i,:,:) = squeeze(inertiaMat(i,:,:)) + squeeze(inertiaRot(linkI,:,:))'* ...
-%                                                          [smiData.Solid(linkI).MoI(1) smiData.Solid(linkI).PoI(1) smiData.Solid(linkI).PoI(2); ... 
-%                                                           smiData.Solid(linkI).PoI(1) smiData.Solid(linkI).MoI(2) smiData.Solid(linkI).PoI(3); ...
-%                                                           smiData.Solid(linkI).PoI(2) smiData.Solid(linkI).PoI(3) smiData.Solid(linkI).MoI(3)]*squeeze(inertiaRot(linkI,:,:));
-            inertiaMat(i,:,:) = squeeze(inertiaRot(linkI,:,:))'*squeeze(modelInertia(i,:,:))*squeeze(inertiaRot(linkI,:,:));
-        end
-    end
-    linkInertia = zeros(nLink,3,3);
-    arm(1).massProperties.mt = mt;
-    arm(1).massProperties.massVec = massVec;
-    arm(1).massProperties.inertiaMatBase = inertiaMatBase;
-    arm(1).massProperties.inertiaMat = inertiaMat;
-    arm(1).massProperties.linkInertia = linkInertia;
-    arm(1).thetaOffset = thetaOffset;
-    arm(1).DHparams = DHparams;
-    arm(1).thetaOffset = thetaOffset;
-    arm(1).armAttachPnt = armAttachPnt;
-    arm(1).armAttachAngles = armAttachAngles;
+    clear arm;
+    arm(1) = arm_data;
+    arm(2).nLink = 0;
 
 elseif ARM_TYPE == 4
     % Initial Joint Angles and Rates
@@ -339,155 +233,11 @@ elseif ARM_TYPE == 5
         q(i) = arm(1).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;
     end
-    % armAttachPnt = [0 0 0];
-    % armAttachAngles = [0 0 0]*dtr;
-    % thetaOffset = [0 0 0 0 90 0]*dtr;
-    % 
-    % 
-    % DHparams(1,:) = [sat.service.radius*cos(pi/8)+ArmBase_height sat.service.length/2 0.0*dtr Base_z];
-    % DHparams(2,:) = [arm(1).Link_Length(1) 0.0  90*dtr  q(1)+thetaOffset(1)];
-    % DHparams(3,:) = [0.0 arm(1).Link_Length(2)   0*dtr  q(2)+thetaOffset(2)];
-    % DHparams(4,:) = [0.0 arm(1).Link_Length(3)   0*dtr  q(3)+thetaOffset(3)];
-    % DHparams(5,:) = [0.0 arm(1).Link_Length(4)  90*dtr  q(4)+thetaOffset(4)];
-    % DHparams(6,:) = [0.0 0.0             90*dtr  q(5)+thetaOffset(5)];
-    % DHparams(7,:) = [arm(1).Link_Length(5)+arm(1).Link_Length(6) 0.0  -90*dtr  q(6)+thetaOffset(6)];
-    % 
-    % % Set up mass properties
-    % % THESE ARE PROBABLY INCORRECT. NEED TO MATCH THIS WITH ARM MODEL
-    % m_base = sat.service.mass + arm(1).smiData.Solid(1).mass;  % Sum satellite base and arm base
-    % for i = 1:arm(1).nLink
-    %     m_link(i) = arm(1).smiData.Solid(i+1).mass;
-    % end
-    % mt = m_base + sum(m_link);
-    % massVec = [m_base m_link];
-    % 
-    % % NEED TO ADD IN INERTIA OF ARM BASE (also check order of PoI variables)
-    % inertiaMatBase = [sat.service.MoI(1) sat.service.PoI(1) sat.service.PoI(2); ... 
-    %                   sat.service.PoI(1) sat.service.MoI(2) sat.service.PoI(3); ...
-    %                   sat.service.PoI(2) sat.service.PoI(3) sat.service.MoI(3)];
-    % 
-    % linkIdx = 1;
-    % for i = 1:nLink
-    %     inertiaMat(i,:,:) = [arm(1).smiData.Solid(i+linkIdx).MoI(1) arm(1).smiData.Solid(i+linkIdx).PoI(1) arm(1).smiData.Solid(i+linkIdx).PoI(2); ... 
-    %                          arm(1).smiData.Solid(i+linkIdx).PoI(1) arm(1).smiData.Solid(i+linkIdx).MoI(2) arm(1).smiData.Solid(i+linkIdx).PoI(3); ...
-    %                          arm(1).smiData.Solid(i+linkIdx).PoI(2) arm(1).smiData.Solid(i+linkIdx).PoI(3) arm(1).smiData.Solid(i+linkIdx).MoI(3)]/1000/1000; % Convert from kg*mm2 to kg*m2
-    % end
-    % linkInertia = zeros(arm(1).nLink,3,3);
-    % arm(1).massProperties.mt = mt;
-    % arm(1).massProperties.massVec = massVec;
-    % arm(1).massProperties.inertiaMatBase = inertiaMatBase;
-    % arm(1).massProperties.inertiaMat = inertiaMat;
-    % arm(1).massProperties.linkInertia = linkInertia;
 
     arm(1).armAttachPnt = [0
                           sat.service.length/2-Base_dia/2
                           sat.service.radius*cos(pi/8)*sin(pi/4)];
     arm(1).armAttachAngles = [0 0 90]*dtr;
-
-
-% % %     thetaOffset = [0 0 0 0 0 0 -90]*dtr;
-% % % 
-% % %     DHparams(1,:) = [0 0 0 0];
-% % %     DHparams(2,:) = [ arm(1).Link_Length(1) 0.0              90.0*dtr q(1)+thetaOffset(1)];
-% % %     DHparams(3,:) = [ arm(1).Link_Length(2) 0.0             -90.0*dtr q(2)+thetaOffset(2)];
-% % %     DHparams(4,:) = [ arm(1).Link_Length(3) 0.0              90.0*dtr q(3)+thetaOffset(3)];
-% % %     DHparams(5,:) = [-arm(1).Link_Length(4) 0.0             -90.0*dtr q(4)+thetaOffset(4)];
-% % %     DHparams(6,:) = [ arm(1).Link_Length(5) 0.0              90.0*dtr q(5)+thetaOffset(5)];
-% % %     DHparams(7,:) = [-arm(1).Link_Length(6) 0.0             -90.0*dtr q(6)+thetaOffset(6)];
-% % %     DHparams(8,:) = [ arm(1).Link_Length(7) 0.0               0.0*dtr q(7)+thetaOffset(7)];
-% % %     % Set up mass properties
-% % %     % THESE ARE PROBABLY INCORRECT. NEED TO MATCH THIS WITH ARM MODEL
-% % %     m_base = sat.service.mass + arm(1).smiData.Solid(1).mass;  % Sum satellite base and arm base
-% % % 
-% % %     baseIdx = [11 9];
-% % %     clear linkIdx
-% % % %     linkIdx{1} = [7];
-% % % %     linkIdx{2} = [8];
-% % % %     linkIdx{3} = [10 1];
-% % % %     linkIdx{4} = [4];
-% % % %     linkIdx{5} = [2 3];
-% % % %     linkIdx{6} = [5];
-% % % %     linkIdx{7} = [6 12];
-% % % 
-% % %     linkIdx{1} = [7 8];
-% % %     % % linkIdx{1} = 7;
-% % %     linkIdx{2} = [10];
-% % %     linkIdx{3} = [1 4];
-% % %     % % linkIdx{3} = [1];
-% % %     linkIdx{4} = [2];
-% % %     linkIdx{5} = [3 5];
-% % %     % % linkIdx{5} = [3];
-% % %     linkIdx{6} = [6];
-% % %     linkIdx{7} = [12];
-% % % 
-% % %     inertiaRot(11,:,:) = XRot(-pi/2);
-% % %     inertiaRot(9,:,:)  = XRot(-pi/2);
-% % % %     inertiaRot(7,:,:)  = XRot(-pi/2);
-% % %     inertiaRot(7,:,:)  = XRot(0);
-% % %     inertiaRot(8,:,:)  = XRot(0);
-% % %     inertiaRot(10,:,:) = XRot(-pi/2);
-% % % %     inertiaRot(1,:,:)  = XRot(-pi/2);
-% % %     inertiaRot(1,:,:)  = XRot(0);
-% % %     inertiaRot(4,:,:)  = XRot(0);
-% % %     inertiaRot(2,:,:)  = XRot(-pi/2);
-% % % %     inertiaRot(3,:,:)  = XRot(-pi/2);
-% % %     inertiaRot(3,:,:)  = XRot(0);
-% % %     inertiaRot(5,:,:)  = XRot(0);
-% % %     inertiaRot(6,:,:)  = XRot(-pi/2);
-% % %     inertiaRot(12,:,:) = XRot(-pi/2);
-% % % 
-% % %     m_base = sat.service.mass;
-% % %     for j=1:length(baseIdx)
-% % %         m_base = m_base + arm(1).smiData.Solid(baseIdx(j)).mass;
-% % %     end
-% % %     for i = 1:arm(2).nLink
-% % %         m_link(i) = 0;
-% % %         for j=1:length(linkIdx{i})
-% % %             m_link(i) = m_link(i) + arm(1).smiData.Solid(linkIdx{i}(j)).mass;
-% % %         end
-% % %     end
-% % %     mt = m_base + sum(m_link);
-% % %     massVec = [m_base m_link];
-% % % 
-% % %     % NEED TO ADD IN INERTIA OF ARM BASE (also check order of PoI variables)
-% % %     inertiaMatBase = [sat.service.MoI(1) sat.service.PoI(1) sat.service.PoI(2); ... 
-% % %                       sat.service.PoI(1) sat.service.MoI(2) sat.service.PoI(3); ...
-% % %                       sat.service.PoI(2) sat.service.PoI(3) sat.service.MoI(3)];
-% % % 
-% % %     for i = 1:arm(1).nLink
-% % %         if i~=1 && i~=3 && i~=5
-% % %             modelInertia(i,:,:) = zeros(3,3);
-% % %             modelInertia(i,:,:) = [arm(1).smiData.Solid(linkIdx{i}).MoI(1) arm(1).smiData.Solid(linkIdx{i}).PoI(1) arm(1).smiData.Solid(linkIdx{i}).PoI(2); ... 
-% % %                                    arm(1).smiData.Solid(linkIdx{i}).PoI(1) arm(1).smiData.Solid(linkIdx{i}).MoI(2) arm(1).smiData.Solid(linkIdx{i}).PoI(3); ...
-% % %                                    arm(1).smiData.Solid(linkIdx{i}).PoI(2) arm(1).smiData.Solid(linkIdx{i}).PoI(3) arm(1).smiData.Solid(linkIdx{i}).MoI(3)];
-% % %         end
-% % %     end
-% % % %     modelInertia(1,:,:) = [0.1523 0.005 0;  0.005 0.0709 0; 0 0 0.1301];
-% % %     % % modelInertia(1,:,:) = [0.1301 0 0; 0 0.1523 -0.005; 0 -0.005 0.709];
-% % %     % % modelInertia(3,:,:) = [1.5782 -0.0298 0.0003; -0.0298 0.0446 0.0137; 0.0003 0.0137 1.5691];
-% % %     % % modelInertia(5,:,:) = [1.5552 -0.014 0.0001; -0.014 0.0441 0.0136; 0.0001 0.0136 1.5509];
-% % %     modelInertia(1,:,:) = [0.1398 0 -0.0228; 0 0.2035 0.0; -0.0228 0.0 0.1569];
-% % %     modelInertia(3,:,:) = [5.4823 0.0 -0.0281; 0.0 5.4867 0.0; -0.0281 0.0 0.0441];
-% % %     modelInertia(5,:,:) = [4.4390 0.0 -0.0260; 0.0 4.4434 0.0; -0.0260 0.0 0.0441];
-% % %     for i = 1:arm(1).nLink
-% % %         inertiaMat(i,:,:) = zeros(3,3);
-% % %         for j=1:length(linkIdx{i})
-% % %             linkI = linkIdx{i}(j);
-% % %             % THIS CALC IS NOT ACCURATE. CANNOT JUST ADD INERTIAS LIKE
-% % %             % THIS. NEED TO USE PARALLEL AXIS THEOREM
-% % % %             inertiaMat(i,:,:) = squeeze(inertiaMat(i,:,:)) + squeeze(inertiaRot(linkI,:,:))'* ...
-% % % %                                                          [smiData.Solid(linkI).MoI(1) smiData.Solid(linkI).PoI(1) smiData.Solid(linkI).PoI(2); ... 
-% % % %                                                           smiData.Solid(linkI).PoI(1) smiData.Solid(linkI).MoI(2) smiData.Solid(linkI).PoI(3); ...
-% % % %                                                           smiData.Solid(linkI).PoI(2) smiData.Solid(linkI).PoI(3) smiData.Solid(linkI).MoI(3)]*squeeze(inertiaRot(linkI,:,:));
-% % %             inertiaMat(i,:,:) = squeeze(inertiaRot(linkI,:,:))'*squeeze(modelInertia(i,:,:))*squeeze(inertiaRot(linkI,:,:));
-% % %         end
-% % %     end
-% % %     linkInertia = zeros(arm(1).nLink,3,3);
-% % %     arm(1).massProperties.mt = mt;
-% % %     arm(1).massProperties.massVec = massVec;
-% % %     arm(1).massProperties.inertiaMatBase = inertiaMatBase;
-% % %     arm(1).massProperties.inertiaMat = inertiaMat;
-% % %     arm(1).massProperties.linkInertia = linkInertia;
 
     left_arm = configure7DOFArm(arm(1),q,sat);
 
@@ -500,165 +250,65 @@ elseif ARM_TYPE == 5
         q(i) = arm(2).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;
     end
-%     armAttachPnt = [sat.service.radius*cos(pi/8)*cos(pi/4)
-%                     sat.service.length/2-Base_dia/2
-%                     sat.service.radius*cos(pi/8)*sin(pi/4)];
-%     armAttachAngles = [-45 0 90]*dtr;
-
 
     arm(2).armAttachPnt = [0
                            sat.service.length/2-Base_dia/2
                            sat.service.radius*cos(pi/8)*sin(pi/4)];
     arm(2).armAttachAngles = [0 0 90]*dtr;
 
-
-% % %     thetaOffset = [0 0 0 0 0 0 -90]*dtr;
-% % % 
-% % %     DHparams(1,:) = [0 0 0 0];
-% % %     DHparams(2,:) = [ arm(2).Link_Length(1) 0.0              90.0*dtr q(1)+thetaOffset(1)];
-% % %     DHparams(3,:) = [ arm(2).Link_Length(2) 0.0             -90.0*dtr q(2)+thetaOffset(2)];
-% % %     DHparams(4,:) = [ arm(2).Link_Length(3) 0.0              90.0*dtr q(3)+thetaOffset(3)];
-% % %     DHparams(5,:) = [-arm(2).Link_Length(4) 0.0             -90.0*dtr q(4)+thetaOffset(4)];
-% % %     DHparams(6,:) = [ arm(2).Link_Length(5) 0.0              90.0*dtr q(5)+thetaOffset(5)];
-% % %     DHparams(7,:) = [-arm(2).Link_Length(6) 0.0             -90.0*dtr q(6)+thetaOffset(6)];
-% % %     DHparams(8,:) = [ arm(2).Link_Length(7) 0.0               0.0*dtr q(7)+thetaOffset(7)];
-% % %     % Set up mass properties
-% % %     % THESE ARE PROBABLY INCORRECT. NEED TO MATCH THIS WITH ARM MODEL
-% % %     m_base = sat.service.mass + arm(2).smiData.Solid(1).mass;  % Sum satellite base and arm base
-% % % 
-% % %     baseIdx = [11 9];
-% % %     clear linkIdx
-% % % %     linkIdx{1} = [7];
-% % % %     linkIdx{2} = [8];
-% % % %     linkIdx{3} = [10 1];
-% % % %     linkIdx{4} = [4];
-% % % %     linkIdx{5} = [2 3];
-% % % %     linkIdx{6} = [5];
-% % % %     linkIdx{7} = [6 12];
-% % % 
-% % % %     linkIdx{1} = [7 8];
-% % %     linkIdx{1} = 7;
-% % %     linkIdx{2} = [10];
-% % % %     linkIdx{3} = [1 4];
-% % %     linkIdx{3} = [1];
-% % %     linkIdx{4} = [2];
-% % % %     linkIdx{5} = [3 5];
-% % %     linkIdx{5} = [3];
-% % %     linkIdx{6} = [6];
-% % %     linkIdx{7} = [12];
-% % % 
-% % %     inertiaRot(11,:,:) = XRot(-pi/2);
-% % %     inertiaRot(9,:,:)  = XRot(-pi/2);
-% % % %     inertiaRot(7,:,:)  = XRot(-pi/2);
-% % %     inertiaRot(7,:,:)  = XRot(0);
-% % %     inertiaRot(8,:,:)  = XRot(0);
-% % %     inertiaRot(10,:,:) = XRot(-pi/2);
-% % % %     inertiaRot(1,:,:)  = XRot(-pi/2);
-% % %     inertiaRot(1,:,:)  = XRot(0);
-% % %     inertiaRot(4,:,:)  = XRot(0);
-% % %     inertiaRot(2,:,:)  = XRot(-pi/2);
-% % % %     inertiaRot(3,:,:)  = XRot(-pi/2);
-% % %     inertiaRot(3,:,:)  = XRot(0);
-% % %     inertiaRot(5,:,:)  = XRot(0);
-% % %     inertiaRot(6,:,:)  = XRot(-pi/2);
-% % %     inertiaRot(12,:,:) = XRot(-pi/2);
-% % % 
-% % %     m_base = sat.service.mass;
-% % %     for j=1:length(baseIdx)
-% % %         m_base = m_base + arm(2).smiData.Solid(baseIdx(j)).mass;
-% % %     end
-% % %     for i = 1:arm(2).nLink
-% % %         m_link(i) = 0;
-% % %         for j=1:length(linkIdx{i})
-% % %             m_link(i) = m_link(i) + arm(2).smiData.Solid(linkIdx{i}(j)).mass;
-% % %         end
-% % %     end
-% % %     mt = m_base + sum(m_link);
-% % %     massVec = [m_base m_link];
-% % % 
-% % %     % NEED TO ADD IN INERTIA OF ARM BASE (also check order of PoI variables)
-% % %     inertiaMatBase = [sat.service.MoI(1) sat.service.PoI(1) sat.service.PoI(2); ... 
-% % %                       sat.service.PoI(1) sat.service.MoI(2) sat.service.PoI(3); ...
-% % %                       sat.service.PoI(2) sat.service.PoI(3) sat.service.MoI(3)];
-% % % 
-% % %     for i = 1:arm(2).nLink
-% % %         modelInertia(i,:,:) = zeros(3,3);
-% % %         modelInertia(i,:,:) = [arm(2).smiData.Solid(linkIdx{i}).MoI(1) arm(2).smiData.Solid(linkIdx{i}).PoI(1) arm(2).smiData.Solid(linkIdx{i}).PoI(2); ... 
-% % %                                arm(2).smiData.Solid(linkIdx{i}).PoI(1) arm(2).smiData.Solid(linkIdx{i}).MoI(2) arm(2).smiData.Solid(linkIdx{i}).PoI(3); ...
-% % %                                arm(2).smiData.Solid(linkIdx{i}).PoI(2) arm(2).smiData.Solid(linkIdx{i}).PoI(3) arm(2).smiData.Solid(linkIdx{i}).MoI(3)];
-% % %     end
-% % % %     modelInertia(1,:,:) = [0.1523 0.005 0;  0.005 0.0709 0; 0 0 0.1301];
-% % %     modelInertia(1,:,:) = [0.1398 0 -0.0228; 0 0.2035 0.0; -0.0228 0.0 0.1569];
-% % %     modelInertia(3,:,:) = [5.4823 0.0 -0.0281; 0.0 5.4867 0.0; -0.0281 0.0 0.0441];
-% % %     modelInertia(5,:,:) = [4.4390 0.0 -0.0260; 0.0 4.4434 0.0; -0.0260 0.0 0.0441];
-% % %     for i = 1:arm(2).nLink
-% % %         inertiaMat(i,:,:) = zeros(3,3);
-% % %         for j=1:length(linkIdx{i})
-% % %             linkI = linkIdx{i}(j);
-% % %             % THIS CALC IS NOT ACCURATE. CANNOT JUST ADD INERTIAS LIKE
-% % %             % THIS. NEED TO USE PARALLEL AXIS THEOREM
-% % % %             inertiaMat(i,:,:) = squeeze(inertiaMat(i,:,:)) + squeeze(inertiaRot(linkI,:,:))'* ...
-% % % %                                                          [smiData.Solid(linkI).MoI(1) smiData.Solid(linkI).PoI(1) smiData.Solid(linkI).PoI(2); ... 
-% % % %                                                           smiData.Solid(linkI).PoI(1) smiData.Solid(linkI).MoI(2) smiData.Solid(linkI).PoI(3); ...
-% % % %                                                           smiData.Solid(linkI).PoI(2) smiData.Solid(linkI).PoI(3) smiData.Solid(linkI).MoI(3)]*squeeze(inertiaRot(linkI,:,:));
-% % %             inertiaMat(i,:,:) = squeeze(inertiaRot(linkI,:,:))'*squeeze(modelInertia(i,:,:))*squeeze(inertiaRot(linkI,:,:));
-% % %         end
-% % %     end
-% % %     linkInertia = zeros(arm(2).nLink,3,3);
-% % %     arm(2).massProperties.mt = mt;
-% % %     arm(2).massProperties.massVec = massVec;
-% % %     arm(2).massProperties.inertiaMatBase = inertiaMatBase;
-% % %     arm(2).massProperties.inertiaMat = inertiaMat;
-% % %     arm(2).massProperties.linkInertia = linkInertia;
     right_arm = configure7DOFArm(arm(2),q,sat);
     clear arm;
     arm(1) = left_arm;
     arm(2) = right_arm;
+
+elseif ARM_TYPE == 6
+    % Initial Joint Angles and Rates
+    for i = 1:arm(1).nLink
+        arm(1).smiData.RevoluteJoint(i).Rz.Pos = 0.0;
+        q(i) = arm(1).smiData.RevoluteJoint(i).Rz.Pos*dtr;
+        qDot(i) = 0.0;
+    end
+    left_arm = configure3DOFArm(arm(1),q,sat);
+
+    % Initial Joint Angles and Rates
+    % arm(2).smiData.RevoluteJoint(1).Rz.Pos = 20.0;
+    % arm(2).smiData.RevoluteJoint(2).Rz.Pos = 45.0;
+    % arm(2).smiData.RevoluteJoint(3).Rz.Pos = -30.0;
+    for i = 1:arm(2).nLink
+        arm(2).smiData.RevoluteJoint(i).Rz.Pos = 0.0;
+        q(i) = arm(2).smiData.RevoluteJoint(i).Rz.Pos*dtr;
+        qDot(i) = 0.0;
+    end
+    right_arm = configure3DOFArm(arm(2),q,sat);
+    
+    clear arm;
+    arm(1) = left_arm;
+    arm(2) = right_arm;
+
+    Base_dia = 0.1;
+    Base_height = 0.00;
+    arm(1).smiData.RigidTransform(1).angle = 0.0;
+    % arm(1).smiData.RigidTransform(1).translation = [Base_height 0 0];
+    % arm(1).armAttachOffset(1).orientation = [45 0 90]*dtr;
+    arm(1).armAttachOffset(1).orientation = [0 -135 0]*dtr;
+    arm(1).armAttachOffset(1).translation = [ 1*((sat.service.radius)*cos(pi/8)*(1-cos(pi/4)))+Base_height*cos(pi/4) -Base_dia/2 (sat.service.radius)*cos(pi/8)*cos(pi/4)+Base_height*cos(pi/4)];
+
+    arm(2).smiData.RigidTransform(1).angle = 0.0;
+    % arm(2).armAttachOffset(1).orientation = [-45 0 90]*dtr;
+    arm(2).armAttachOffset(1).orientation = [0 -45 0]*dtr;
+    arm(2).armAttachOffset(1).translation = [ -1*((sat.service.radius)*cos(pi/8)*(1-cos(pi/4)))+Base_height*cos(pi/4) -Base_dia/2 (sat.service.radius)*cos(pi/8)*cos(pi/4)-Base_height*cos(pi/4)];
+
 else
     % Initial Joint Angles and Rates
     for i = 1:nLink
         q(i) = arm(1).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;
     end
-    armAttachPnt = [0 0 0];
-    armAttachAngles = [0 0 0]*dtr;
-    thetaOffset = [0 0 0]*dtr;
-    DHparams(1,:) = [sat.service.radius sat.service.length/2 0.0*dtr Base_z];
-% % %     DHparams(1,:) = [0 0 0.0*dtr Base_z];
-    for i = 1:nLink
-        DHparams(i+1,:) = [0.0 Link_Length(i) 0.0 q(i)+thetaOffset(i)];
-    end
+    arm_data = configure3DOFArm(arm(1),q,sat);
+    clear arm;
+    arm(1) = arm_data;
+    arm(2).nLink = 0;
 
-    % Set up mass properties
-    m_base = sat.service.mass + arm(1).smiData.Solid(1).mass;  % Sum satellite base and arm base
-    for i = 1:nLink
-        m_link(i) = arm(1).smiData.Solid(i+1).mass;
-    end
-    mt = m_base + sum(m_link);
-    massVec = [m_base m_link];
-    
-    % NEED TO ADD IN INERTIA OF ARM BASE (also check order of PoI variables)
-    inertiaMatBase = [sat.service.MoI(1) sat.service.PoI(1) sat.service.PoI(2); ... 
-                      sat.service.PoI(1) sat.service.MoI(2) sat.service.PoI(3); ...
-                      sat.service.PoI(2) sat.service.PoI(3) sat.service.MoI(3)];
-                  
-    linkIdx = 1;
-    for i = 1:nLink
-        inertiaMat(i,:,:) = [arm(1).smiData.Solid(i+linkIdx).MoI(1) arm(1).smiData.Solid(i+linkIdx).PoI(1) arm(1).smiData.Solid(i+linkIdx).PoI(2); ... 
-                             arm(1).smiData.Solid(i+linkIdx).PoI(1) arm(1).smiData.Solid(i+linkIdx).MoI(2) arm(1).smiData.Solid(i+linkIdx).PoI(3); ...
-                             arm(1).smiData.Solid(i+linkIdx).PoI(2) arm(1).smiData.Solid(i+linkIdx).PoI(3) arm(1).smiData.Solid(i+linkIdx).MoI(3)]/1000/1000; % Convert from kg*mm2 to kg*m2
-    end
-    linkInertia = zeros(nLink,3,3);
-    arm(1).massProperties.mt = mt;
-    arm(1).massProperties.massVec = massVec;
-    arm(1).massProperties.inertiaMatBase = inertiaMatBase;
-    arm(1).massProperties.inertiaMat = inertiaMat;
-    arm(1).massProperties.linkInertia = linkInertia;
-    arm(1).thetaOffset = thetaOffset;
-    arm(1).DHparams = DHparams;
-    arm(1).thetaOffset = thetaOffset;
-    arm(1).armAttachPnt = armAttachPnt;
-    arm(1).armAttachAngles = armAttachAngles;
 end
 % Workspace cleanup
 clear q qDot inertiaMatBase inertiaMat mt massVec

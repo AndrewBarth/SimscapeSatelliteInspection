@@ -1,5 +1,5 @@
 function arm = configure7DOFArm(arm,q,sat)
-    % arm = arm_in;
+  
     dtr = pi/180;
 
     % Set DH parameters
@@ -97,6 +97,6 @@ function arm = configure7DOFArm(arm,q,sat)
     arm.massProperties.linkInertia = linkInertia;
     arm.thetaOffset = thetaOffset;
     arm.DHparams = DHparams;
-    arm.thetaOffset = thetaOffset;
+ 
 
-
+end
