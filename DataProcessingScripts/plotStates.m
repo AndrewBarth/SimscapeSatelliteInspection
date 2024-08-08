@@ -106,7 +106,8 @@ xlabel('Time (s)')
 pos_base = out.base_state.translation.position.Data;
 pos_ee = out.ee_state.translation.position.Data;
 ori_ee = out.ee_state.rotation.euler.Data;
-
+pos_eecmd = squeeze(out.eeCmd_RelWorld.Position.Data);
+ori_eecmd = squeeze(out.eeCmd_RelWorld.Euler.Data);
 % pos_tip= out.tip_states.Data(:,1:3);
 
 % figure for client positions
@@ -145,35 +146,35 @@ grid on; grid minor
 xlabel('Time (s)')
 
 % figure for ee positions
-figure;
-subplot(3,1,1)
-plot(data_time,pos_ee(:,1)); ylabel('x-Position (m)')
+figure; 
+subplot(3,1,1); hold all;
+plot(data_time,pos_ee(:,1)); plot(data_time,pos_eecmd(1,:)'); ylabel('x-Position (m)')
 title('EE Positions')
 legend('EE Position x','location','best')
 grid on; grid minor
-subplot(3,1,2)
-plot(data_time,pos_ee(:,2)); ylabel('y-Position (m)')
+subplot(3,1,2); hold all;
+plot(data_time,pos_ee(:,2)); plot(data_time,pos_eecmd(2,:)'); ylabel('y-Position (m)')
 legend('EE Position y','location','best')
 grid on; grid minor
-subplot(3,1,3)
-plot(data_time,pos_ee(:,3)); ylabel('z-Position (m)')
+subplot(3,1,3); hold all;
+plot(data_time,pos_ee(:,3)); plot(data_time,pos_eecmd(3,:)'); ylabel('z-Position (m)')
 legend('EE Position z','location','best')
 grid on; grid minor
 xlabel('Time (s)')
 
 % figure for ee orientation
 figure;
-subplot(3,1,1)
-plot(data_time,ori_ee(:,1)*rtd); ylabel('x-Orientation (deg)')
+subplot(3,1,1); hold all;
+plot(data_time,ori_ee(:,1)*rtd); plot(data_time,ori_eecmd(1,:)'*rtd); ylabel('x-Orientation (deg)')
 title('EE Orientation')
 legend('EE Orientation x','location','best')
 grid on; grid minor
-subplot(3,1,2)
-plot(data_time,ori_ee(:,2)*rtd); ylabel('y-Orientation (deg)')
+subplot(3,1,2); hold all;
+plot(data_time,ori_ee(:,2)*rtd); plot(data_time,ori_eecmd(2,:)'*rtd); ylabel('y-Orientation (deg)')
 legend('EE Orientation y','location','best')
 grid on; grid minor
-subplot(3,1,3)
-plot(data_time,ori_ee(:,3)*rtd); ylabel('z-Orientation (deg)')
+subplot(3,1,3); hold all;
+plot(data_time,ori_ee(:,3)*rtd); plot(data_time,ori_eecmd(3,:)'*rtd); ylabel('z-Orientation (deg)')
 legend('EE Orientation z','location','best')
 grid on; grid minor
 xlabel('Time (s)')

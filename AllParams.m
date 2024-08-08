@@ -5,11 +5,14 @@
 % Set the run time and step size of the simulation
 if MISSION_TYPE == 0
     endTime = 99;
-% endTime = 5;
+    endTime = 49;
     stepSize = 0.001;
 elseif MISSION_TYPE == 1
-    endTime = 6000;
     stepSize = 0.5;
+    
+    % Inspection Parameters
+    loadInspectionParams
+    loadCubesatParams
 end
 
 %% Rod Parameters
@@ -83,7 +86,8 @@ rod_base.rotation = [ 0 90 0]*pi/180;
 dtr = pi/180;
 
 % Mass Properties of servicing satellite
-sat.service.mass = 150;
+% sat.service.mass = 150;
+sat.service.mass = 20;
 sat.service.radius = 0.25;
 sat.service.length = 0.5;
 % The following mass properties are derived from simscape
@@ -98,19 +102,20 @@ sat.service.panel_mount.mass = 0.25;
 sat.service.panel_mount.dim = [0.05 0.01 0.01];
 
 % Initial state of servicing satellite
-% Position in m
+% Position in m relative to world frame (which is fixed in the client)
 sat.service.IC.pose.position.x = 0.0;
 sat.service.IC.pose.position.y = 0.0;
 sat.service.IC.pose.position.z = 0.0;
-sat.service.IC.pose.position.x = 0.05;
+% sat.service.IC.pose.position.x = 0.05;
 sat.service.IC.pose.position.y = -1.5;
-sat.service.IC.pose.position.z = -0.25;
+% sat.service.IC.pose.position.z = -0.25;
 % Velocity in m/s
 sat.service.IC.twist.linear.x = 0.0;
 sat.service.IC.twist.linear.y = 0.0;
 sat.service.IC.twist.linear.z = 0.0;
 % Attitude in rad Z-Y-X order and sequence
-sat.service.IC.pose.orientation = [20.0 0.0 0.0]*dtr;
+% sat.service.IC.pose.orientation = [20.0 0.0 0.0]*dtr;
+sat.service.IC.pose.orientation = [0.0 0.0 0.0]*dtr;
 % Angular velocity in rad/s
 sat.service.IC.twist.angular = [0.0 0.0 0.0]*dtr;
 
@@ -155,7 +160,9 @@ NLINKS.DocUnits = '';
 % Link length should be moment arm of link.
 if ARM_TYPE == 1
     NLINKS.Value = 5;
-
+    arm(1).nLink = 5;
+    arm(2).nLink = 0;
+    
     % Data Trossen Robotics URDF File
     Base_height = 79.00 / 1000;
     waist_offset = [0, 0, 0.079];
@@ -175,14 +182,16 @@ if ARM_TYPE == 1
     Link_Length(4) = 0.0 / 1000;
     Link_Length(5) = ee_offset(1);
 
-    arm1.Joint_Limits(1,:) = [-pi pi];
-    arm1.Joint_Limits(2,:) = [-1.850049007113989 1.256637061435917];
-    arm1.Joint_Limits(3,:) = [-1.762782544514273 1.605702911834783];
-    arm1.Joint_Limits(4,:) = [-1.867502299633933 2.234021442552742];
-    arm1.Joint_Limits(5,:) = [-pi pi];
+    arm(1).Joint_Limits(1,:) = [-pi pi];
+    arm(1).Joint_Limits(2,:) = [-1.850049007113989 1.256637061435917];
+    arm(1).Joint_Limits(3,:) = [-1.762782544514273 1.605702911834783];
+    arm(1).Joint_Limits(4,:) = [-1.867502299633933 2.234021442552742];
+    arm(1).Joint_Limits(5,:) = [-pi pi];
 
 elseif ARM_TYPE == 2
     NLINKS.Value = 6;
+    arm(1).nLink = 6;
+    arm(2).nLink = 0;
 
     % Arbitary values (in m)
     Link_Length(1) = ArmLink1_height;
@@ -194,15 +203,17 @@ elseif ARM_TYPE == 2
 %     Link_Length(5) = 65.95;
 %     Link_Length(6) = 10.0;
 
-    arm1.Joint_Limits(1,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(2,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(3,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(4,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(5,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(6,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(1,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(2,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(3,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(4,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(5,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(6,:) = [-2*pi 2*pi];
 
 elseif ARM_TYPE == 3
     NLINKS.Value = 7;
+    arm(1).nLink = 7;
+    arm(2).nLink = 0;
 
     Base_height = 0.04;
     Base_dia = 0.45;
@@ -229,16 +240,18 @@ elseif ARM_TYPE == 3
     Link_CG(6,:) = [0 0 -Link_Length(6)/2];
     Link_CG(7,:) = [0 0 Link_Length(7)/2];
 
-    arm1.Joint_Limits(1,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(2,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(3,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(4,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(5,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(6,:) = [-2*pi 2*pi];
-    arm1.Joint_Limits(7,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(1,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(2,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(3,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(4,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(5,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(6,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(7,:) = [-2*pi 2*pi];
 
 elseif ARM_TYPE == 4
     NLINKS.Value = 2;
+    arm(1).nLink = 2;
+    arm(2).nLink = 0;
 
     % Data from Solidworks model (in m)
     Link_Length(1) = 0.2;
@@ -246,39 +259,148 @@ elseif ARM_TYPE == 4
     Link_CG(1,:) = [Link_Length(1)/2 0 0];
     Link_CG(2,:) = [Link_Length(2)/2 0 0];
 
-    arm1.Joint_Limits(1,:) = [-120 120]*pi/180;
-    arm1.Joint_Limits(2,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(1,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(2,:) = [-120 120]*pi/180;
 
-else
+elseif ARM_TYPE == 5
+
+
+    NLINKS.Value = 7;
+
+    arm(1).nLink = 7;
+
+    Base_height = 0.04;
+    Base_dia = 0.45;
+    % CAD model values (in m)
+    arm(1).Link_Length(1) = 0.05 + 0.04 + 0.1;   % Attach base plus Base height plus shoulder 1
+    arm(1).Link_Length(2) = 0.35 - .15 + 0.075;   % subtract half of shoulder_2 and add radius of shoulder 3
+%     arm(1).Link_Length(3) = 0.20 / 2 + 1;     % half the length of shoulder 3 plus main link 1
+    arm(1).Link_Length(3) = (0.20 - .16/2) + 1;   % shoulder 3 minus radius of shoulder 2 plus main link 1
+%     arm(1).Link_Length(4) = 0.075 + 0.075;    % half elbow 1 plus radius elbow 2
+    arm(1).Link_Length(4) =  0.15 - 0.15/2 + 0.15/2; % subtract radius of main link 1 and add radius of elbow 2
+%     arm(1).Link_Length(5) = 0.2 - 0.06 + 1;   % subtract elbow joint 1 radius plus main link 2
+    arm(1).Link_Length(5) = (0.20 - .12/2) + 1;   % elbow 2 minus radius of elbow 1 pluse main link 2
+%     arm(1).Link_Length(6) = 0.075 + 0.075;    % half wrist 1 plus radius wrist 2
+    arm(1).Link_Length(6) = 0.15 - 0.15/2 + 0.15/2; % subtract radius of main link 2 and add radius of wrist 2
+%     arm(2).Link_Length(6) = 0.2 - 0.12/2;     % subtract radius of elbow 1
+    arm(1).Link_Length(7) = 0.2 - 0.06;       % subtract wrist joint 1 radius
+
+    % % Arbitary values (in m)
+    % arm(1).Link_Length(1) = ArmLink1_height;
+    % arm(1).Link_Length(2) = 227.5 / 1000;
+    % arm(1).Link_Length(3) = 227.5 / 1000;
+    % arm(1).Link_Length(4) = 227.5 / 1000;
+    % arm(1).Link_Length(5) = 227.5 / 1000;
+    % arm(1).Link_Length(6) = 0.065;
+
+    arm(1).Link_CG(1,:) = [0 0  arm(1).Link_Length(1)/2];
+    arm(1).Link_CG(2,:) = [0 0  arm(1).Link_Length(2)/2];
+    arm(1).Link_CG(3,:) = [0 0  arm(1).Link_Length(3)/2];
+    arm(1).Link_CG(4,:) = [0 0 -arm(1).Link_Length(4)/2];
+    arm(1).Link_CG(5,:) = [0 0  arm(1).Link_Length(5)/2];
+    arm(1).Link_CG(6,:) = [0 0 -arm(1).Link_Length(6)/2];
+    arm(1).Link_CG(7,:) = [0 0  arm(1).Link_Length(7)/2];
+
+    arm(1).Joint_Limits(1,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(2,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(3,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(4,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(5,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(6,:) = [-2*pi 2*pi];
+    arm(1).Joint_Limits(7,:) = [-2*pi 2*pi];
+
+    % Arm 2
+    arm(2).nLink = 7;
+    Base_height = 0.04;
+    Base_dia = 0.45;
+    % CAD model values (in m)
+    arm(2).Link_Length(1) = 0.05 + 0.04 + 0.1;   % Attach base plus Base height plus shoulder 1
+    arm(2).Link_Length(2) = 0.35 - .15 + 0.075;   % subtract half of shoulder_2 and add radius of shoulder 3
+%     arm(2).Link_Length(3) = 0.20 / 2 + 1;     % half the length of shoulder 3 plus main link 1
+    arm(2).Link_Length(3) = (0.20 - .16/2) + 1;   % shoulder 3 minus radius of shoulder 2 plus main link 1
+%     arm(2).Link_Length(4) = 0.075 + 0.075;    % half elbow 1 plus radius elbow 2
+    arm(2).Link_Length(4) =  0.15 - 0.15/2 + 0.15/2; % subtract radius of main link 1 and add radius of elbow 2
+%     arm(2).Link_Length(5) = 0.2 - 0.06 + 1;   % subtract elbow joint 1 radius plus main link 2
+    arm(2).Link_Length(5) = (0.20 - .12/2) + 1;   % elbow 2 minus radius of elbow 1 pluse main link 2
+%     arm(2).Link_Length(6) = 0.075 + 0.075;    % half wrist 1 plus radius wrist 2
+    arm(2).Link_Length(6) = 0.15 - 0.15/2 + 0.15/2; % subtract radius of main link 2 and add radius of wrist 2
+%     arm(2).Link_Length(6) = 0.2 - 0.12/2;     % subtract radius of elbow 1
+    arm(2).Link_Length(7) = 0.2 - 0.06;       % subtract wrist joint 1 radius
+
+
+    arm(2).Link_CG(1,:) = [0 0  arm(2).Link_Length(1)/2];
+    arm(2).Link_CG(2,:) = [0 0  arm(2).Link_Length(2)/2];
+    arm(2).Link_CG(3,:) = [0 0  arm(2).Link_Length(3)/2];
+    arm(2).Link_CG(4,:) = [0 0 -arm(2).Link_Length(4)/2];
+    arm(2).Link_CG(5,:) = [0 0  arm(2).Link_Length(5)/2];
+    arm(2).Link_CG(6,:) = [0 0 -arm(2).Link_Length(6)/2];
+    arm(2).Link_CG(7,:) = [0 0  arm(2).Link_Length(7)/2];
+
+    arm(2).Joint_Limits(1,:) = [-2*pi 2*pi];
+    arm(2).Joint_Limits(2,:) = [-2*pi 2*pi];
+    arm(2).Joint_Limits(3,:) = [-2*pi 2*pi];
+    arm(2).Joint_Limits(4,:) = [-2*pi 2*pi];
+    arm(2).Joint_Limits(5,:) = [-2*pi 2*pi];
+    arm(2).Joint_Limits(6,:) = [-2*pi 2*pi];
+    arm(2).Joint_Limits(7,:) = [-2*pi 2*pi];
+
+elseif ARM_TYPE == 6
     NLINKS.Value = 3;
+    arm(1).nLink = 3;
 
     % Data from Solidworks model (in m)
-    Link_Length(1) = 0.2;
-    Link_Length(2) = 0.2;
-    Link_Length(3) = 0.08;
+    arm(1).Link_Length(1) = 0.2;
+    arm(1).Link_Length(2) = 0.2;
+    arm(1).Link_Length(3) = 0.08;
 
-%     Link_CG(1,:) = [0 0 Link_Length(1)/2];
-%     Link_CG(2,:) = [0 0 Link_Length(2)/2];
-%     Link_CG(3,:) = [0 0 Link_Length(3)/2];
-    Link_CG(1,:) = [Link_Length(1)/2 0 0];
-    Link_CG(2,:) = [Link_Length(2)/2 0 0];
-    Link_CG(3,:) = [Link_Length(3)/2 0 0];
+    arm(1).Link_CG(1,:) = [arm(1).Link_Length(1)/2 0 0];
+    arm(1).Link_CG(2,:) = [arm(1).Link_Length(2)/2 0 0];
+    arm(1).Link_CG(3,:) = [arm(1).Link_Length(3)/2 0 0];
 
-    arm1.Joint_Limits(1,:) = [-120 120]*pi/180;
-    arm1.Joint_Limits(2,:) = [-120 120]*pi/180;
-    arm1.Joint_Limits(3,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(1,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(2,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(3,:) = [-120 120]*pi/180;
+
+
+    arm(2).nLink = 3;
+    % Data from Solidworks model (in m)
+    arm(2).Link_Length(1) = 0.2;
+    arm(2).Link_Length(2) = 0.2;
+    arm(2).Link_Length(3) = 0.08;
+
+    arm(2).Link_CG(1,:) = [arm(2).Link_Length(1)/2 0 0];
+    arm(2).Link_CG(2,:) = [arm(2).Link_Length(2)/2 0 0];
+    arm(2).Link_CG(3,:) = [arm(2).Link_Length(3)/2 0 0];
+
+    arm(2).Joint_Limits(1,:) = [-120 120]*pi/180;
+    arm(2).Joint_Limits(2,:) = [-120 120]*pi/180;
+    arm(2).Joint_Limits(3,:) = [-120 120]*pi/180;
+else
+    NLINKS.Value = 3;
+    arm(1).nLink = 3;
+    arm(2).nLink = 0;
+
+    % Data from Solidworks model (in m)
+    arm(1).Link_Length(1) = 0.2;
+    arm(1).Link_Length(2) = 0.2;
+    arm(1).Link_Length(3) = 0.08;
+
+    arm(1).Link_CG(1,:) = [arm(1).Link_Length(1)/2 0 0];
+    arm(1).Link_CG(2,:) = [arm(1).Link_Length(2)/2 0 0];
+    arm(1).Link_CG(3,:) = [arm(1).Link_Length(3)/2 0 0];
+
+    arm(1).Joint_Limits(1,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(2,:) = [-120 120]*pi/180;
+    arm(1).Joint_Limits(3,:) = [-120 120]*pi/180;
 
 end
 % Assumes CG is in the middle of the link
 % Link_CG = Link_Length/2;
 
-nLink = NLINKS.Value;
+% Set the number of actions to the number of links in the primary arm
+nAction = arm(1).nLink;
 
-% Initial Joint Angles and Rates
-for i = 1:nLink
-    q(i) = smiData.RevoluteJoint(i).Rz.Pos*dtr;
-    qDot(i) = 0.0;
-end
+nLink = NLINKS.Value;
 
 % Set up DH parameters
 Base_z = 90*dtr;   % Rotation becase Y axis is the joint axis
@@ -361,7 +483,23 @@ jointControlData.refTime = [0 20 30 100 110 12000];
 jointControlData.Kp = [1 1 1 1 1 1]*0.7;
 jointControlData.Kd = [1 1 1 1 1 1]*4;
 jointControlData.Ki = [1 1 1 1 1 1]*0.;
-sat.service.IC.pose.orientation = [0.0 0.0 0.0]*dtr;
+
+if ARM_TYPE == 5
+    % jointControlData.Kp = [1 1 1 1 1 1 1]*50.0;
+    % jointControlData.Kd = [1 .5 .1 .05 .01 .005 .001]*0.01;
+    % jointControlData.Ki = [1 1 1 1 1 1 1]*10.;
+    % 
+    massPct = [0.2746    0.2216    0.2055    0.1288    0.1128    0.0365  0.0203]; 
+    jointControlData.Kp = massPct*200; 
+    jointControlData.Kd = massPct*0.1;
+    jointControlData.Ki = massPct*40;
+
+elseif ARM_TYPE == 6
+    massPct = [1.0  0.5785 0.1571];
+    jointControlData.Kp = massPct*1.5;
+    jointControlData.Kd = massPct*0;
+    jointControlData.Ki = massPct*1.0;
+end
 
 jointControlData.jointControlMode = 0;
 jointControlData.jointControlModeVec = [2 2 2 2 2];   % 1 = hold position, 2 = EE control
@@ -370,7 +508,7 @@ jointControlData.torqueLimit = 0.5*ones(1,nLink);
 % jointControlData.deadzone = 0.001*ones(1,nLink);
 jointControlData.deadzone = 1e-10*ones(1,nLink);
 
-jointControlData.angleLimit = arm1.Joint_Limits;
+jointControlData.angleLimit = arm(1).Joint_Limits;
 jointControlData.rateLimit = 10*ones(1,nLink)*pi/180;
 
 % Increasing rate limit
@@ -405,6 +543,3 @@ satControlData_Rot.torqueLimit = 10;
 %% Navigation Parameters
 nav.CameraToBase.orientation = [-90 0 -45]*dtr;
 
-%% Inspection Parameters
-loadInspectionParams
-loadCubesatParams

@@ -58,13 +58,15 @@ linkInertia = zeros(nLink,3,3);
     
     % Form the inertia matrix of the base - manipulator system
     Hs = RLbase*inertiaMatBase*RLbase';
+
     for i = 1:nLink
         % Convert the link inertias to the inertial frame
         linkInertia(i,:,:) = squeeze(RL(i,:,:))*squeeze(inertiaMat(i,:,:))*squeeze(RL(i,:,:))';
         rSkew = skewMat(rVec0(i,:));
         Hs = Hs + (squeeze(linkInertia(i,:,:)) - massVec(i+1)*rSkew*rSkew);  % Ref 1, Eq. 29
+        % Hs = Hs + (squeeze(linkInertia(i,:,:)) - massVec(i+1)*rSkew'*rSkew);  % Ref 1, Eq. 29
     end
-
+   
     % Form the base-spacecraft inertia matrix
     Ho = [mt*eye(3,3) -mt*rocSkew; mt*rocSkew Hs];           % Ref 1, Eq. 28
 
@@ -81,8 +83,10 @@ linkInertia = zeros(nLink,3,3);
             Jt(i,:,j) = kSkew*(rVec(i,:) - pVec(j,:))';      % Ref 1, Eq. 33
             Jr(i,:,j) = kVec(j,:);                           % Ref 1, Eq. 35
         end
-        Jti = squeeze(Jt(i,:,:));
-        Jri = squeeze(Jr(i,:,:));
+        % Jti = squeeze(Jt(i,:,:));
+        % Jri = squeeze(Jr(i,:,:));
+        Jti = reshape(Jt(i,:,:),[3,nLink]);
+        Jri = reshape(Jr(i,:,:),[3,nLink]);
         rSkew = skewMat(rVec0(i,:));
         Jts = Jts + massVec(i+1)*Jti;                        % Ref 1, Eq. 32
         Hsq = Hsq + (squeeze(linkInertia(i,:,:))*Jri + massVec(i+1)*rSkew*Jti);     % Ref 1, Eq. 34
