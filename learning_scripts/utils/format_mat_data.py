@@ -3,7 +3,8 @@ import numpy as np
 
 def format_mat_data(Data,caseTitle,caseName,mission,time_step):
 
-    npts = len(Data[0])
+    #npts = len(Data[0])
+    npts = len(Data)
 
     # Create the time vector
     time_vec = np.arange(0,npts*time_step,time_step)

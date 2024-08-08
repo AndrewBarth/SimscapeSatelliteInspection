@@ -11,12 +11,16 @@ from reference_trajectory import refTraj
 from compute_reward import SatServiceReward
 from utils import math_utils
 from utils import reward_utils
+from utils import data_utils
 
 
 class SatServiceEnv(MultiAgentEnv):
 
 
     def __init__(self,  *args, **kwargs):
+
+        alldata = data_utils.load_mat('.','jointCmds.mat')
+        self.jointCmds = alldata['jointCmds']
 
         self.nAgents = kwargs['nAgents']
         self.agents = {1}
@@ -51,7 +55,9 @@ class SatServiceEnv(MultiAgentEnv):
 #                            dtype=np.float32)
 #        box_act_space1 = Box(low=np.array([-0.0001,-0.00006,-0.00002]), high=np.array([0.0001,0.00006,0.00002]),
 #                            dtype=np.float32)
-        box_act_space1 = Box(low=np.array([-0.005,-0.001,-0.0005]), high=np.array([0.005,0.001,0.0005]),
+#        box_act_space1 = Box(low=np.array([-0.005,-0.001,-0.0005]), high=np.array([0.005,0.001,0.0005]),
+#                            dtype=np.float32)
+        box_act_space1 = Box(low=np.array([-0.005,-0.001,-0.001]), high=np.array([0.005,0.001,0.001]),
                             dtype=np.float32)
         box_act_space2 = Box(low=-0.001, high=0.001,
                             shape=(agent_dof,), dtype=np.float32)
@@ -193,9 +199,9 @@ class SatServiceEnv(MultiAgentEnv):
  
         #desired_state_world = np.empty_like(desired_state_base)
         desired_state_world = np.empty(np.size(desired_state_base)+1)
-        desired_state_world[0:3] = math_utils.quatrotate(desired_state_base[0:3],quat_base_world)
-        desired_state_world[7:10] = math_utils.quatrotate(desired_state_base[6:9],quat_base_world)
-        desired_state_world[10:13] = math_utils.quatrotate(desired_state_base[9:12],quat_base_world)
+        desired_state_world[0:3] = states[0:3] + math_utils.quatrotate(desired_state_base[0:3],quat_base_world)
+        desired_state_world[7:10] = states[7:10] + math_utils.quatrotate(desired_state_base[6:9],quat_base_world)
+        desired_state_world[10:13] = states[10:13] + math_utils.quatrotate(desired_state_base[9:12],quat_base_world)
 
 
         # Convert desired orientation to Modified Rodrigues Parameter format
@@ -229,6 +235,8 @@ class SatServiceEnv(MultiAgentEnv):
 
         second_action = action[1][1]
 #        action[1] = np.array([0.0, second_action, 0.0])
+        #new_action = self.jointCmds[self.step_count,:]
+        #action[1] = self.jointCmds[self.step_count,:]
 
         # Locally track the current step number
         self.step_count += 1

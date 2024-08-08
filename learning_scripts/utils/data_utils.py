@@ -2,6 +2,7 @@ import os
 import csv
 import pickle
 from scipy.io import savemat
+from scipy.io import loadmat
 
 # save pickle
 def save_pkl(content, fdir, fname):
@@ -52,3 +53,17 @@ def save_mat(content, fdir, fname):
     file_path = os.path.join(fdir, fname)
     with open(file_path, 'w') as f:
         savemat(file_path, content) 
+
+def load_mat(fdir, fname):
+    """
+    Load content from a mat file into into a numpy array
+    Args:
+        path: file path, str
+        fname: file name, str
+    """
+
+    file_path = os.path.join(fdir, fname)
+    data = loadmat(file_path)
+
+    return data
+    

@@ -7,11 +7,16 @@ from ray.rllib.algorithms.ppo import PPOConfig
 from ray.tune.registry import register_env
 from ray.rllib.algorithms.algorithm import Algorithm
 from datetime import datetime
-from create_task_env import create_task_env
+from create_inspection_env import create_inspection_env
 from create_robotics_env import create_robotics_env
 from custom_metrics import MyCallbacks
 from utils import data_utils
 from utils.format_mat_data import format_mat_data
+from scipy.io import loadmat
+
+values = loadmat('jointCmds.mat')
+
+
 
 nAgents=1
 
@@ -26,7 +31,7 @@ case_type = 'Benchmark2'
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-05-21-22-34/checkpoint_400'
+checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-05-24-16-57/checkpoint_400'
 
 # Instantiate the environment
 #Create the environment

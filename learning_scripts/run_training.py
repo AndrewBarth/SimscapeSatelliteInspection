@@ -12,7 +12,7 @@ from ray.tune.registry import get_trainable_cls
 from ray.train import RunConfig, CheckpointConfig
 from ray import air, tune
 from datetime import datetime
-from create_task_env import create_task_env
+from create_inspection_env import create_inspection_env
 from create_robotics_env import create_robotics_env
 from training_config import PPOAlgorithmConfig
 from hyperparameter_tuning import HyperparameterTuning
@@ -46,7 +46,7 @@ case_type = 'Benchmark2'
 if mission == 'Transfer':
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Inspection':
-    env,task_type,caseName = create_task_env(init_type,scenario_type,case_type,nAgents)
+    env,task_type,caseName = create_inspection_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Robotics':
     env,caseName = create_robotics_env(scenario_type,nAgents)
 

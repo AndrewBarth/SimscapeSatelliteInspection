@@ -11,7 +11,7 @@ def create_robotics_env(scenario_type,nAgents):
         name = 'Eval'
 
 
-    caseName = 'Single-Arm-Robotics'+name
+    caseName = 'Single_Arm_Robotics'+name
 
     # Set initial conditions
     initial_state = {}

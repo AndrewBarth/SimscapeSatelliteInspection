@@ -39,12 +39,12 @@ class refTraj():
                                    [70.0,  0.0,    0.4,  0.2710,  90.0*dtr,  0.0,    90.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
                                    [80.0,  0.4,    0.6,  0.2710,  90.0*dtr,  0.0,    90.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
                              [last_point,  0.4,    0.6,  0.2710,  90.0*dtr,  0.0,    90.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0]])
-        self.eeRefTraj = np.array([[0.0,  -0.2362, 0.0438, 0.2710,  90.0*dtr,  0.0,  -80*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [50.0, -0.4280, 0.1395, 0.2710,  90.0*dtr,  0.0,  -125*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [60.0, -0.235,  -0.0,  0.2710,  90.0*dtr,  0.0,  -150.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [70.0,  0.0,    0.4,  0.2710,  90.0*dtr,  0.0,  -150.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [80.0,  0.0,    0.4,  0.2710,  90.0*dtr,  0.0,    90.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
-                             [last_point,  0.4,    0.6,  0.2710,  90.0*dtr,  0.0,    90.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0]])
+        self.eeRefTraj = np.array([[0.0,  -0.2,    0.0,  0.2710,  90.0*dtr,  0.0,   -80.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [20.0, -0.25,   0.3,  0.2710,  90.0*dtr,  0.0,  -150.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [30.0, -0.1,    0.4,  0.2710,  90.0*dtr,  0.0,  -150.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [50.0,  0.0,    0.4,  0.2710,  45.0*dtr,  0.0,    90.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [70.0, -0.1,    0.55, 0.2710,  45.0*dtr,  0.0,    90.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0],
+                             [last_point, -0.1,    0.55, 0.2710,  45.0*dtr,  0.0,    90.0*dtr,  0.0,  0.0, 0.0, 0.0, 0.0, 0.0]])
 
         # Define an interpolation function for the table
         self.interpFunc = interpolate.interp1d(self.eeRefTraj[:,0],self.eeRefTraj[:,1:13],axis=0,assume_sorted=True)
@@ -66,6 +66,7 @@ class refTraj():
                 else: 
                     wpt_f = self.eeRefTraj[i+1][0:13]
                     wpt_i = self.eeRefTraj[i][0:13]
+                break
 
         # Compute cubic polynomial
         new_des_state=np.zeros(12)
@@ -82,8 +83,8 @@ class refTraj():
             new_des_state[3+k] = aq
             new_des_state[9+k] = av
              
-        return new_des_state
-        #return desired_values
+        #return new_des_state
+        return desired_values
 
 
 def cubic_polynomial(t0,tf,q0,qf,v0,vf):

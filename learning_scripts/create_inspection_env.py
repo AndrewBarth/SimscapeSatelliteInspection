@@ -1,10 +1,9 @@
 
 from ray.tune.registry import register_env
-#from cubesat_task_gym_env import CubesatTaskEnv
 from cubesat_inspection_gym_env import CubesatInspectionEnv
 
 
-def create_task_env(init_type,scenario_type,case_type,nAgents):
+def create_inspection_env(init_type,scenario_type,case_type,nAgents):
 
     if scenario_type == 'train':
         name = 'Train'

@@ -109,7 +109,10 @@ class SatServiceReward():
         ori_error = np.array(errors[agent_id][4:7])
         rates = np.array(states[agent_id][22:25])
 
-        direction = ori_error*rates/np.abs(rates)
+        if any(np.abs(rates)) < 1e-10:
+            direction = ori_error*rates/np.abs(rates)
+        else:
+            direction = np.array([1,0,0])
 
 
         # Reward is based on the square of the error

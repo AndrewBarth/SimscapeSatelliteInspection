@@ -10,8 +10,8 @@ from utils.load_agent_data import load_data
 def main():
 
     # Specify data
-    fileDate = '2024-03-28'
-    fileTime = '13-26'
+    fileDate = '2024-05-26'
+    fileTime = '08-12'
 
     scenario_type = 'eval_dv'
 
@@ -80,6 +80,20 @@ def main():
     labels=['Cumulative Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Smoothness Reward', 'Total Reward']
     legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Smoothness Reward', 'Total Reward']
     plotData={'data0':cumPosReward,'data1':cumOriReward,'data2':cumCntReward,'data3':cumJntReward,'data4':cumSmoReward,'data5':cumReward}
+    plot_static('1d',plotData,labels,legend,colors)
+
+
+    labels=['Pos Error Reward','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Smoothness Reward', 'Total Reward']
+    plotData = {}
+    legend = []
+    colors = []
+    for i in range(len(episodes)):
+        ky = 'data'+str(i)
+        plotData[ky] = all_reward[i]['poserr_reward']
+        legend.append('Iteration'+str(i))
+        colors.append('orange')
+#        plotData={'data0':all_reward[i]['poserr_reward']}
+   
     plot_static('1d',plotData,labels,legend,colors)
 
     plt.show()
