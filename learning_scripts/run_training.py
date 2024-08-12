@@ -19,14 +19,19 @@ from hyperparameter_tuning import HyperparameterTuning
 from utils import data_utils
 from utils.format_mat_data import format_mat_data
 
-nAgents=1
+nAgents=3
 perform_hyperparameter_tuning = False
 debug = False    # You also need to give the -m -pdb arguments to python on command line
+#debug = True
 
 
 save_step = 40
 checkpoint_step = 40
-nIter = 400 
+nIter = 100 
+
+save_step = 20
+checkpoint_step = 20
+nIter = 100 
 
 caseName = 'agent_parameters'
 caseTitle = 'Agent Parameters'
@@ -36,13 +41,13 @@ if debug:
     ray.init(local_mode=True)
 
 mission = 'Inspection'
-mission = 'Robotics'
+#mission = 'Robotics'
 init_type = 'fixed'
 scenario_type = 'train'
 case_type = 'Benchmark2'
 
 # Instantiate the environment
-#Create the environment
+#Create the environmet
 if mission == 'Transfer':
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Inspection':
@@ -51,18 +56,22 @@ elif mission == 'Robotics':
     env,caseName = create_robotics_env(scenario_type,nAgents)
 
 learning_step_size = env.control_step_size
-nSteps = int(env.stop_time/learning_step_size)
+#nSteps = int(env.stop_time/learning_step_size)
+nSteps = 1
 
 # Fixed hyperparameters
 # Cubesat inspection values
 if mission == 'Inspection':
     train_batch_size = int(400)
     sgd_minibatch_size = int(train_batch_size/5)
+    duration = 1
 
 elif mission == 'Robotics':
     train_batch_size = int(500)
     #train_batch_size = nSteps
     sgd_minibatch_size = int(train_batch_size/10)
+    nBatches = int(nSteps/train_batch_size)
+    duration = nBatches
 
 #num_sgd_iter = 1
 #clip_param = 0.3
@@ -76,12 +85,8 @@ lr_end = 1e-5
 # Define a learning rate schedule
 lr_endtime = 0.8*nIter*train_batch_size
 
-nBatches = int(nSteps/train_batch_size)
-duration = nBatches
-print(duration)
-
 # Get the algorithm configuration settings
-algoConfig = PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug)
+algoConfig = PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug)
 
 
 if perform_hyperparameter_tuning == True:

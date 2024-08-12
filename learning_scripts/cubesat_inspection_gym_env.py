@@ -22,15 +22,15 @@ class CubesatInspectionEnv(MultiAgentEnv):
 
         super().__init__()
 
+        self.nAgents = kwargs['nAgents']
         self.agent_ids = {1} 
         self._agent_ids = {1}  # Later version of Ray require a private variable
 # Agent ids stay at only 1, nAgents is the number of active cubesats
-#        for i in range(2,self.nAgents+1):
-#            self.agent_ids.add(i)
-#            self._agent_ids.add(i)
+        #for i in range(2,self.nAgents+1):
+        #    self.agent_ids.add(i)
+        #    self._agent_ids.add(i)
 
          
-        self.nAgents = kwargs['nAgents']
         self.active_agents = {1}
         for i in range(2,self.nAgents+1):
             self.active_agents.add(i)

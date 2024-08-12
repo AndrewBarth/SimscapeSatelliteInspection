@@ -18,10 +18,10 @@ values = loadmat('jointCmds.mat')
 
 
 
-nAgents=1
+nAgents=3
 
-#mission = 'Inspection'
-mission = 'Robotics'
+mission = 'Inspection'
+#mission = 'Robotics'
 init_type = 'fixed'
 scenario_type = 'eval'
 case_type = 'Benchmark2'
@@ -31,14 +31,14 @@ case_type = 'Benchmark2'
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-05-24-16-57/checkpoint_400'
+checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-08-11-09-44/checkpoint_60'
 
 # Instantiate the environment
 #Create the environment
 if mission == 'Transfer':
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Inspection':
-    env,task_type,caseName = create_task_env(init_type,scenario_type,case_type,nAgents)
+    env,task_type,caseName = create_inspection_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Robotics':
     env,caseName = create_robotics_env(scenario_type,nAgents)
 

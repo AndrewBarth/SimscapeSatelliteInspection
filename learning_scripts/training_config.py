@@ -8,7 +8,7 @@ from ray.tune.registry import get_trainable_cls
 from ray import air, tune
 from custom_metrics import MyCallbacks
 
-def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
+def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
 
 
     #rollout_fragment_length = int(360)
@@ -23,6 +23,12 @@ def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
     # Adjust the episode duration
     if rollout_workers > 0:
         duration = duration*rollout_workers
+
+
+    if mission == 'Inspection':
+        batch_episodes = 'complete_episodes'
+    else:
+        batch_episodes = 'truncate_episodes'
 
     #algoConfig = (\
     #    get_trainable_cls('PPO')
@@ -55,8 +61,7 @@ def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
         .rollouts(
               create_env_on_local_worker=True,
               num_rollout_workers=rollout_workers,
-              batch_mode="truncate_episodes",
-              #batch_mode="complete_episodes",
+              batch_mode=batch_episodes,
               rollout_fragment_length=rollout_fragment_length
               )\
         .evaluation(
@@ -83,8 +88,9 @@ def PPOAlgorithmConfig(nSteps,duration,nAgents,env,debug):
                 custom_evaluation_function=None,
                 #horizon=nSteps,
                 num_rollout_workers=0,
-                rollout_fragment_length=nSteps,
-                train_batch_size=nSteps,
+                #rollout_fragment_length=nSteps,
+                ##rollout_fragment_length="auto",
+                #train_batch_size=nSteps,
             )\
         )\
 
