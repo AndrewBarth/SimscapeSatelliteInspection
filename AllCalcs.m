@@ -161,7 +161,7 @@ elseif ARM_TYPE == 2
 elseif ARM_TYPE == 3
     % Initial Joint Angles and Rates
     for i = 1:nLink
-        q(i) = smiData.RevoluteJoint(i).Rz.Pos*dtr;
+        q(i) = arm(1).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;
     end
 %     armAttachPnt = [sat.service.radius*cos(pi/8)*cos(pi/4)
@@ -182,47 +182,16 @@ elseif ARM_TYPE == 3
 
 elseif ARM_TYPE == 4
     % Initial Joint Angles and Rates
-    for i = 1:nLink
-        q(i) = smiData.RevoluteJoint(i).Rz.Pos*dtr;
+    for i = 1:arm(1).nLink
+        q(i) = arm(1).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;
     end
-    armAttachPnt = [0 0 0];
-    armAttachAngles = [0 0 0]*dtr;
-    thetaOffset = [0 0]*dtr;
-    DHparams(1,:) = [sat.service.radius sat.service.length/2 0.0*dtr Base_z];
-% % %     DHparams(1,:) = [0 0 0.0*dtr Base_z];
-    for i = 1:nLink
-        DHparams(i+1,:) = [0.0 Link_Length(i) 0.0 q(i)+thetaOffset(i)];
-    end
+    left_arm = configure2DOFArm(arm(1),q,sat);
+    right_arm = configure2DOFArm(arm(2),q,sat);
+    clear arm
+    arm(1) = left_arm;
+    arm(2) = right_arm;
 
-    % Set up mass properties
-    m_base = sat.service.mass + smiData.Solid(1).mass;  % Sum satellite base and arm base
-    for i = 1:nLink
-        m_link(i) = smiData.Solid(i+1).mass;
-    end
-    mt = m_base + sum(m_link);
-    massVec = [m_base m_link];
-    
-    % NEED TO ADD IN INERTIA OF ARM BASE (also check order of PoI variables)
-    inertiaMatBase = [sat.service.MoI(1) sat.service.PoI(1) sat.service.PoI(2); ... 
-                      sat.service.PoI(1) sat.service.MoI(2) sat.service.PoI(3); ...
-                      sat.service.PoI(2) sat.service.PoI(3) sat.service.MoI(3)];
-                  
-    linkIdx = 1;
-    for i = 1:nLink
-        inertiaMat(i,:,:) = [smiData.Solid(i+linkIdx).MoI(1) smiData.Solid(i+linkIdx).PoI(1) smiData.Solid(i+linkIdx).PoI(2); ... 
-                             smiData.Solid(i+linkIdx).PoI(1) smiData.Solid(i+linkIdx).MoI(2) smiData.Solid(i+linkIdx).PoI(3); ...
-                             smiData.Solid(i+linkIdx).PoI(2) smiData.Solid(i+linkIdx).PoI(3) smiData.Solid(i+linkIdx).MoI(3)]/1000/1000; % Convert from kg*mm2 to kg*m2
-    end
-    linkInertia = zeros(nLink,3,3);
-    arm(1).massProperties.mt = mt;
-    arm(1).massProperties.massVec = massVec;
-    arm(1).massProperties.inertiaMatBase = inertiaMatBase;
-    arm(1).massProperties.inertiaMat = inertiaMat;
-    arm(1).massProperties.linkInertia = linkInertia;
-    arm(1).thetaOffset = thetaOffset;
-    arm(1).DHparams = DHparams;
-    arm(1).thetaOffset = thetaOffset;
 elseif ARM_TYPE == 5
     % Arm 1
     % Initial Joint Angles and Rates

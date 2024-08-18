@@ -63,7 +63,7 @@ linkInertia = zeros(nLink,3,3);
         % Convert the link inertias to the inertial frame
         linkInertia(i,:,:) = squeeze(RL(i,:,:))*squeeze(inertiaMat(i,:,:))*squeeze(RL(i,:,:))';
         rSkew = skewMat(rVec0(i,:));
-        Hs = Hs + (squeeze(linkInertia(i,:,:)) - massVec(i+1)*rSkew*rSkew);  % Ref 1, Eq. 29
+        Hs = Hs + (squeeze(linkInertia (i,:,:)) - massVec(i+1)*rSkew*rSkew);  % Ref 1, Eq. 29
         % Hs = Hs + (squeeze(linkInertia(i,:,:)) - massVec(i+1)*rSkew'*rSkew);  % Ref 1, Eq. 29
     end
    

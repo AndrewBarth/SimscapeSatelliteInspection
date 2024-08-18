@@ -72,7 +72,7 @@ end
 % Call forward kinematics to compute pose matrices (relative to spacecraft)
 basePoseMats = zeros(4,4,nLink+1);
 basePoseMats = fKinematics(DHparams,'all');
-attachMat = EulerToDCM_321(attachAngles); 
+attachMat = EulerToDCM_321(attachAngles)'; 
 attachPose = [ [attachMat [attachPnt]]; [0 0 0 1] ];
 for i=1:nLink+1    
     PoseMats(:,:,i) = attachPose*basePoseMats(:,:,i);
@@ -119,6 +119,8 @@ end
 for i=1:nLink
    rVec0(i,:) = squeeze(Tmat(1,1:3,1:3))*Tmat(i+1,1:3,4)' + ...
                 squeeze(RJ(i+1,:,:))*Link_CG(i,:)';
+   % rVec0(i,:) = squeeze(Tmat(1,1:3,1:3))*(Tmat(i+1,1:3,4)' + ...
+   %              squeeze(RJ(i+1,:,:))*Link_CG(i,:)');
 end
 
 % Compute the system center of mass relative to the base
@@ -158,4 +160,5 @@ geometry.kVec = kVec;
 geometry.T00 = squeeze(Tmat(1,:,:));
 geometry.PoseMats = PoseMats;
 geometry.alpha = alphaOut;
+geometry.rcmSys = rcmSys;
 

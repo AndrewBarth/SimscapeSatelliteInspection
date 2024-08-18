@@ -40,6 +40,7 @@ addpath('ServicingSatellite/Camera');
 addpath('FlexibleBeam');
 addpath('ManipulatorControl');
 addpath('TestScenarios')
+addpath('TestScenarios/TwoLinkTest/')
 addpath('DataProcessingScripts')
 
 
@@ -50,9 +51,13 @@ elseif ARM_TYPE == 2
     General_6DOF_ArmAssembly_DataFile
 elseif ARM_TYPE == 3
     General_7DOF_ArmAssembly_DataFile
+    arm(1).smiData = smiData; clear smiData
 elseif ARM_TYPE == 4
     ArmAssembly_DataFile
     RigidBodyTree = load("2linkPlanarTree.mat");
+
+    arm(1).smiData = smiData;
+    arm(2).smiData = smiData; clear smiData
 elseif ARM_TYPE == 5
 
     General_7DOF_ArmAssembly_DataFile
@@ -69,8 +74,10 @@ elseif ARM_TYPE == 5
    zeroVec=zeros(1,length(tVec));
 
    angles=[zeroVec;ang;zeroVec;zeroVec;zeroVec;zeroVec;zeroVec;];
+   rates=[zeroVec;v;zeroVec;zeroVec;zeroVec;zeroVec;zeroVec;];
    % times = [0 49];
    prescribed_jointAngles = timeseries(angles,tVec);
+   prescribed_jointRates = timeseries(rates,tVec);
 
    General_7DOF_ArmAssembly_DataFile
    arm(2).smiData = smiData; clear smiData
@@ -82,21 +89,6 @@ elseif ARM_TYPE == 6
     arm(1).smiData = smiData; clear smiData
     arm(1).rigidBodyTree = load("3linkPlanarTree.mat");
 
-    i=0;
-    for t=0:.001:49
-        i=i+1;
-        a(i) = 0.00088;
-        v(i) = a(i)*t;
-        ang(i) = 0.5*a(i)*t^2;
-    end
-   tVec=0:.001:49;
-   zeroVec=zeros(1,length(tVec));
-
-   angles=[ang; zeroVec; zeroVec];
-   rates=[v; zeroVec; zeroVec];
-   % times = [0 49];
-   prescribed_jointAngles = timeseries(angles,tVec);
-   prescribed_jointRates = timeseries(rates,tVec);
    % Set up arm 2
    ArmAssembly_DataFile
    arm(2).smiData = smiData; clear smiData
@@ -110,7 +102,6 @@ end
 
 ClientAssembly_DataFile
 AllParams
-endTime = 10;
 
 % Load parameter override data from TestScenarios directory
 if ARM_TYPE == 1
@@ -121,6 +112,8 @@ elseif ARM_TYPE == 3
     General7DOF_test
 elseif ARM_TYPE == 5
     General7DOF_test
+% elseif ARM_TYPE == 6
+%     Dual3LinkTest
 end
 
 

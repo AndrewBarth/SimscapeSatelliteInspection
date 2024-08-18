@@ -1,6 +1,34 @@
 
+
 function [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(a,b,radius,makePlots)
 
+% Function to construct a Goldberg Polyhedron 
+%
+% Inputs: a         First term in the G(a,b) polyhedron definition
+%         b         Second term term in the G(a,b) polyhedron definition
+%         radius    Radius of the resultinng polyhedron
+%         makePlots Flag (0,1) to create plots of the polyhedron
+%
+% Output: faceCenter Location of the center of each face relative to the
+%                    center of the polyhedron (nx3)
+%         faceRadius Distance from center of polyhedron to the center of
+%                    each face (1xn)
+%         GPData     Structure containing the location of each vertex (V
+%                    nx3) and the index of each vertex that make up each
+%                    face
+%
+% Assumptions and Limitations:
+%   (none)
+%
+% References:
+%   Code is based on the Babylon JS project
+%   https://doc.babylonjs.com/guidedLearning/workshop/Geodesic_Code
+%
+% Author: Andrew Barth
+%
+% Modification History:
+%    Apr 22 2024 - Initial version
+%
     if nargin < 4
         makePlots = 1;
     else
@@ -157,7 +185,9 @@ function [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(a,b,radius,make
         
            
             patch('Vertices', scaledV, 'Faces', Pentagons.F+ONE, 'FaceColor', [0 1 1]);
-            patch('Vertices', scaledV, 'Faces', Hexagons.F+ONE, 'FaceColor', [0 0 1]);
+            if exist('Hexagons')
+                patch('Vertices', scaledV, 'Faces', Hexagons.F+ONE, 'FaceColor', [0 0 1]);
+            end
             for i=1:size(mapped,1)
                 for j = 1:size(mapped,2)
             %        scatter3(mapped(i,j,1),mapped(i,j,2),mapped(i,j,3),'ro','MarkerFaceColor','r')
@@ -167,7 +197,7 @@ function [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(a,b,radius,make
             for i=1:size(faceCenter,1)
                 scatter3(faceCenter(i,1),faceCenter(i,2),faceCenter(i,3),'yo','MarkerFaceColor','y')
             end
-            xlabel('x');ylabel('y');zlabel('z');title('Goldberg Polyhedron G(2,2)')
+            xlabel('x');ylabel('y');zlabel('z');title(['Goldberg Polyhedron G(',num2str(a),',',num2str(b),')'])
     end
 end
 
@@ -518,8 +548,8 @@ function [isoVecsOBOA] = ABOBtoOBOA(vertexTypes,isoVecsABOB,m,n)
     isoVecsOBOA = {};
     point = [0,0];
     
-    % Shifted to account for 1-based indexing
-    for i = 1:length(isoVecsABOB)
+    % % Shifted to account for 1-based indexing
+    for i = 1:size(isoVecsABOB,1)
         temp = [];
         for j = 1:3
             point = isoVecsABOB{i,j};
@@ -537,7 +567,7 @@ function isoVecsBAOA = ABOBtoBAOA(vertexTypes,isoVecsABOB,m,n)
     point = [0,0];
     
     % Shifted to account for 1-based indexing
-    for i = 1:length(isoVecsABOB)
+    for i = 1:size(isoVecsABOB,1)
         temp = [];
         for j = 1:3
             point = isoVecsABOB{i,j};
@@ -553,7 +583,7 @@ end
 function GDmnData = InnerToGDmnData(GDmnData,innerFacets,vecToIdx,f) 
     global ONE
     % Shifted to account for 1-based indexing
-    idx = length(GDmnData.F)+1;
+    idx = size(GDmnData.F,1)+1;
     for i = 1:length(innerFacets)
         for j = 1:3
             dictKey = strcat(string(f),innerFacets{i}{j});
@@ -567,8 +597,8 @@ function GDmnData = ABOBtoGDmnDATA(GDmnData,icoData,isoVecsABOB,vertexTypes,vecT
     global ONE
     fr = icoData.edgematch{f+ONE}{0+ONE};
     % Shifted to account for 1-based indexing
-    idx = length(GDmnData.F)+1;
-    for i = 1:length(isoVecsABOB)
+    idx = size(GDmnData.F,1)+1;
+    for i = 1:size(isoVecsABOB,1)
         for j = 1:3
             if vertexTypes(i,j) == 0
                 dictKey(j) = strcat(string(f),'|', string(isoVecsABOB{i,j}(1)),'|',string(isoVecsABOB{i,j}(2)));
@@ -586,8 +616,8 @@ function GDmnData = OBOAtoGDmnDATA(GDmnData,icoData,isoVecsOBOA,vertexTypes,vecT
     global ONE
     fr = icoData.edgematch{f+ONE}{0+ONE};
      % Shifted to account for 1-based indexing
-    idx = length(GDmnData.F)+1;
-    for i = 1:length(isoVecsOBOA)
+    idx = size(GDmnData.F,1)+1;
+    for i = 1:size(isoVecsOBOA,1)
         for j = 1:3
             if vertexTypes(i,j) == 1
                 dictKey(j) = strcat(string(f),'|', string(isoVecsOBOA{i,j}(1)),'|',string(isoVecsOBOA{i,j}(2)));
@@ -604,8 +634,8 @@ function GDmnData = BAOAtoGDmnDATA(GDmnData,icoData,isoVecsBAOA,vertexTypes,vecT
     global ONE
     fr = icoData.edgematch{f+ONE}{2+ONE};
     % Shifted to account for 1-based indexing
-    idx = length(GDmnData.F)+1;
-    for i = 1:length(isoVecsBAOA)
+    idx = size(GDmnData.F,1)+1;
+    for i = 1:size(isoVecsBAOA,1)
         for j = 1:3
             if vertexTypes(i,j) == 1
                 dictKey(j) = strcat(string(f),'|', string(isoVecsBAOA{i,j}(1)),'|',string(isoVecsBAOA{i,j}(2)));

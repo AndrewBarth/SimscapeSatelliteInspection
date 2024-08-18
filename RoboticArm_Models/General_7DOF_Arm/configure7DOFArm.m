@@ -3,18 +3,33 @@ function arm = configure7DOFArm(arm,q,sat)
     dtr = pi/180;
 
     % Set DH parameters
-    thetaOffset = [0 0 0 0 0 0 -90]*dtr;
-
+    thetaOffset = [-90 0 0 0 0 0 -90]*dtr;
+    % thetaOffset = [90 90 90 90 90 90 -90]*dtr;
+  
     DHparams(1,:) = [0 0 0 0];
-    DHparams(2,:) = [ arm.Link_Length(1) 0.0              90.0*dtr q(1)+thetaOffset(1)];
-    DHparams(3,:) = [ arm.Link_Length(2) 0.0             -90.0*dtr q(2)+thetaOffset(2)];
-    DHparams(4,:) = [ arm.Link_Length(3) 0.0              90.0*dtr q(3)+thetaOffset(3)];
-    DHparams(5,:) = [-arm.Link_Length(4) 0.0             -90.0*dtr q(4)+thetaOffset(4)];
-    DHparams(6,:) = [ arm.Link_Length(5) 0.0              90.0*dtr q(5)+thetaOffset(5)];
-    DHparams(7,:) = [-arm.Link_Length(6) 0.0             -90.0*dtr q(6)+thetaOffset(6)];
-    DHparams(8,:) = [ arm.Link_Length(7) 0.0               0.0*dtr q(7)+thetaOffset(7)];
+    DHparams(2,:) = [0.0  arm.Link_Length(1)              90.0*dtr q(1)+thetaOffset(1)];
+    DHparams(3,:) = [0.0 -arm.Link_Length(2)           -90.0*dtr q(2)+thetaOffset(2)];
+    DHparams(4,:) = [0.0  arm.Link_Length(3)               90.0*dtr q(3)+thetaOffset(3)];
+    DHparams(5,:) = [0.0 -arm.Link_Length(4)               90.0*dtr q(4)+thetaOffset(4)];
+    DHparams(6,:) = [0.0  arm.Link_Length(5)             -90.0*dtr q(5)+thetaOffset(5)];
+    DHparams(7,:) = [0.0 -arm.Link_Length(6)              90.0*dtr q(6)+thetaOffset(6)];
+    DHparams(8,:) = [0.0  arm.Link_Length(7)              0.0*dtr q(7)+thetaOffset(7)];
 
+    DHparams(2,:) = [.1                    0   -90.0*dtr q(1)+thetaOffset(1)];
+    DHparams(3,:) = [-0.275                0    90.0*dtr q(2)+thetaOffset(2)];
+    DHparams(4,:) = [arm.Link_Length(3)    0   -90.0*dtr q(3)+thetaOffset(3)];
+    DHparams(5,:) = [arm.Link_Length(4)    0    90.0*dtr q(4)+thetaOffset(4)];
+    DHparams(6,:) = [arm.Link_Length(5)    0   -90.0*dtr q(5)+thetaOffset(5)];
+    DHparams(7,:) = [arm.Link_Length(6)    0    90.0*dtr q(6)+thetaOffset(6)];
+    DHparams(8,:) = [arm.Link_Length(7)    0     0.0*dtr q(7)+thetaOffset(7)];
 
+    DHparams(2,:) = [.1                    0   90.0*dtr q(1)+thetaOffset(1)];
+    DHparams(3,:) = [-.275                 0   -90.0*dtr q(2)+thetaOffset(2)];
+    DHparams(4,:) = [arm.Link_Length(3)    0   90.0*dtr q(3)+thetaOffset(3)];
+    DHparams(5,:) = [arm.Link_Length(4)    0   -90.0*dtr q(4)+thetaOffset(4)];
+    DHparams(6,:) = [arm.Link_Length(5)    0   90.0*dtr q(5)+thetaOffset(5)];
+    DHparams(7,:) = [arm.Link_Length(6)    0   -90.0*dtr q(6)+thetaOffset(6)];
+    DHparams(8,:) = [arm.Link_Length(7)    0   -90.0*dtr q(7)+thetaOffset(7)];
     % Set up mass properties
     % THESE ARE PROBABLY INCORRECT. NEED TO MATCH THIS WITH ARM MODEL
     m_base = sat.service.mass + arm.smiData.Solid(1).mass;  % Sum satellite base and arm base

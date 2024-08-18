@@ -6,7 +6,7 @@ function arm = configure3DOFArm(arm,q,sat)
     armAttachAngles = [0 0 0]*dtr;
 
     Base_z = 90*dtr;   % Rotation becase Y axis is the joint axis
-
+    Base_z = 0;
     thetaOffset = [0 0 0]*dtr;
     DHparams(1,:) = [sat.service.radius sat.service.length/2 0.0*dtr Base_z];
 

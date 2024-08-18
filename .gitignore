@@ -12,3 +12,6 @@ archive
 *mexw64
 untracked
 data_storage/*
+*.mp4
+testing_scripts/*
+*.mat
