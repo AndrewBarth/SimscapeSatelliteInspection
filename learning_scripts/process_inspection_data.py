@@ -16,8 +16,8 @@ def main():
     fileDate = '2023-07-18'
     fileTime = '13-36'    # 1000 episodes of varied LEO evaluation
 
-    fileDate = '2024-05-17'
-    fileTime = '21-08'
+    fileDate = '2024-08-21'
+    fileTime = '15-54'
 
     #scenario_type = 'Train'
     scenario_type = 'Eval'
@@ -30,51 +30,61 @@ def main():
     file_path = os.path.dirname(sys.path[0])+storageLocation+fileDate+"-"+fileTime
 
     episode_number = 1
-    nAgents = 2
+    nAgents = 3
 
     caseType='3d'
 
     if mission == 'Inspection':
-        npts1,position1,velocity1,accel1,sim_time1,nInspected1,coverage1,reward1,orbit1 = load_data_inspection(str(episode_number),'1',file_path)
-        if nAgents == 1:
-            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2 = load_data_inspection(str(episode_number),'1',file_path)
-            npts3,position3,velocity3,accel3,sim_time3,nInspected3,coverage3,reward3,orbit3 = load_data_inspection(str(episode_number),'1',file_path)
-            npts4,position4,velocity4,accel4,sim_time4,nInspected4,coverage4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
-        elif nAgents == 2:
-            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,accel3,sim_time3,nInspected3,coverage3,reward3,orbit3 = load_data_inspection(str(episode_number),'2',file_path)
-            npts4,position4,velocity4,accel4,sim_time4,nInspected4,coverage4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
+        npts1,position1,velocity1,accel1,sim_time1,nInspected1,coverage1,reward1,orbit1,nAgents1 = load_data_inspection(str(episode_number),'1',file_path)
+        cumReward1 = np.cumsum(reward1,axis=0)
+        nAgents = nAgents1[0]
+        if nAgents == 2:
+            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
+            cumReward2 = np.cumsum(reward2,axis=0)
         elif nAgents == 3:
-            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,accel3,sim_time3,nInspected3,coverage3,reward3,orbit3 = load_data_inspection(str(episode_number),'3',file_path)
-            npts4,position4,velocity4,accel4,sim_time4,nInspected4,coverage4,reward4,orbit4 = load_data_inspection(str(episode_number),'1',file_path)
+            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
+            npts3,position3,velocity3,accel3,sim_time3,nInspected3,coverage3,reward3,orbit3,nAgents3 = load_data_inspection(str(episode_number),'3',file_path)
+            cumReward2 = np.cumsum(reward2,axis=0)
+            cumReward3 = np.cumsum(reward3,axis=0)
         else:
-            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2 = load_data_inspection(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,accel3,sim_time3,nInspected3,coverage3,reward3,orbit3 = load_data_inspection(str(episode_number),'3',file_path)
-            npts4,position4,velocity4,accel4,sim_time4,nInspected4,coverage4,reward4,orbit4 = load_data_inspection(str(episode_number),'4',file_path)
+            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
+            npts3,position3,velocity3,accel3,sim_time3,nInspected3,coverage3,reward3,orbit3,nAgents3 = load_data_inspection(str(episode_number),'3',file_path)
+            npts4,position4,velocity4,accel4,sim_time4,nInspected4,coverage4,reward4,orbit4,nAgents4 = load_data_inspection(str(episode_number),'4',file_path)
+            cumReward2 = np.cumsum(reward2,axis=0)
+            cumReward3 = np.cumsum(reward3,axis=0)
+            cumReward4 = np.cumsum(reward4,axis=0)
     elif mission == 'Transfer':
         npts1,position1,velocity1,poserror1,velerror1,action1,reward1,transfer_time1,orbit1 = load_data_dv(str(episode_number),'1',file_path)
+        cumReward1 = np.cumsum(reward1,axis=0)
         if nAgents == 1:
             npts2,position2,velocity2,poserror2,velerror2,action2,reward2,transfer_time2,orbit2 = load_data_dv(str(episode_number),'1',file_path)
             npts3,position3,velocity3,poserror3,velerror3,action3,reward3,transfer_time3,orbit3 = load_data_dv(str(episode_number),'1',file_path)
             npts4,position4,velocity4,poserror4,velerror4,action4,reward4,transfer_time4,orbit4 = load_data_dv(str(episode_number),'1',file_path)
+            cumReward2 = np.cumsum(reward1,axis=0)
+            cumReward3 = np.cumsum(reward1,axis=0)
+            cumReward4 = np.cumsum(reward1,axis=0)
         elif nAgents == 2:
             npts2,position2,velocity2,poserror2,velerror2,action2,reward2,transfer_time2,orbit2 = load_data_dv(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,poserror3,velerror3,action3,reward3,transfer_time3,orbit3 = load_data_dv(str(episode_number),'2',file_path)
+            npts3,position3,velocity3,poserror3,velerror3,action3,reward3,transfer_time3,orbit3 = load_data_dv(str(episode_number),'1',file_path)
             npts4,position4,velocity4,poserror4,velerror4,action4,reward4,transfer_time4,orbit4 = load_data_dv(str(episode_number),'1',file_path)
+            cumReward2 = np.cumsum(reward2,axis=0)
+            cumReward3 = np.cumsum(reward1,axis=0)
+            cumReward4 = np.cumsum(reward1,axis=0)
         elif nAgents == 3:
             npts2,position2,velocity2,poserror2,velerror2,action2,reward2,transfer_time2,orbit2 = load_data_dv(str(episode_number),'2',file_path)
             npts3,position3,velocity3,poserror3,velerror3,action3,reward3,transfer_time3,orbit3 = load_data_dv(str(episode_number),'3',file_path)
             npts4,position4,velocity4,poserror4,velerror4,action4,reward4,transfer_time4,orbit4 = load_data_dv(str(episode_number),'1',file_path)
+            cumReward2 = np.cumsum(reward2,axis=0)
+            cumReward3 = np.cumsum(reward3,axis=0)
+            cumReward4 = np.cumsum(reward1,axis=0)
         else:
             npts2,position2,velocity2,poserror2,velerror2,action2,reward2,transfer_time2,orbit2 = load_data_dv(str(episode_number),'2',file_path)
             npts3,position3,velocity3,poserror3,velerror3,action3,reward3,transfer_time3,orbit3 = load_data_dv(str(episode_number),'3',file_path)
             npts4,position4,velocity4,poserror4,velerror4,action4,reward4,transfer_time4,orbit4 = load_data_dv(str(episode_number),'4',file_path)
+            cumReward2 = np.cumsum(reward2,axis=0)
+            cumReward3 = np.cumsum(reward3,axis=0)
+            cumReward4 = np.cumsum(reward4,axis=0)
 
-
-    cumReward1 = np.cumsum(reward1,axis=0)
-    cumReward2 = np.cumsum(reward2,axis=0)
-    cumReward3 = np.cumsum(reward3,axis=0)
 
     if mission == 'Transfer':
         print('Transfer Time is: ',transfer_time1[0],' s')
@@ -156,8 +166,8 @@ def main():
         plotData={'data0':totalReward1,'data1':totalReward2,'data2':totalReward3}
         plot_static('1d',plotData,labels,legend,colors)
 
-    legend=['Dep 1','Dep 2','Dep 3']
-    colors=['orange','green','red']
+    legend=['Dep 1','Dep 2','Dep 3','Dep 4']
+    colors=['orange','green','red','blue']
     #labels=['Cubesat Relative Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
     #plotData={'data0':position1,'data1':position2,'data2':position3}
     #plot_static('3d',plotData,labels,legend,colors)
@@ -180,46 +190,59 @@ def main():
         #plot_static('3d',plotData,labels,legend,colors)
 
     if mission == 'Inspection':
-        legend=['Dep 1','Dep 2','Dep 3','Dep 4']
-        colors=['orange','green','red','blue']
+        orbitData={}
+        timeData={}
+        nInspectedData={}
+        rewardData={}
+        cumRewardData={}
+        positionData={}
+        velocityData={}
+        accelData={}
+        for i in range(nAgents):
+            DataKey='data'+str(i)
+            orbitData[DataKey] = eval('orbit'+str(i+1)+'[:,2:5]')
+            timeData[DataKey] = eval('sim_time'+str(i+1))
+            nInspectedData[DataKey] = eval('nInspected'+str(i+1))
+            rewardData[DataKey] = eval('reward'+str(i+1))
+            cumRewardData[DataKey] = eval('cumReward'+str(i+1))
+            positionData[DataKey] = eval('position'+str(i+1))
+            velocityData[DataKey] = eval('velocity'+str(i+1))
+            accelData[DataKey] = eval('accel'+str(i+1))
+            print('Orbit Parameters for Cubesat '+str(i+1)+ ' = ',eval('orbit'+str(i+1)+'[0,0:6]'))
+       
         labels=['Task Orbit','Points','Semi-Major Axis (m)','Inclination (deg)','Eccentricity (-)']
-        plotData={'data0':orbit1[:,2:5],'data1':orbit2[:,2:5],'data2':orbit3[:,2:5],'data3':orbit4[:,2:5]}
+        plotData=orbitData
         plot_static('3d',plotData,labels,legend,colors)
 
         labels=['Inspection','Points','Inspection Time (s)']
-        plotData={'data0':sim_time1,'data1':sim_time2,'data2':sim_time3,'data3':sim_time4}
+        plotData=timeData
         plot_static('1d',plotData,labels,legend,colors)
 
         labels=['Inspection','Points','Faces Covered (--)']
-        plotData={'data0':nInspected1,'data1':nInspected2,'data2':nInspected3,'data3':nInspected4}
+        plotData=nInspectedData
         plot_static('1d',plotData,labels,legend,colors)
 
         labels=['Rewards','Points','Success Reward','Coverage Reward','Time Reward']
-        plotData={'data0':reward1,'data1':reward2,'data2':reward3,'data3':reward4}
+        plotData=rewardData
         #plot_static('4d',plotData,labels,legend,colors)
         plot_static('3d',plotData,labels,legend,colors)
 
         labels=['Cumulative Rewards','Points','Success Reward','Coverage Reward','Time Reward']
-        plotData={'data0':cumReward1,'data1':cumReward2,'data2':cumReward3}
+        plotData=cumRewardData
         plot_static('3d',plotData,labels,legend,colors)
 
         labels=['Cubesat Position','Points','X (m)','Y (m)','Z (m)']
-        plotData={'data0':position1,'data1':position2,'data2':position3,'data3':position4}
+        plotData=positionData
         plot_static('3d',plotData,labels,legend,colors)
 
         labels=['Cubesat Velocity','Points','X (m/s)','Y (m/s)','Z (m/s)']
-        plotData={'data0':velocity1,'data1':velocity2,'data2':velocity3,'data3':velocity4}
+        plotData=velocityData
         plot_static('3d',plotData,labels,legend,colors)
 
         labels=['Cubesat Acceleration','Points','X (m/s2)','Y (m/s2)','Z (m/s2)']
-        #plotData={'data0':accel1,'data1':accel2,'data2':accel3,'data3':accel4}
-        plotData={'data0':accel1}
+        plotData=accelData
         plot_static('3d',plotData,labels,legend,colors)
 
-        print('Orbit for Cubesat 1 = ',orbit1[0,0:6])
-        print('Orbit for Cubesat 2 = ',orbit2[0,0:6])
-        print('Orbit for Cubesat 3 = ',orbit3[0,0:6])
-        print('Orbit for Cubesat 4 = ',orbit4[0,0:6])
     if mission == 'Transfer':
         labels=['Reference Trajectory','X Position (m)', 'Y Position (m)']
         xData = {}

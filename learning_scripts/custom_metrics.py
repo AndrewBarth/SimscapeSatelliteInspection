@@ -68,7 +68,9 @@ class MyCallbacks(DefaultCallbacks):
         episode.user_data["ref_states"] = {}
         episode.user_data["orbit_states"] = {}
         episode.user_data["sim_time"] = []
-        for agent_key in worker.env.active_agents:
+        episode.user_data["nAgents"] = []
+        # Allocate data for all possible agents
+        for agent_key in worker.env.total_agents:
             episode.user_data["output_states"][agent_key] = [] 
             episode.user_data["error_states"][agent_key] = []
             episode.user_data["sim_error_states"][agent_key] = []
@@ -103,6 +105,7 @@ class MyCallbacks(DefaultCallbacks):
             episode.user_data["ref_states"][agent_key].append(worker.env.ref_states[agent_key])
             episode.user_data["orbit_states"][agent_key].append(worker.env.orbit_states[agent_key])
             episode.user_data["sim_time"].append([worker.env.sim_time])
+            episode.user_data["nAgents"].append([worker.env.nChosenAgents])
 
     def on_episode_end(
         self,
@@ -142,8 +145,8 @@ class MyCallbacks(DefaultCallbacks):
         
         for agent_key in agent_keys:
             combined_metrics = []
-            for (s,t,u,v,w,x,y,z) in zip(episode.user_data['output_states'][agent_key], episode.user_data['error_states'][agent_key], episode.user_data['action_states'][agent_key],episode.user_data['reward_states'][agent_key], episode.user_data['ref_states'][agent_key], episode.user_data['orbit_states'][agent_key], episode.user_data['sim_time'],episode.user_data['sim_error_states'][agent_key]):
-                combined_metrics.append(s+t+u+v+w+x+y+z)
+            for (r, s,t,u,v,w,x,y,z) in zip(episode.user_data['output_states'][agent_key], episode.user_data['error_states'][agent_key], episode.user_data['action_states'][agent_key],episode.user_data['reward_states'][agent_key], episode.user_data['ref_states'][agent_key], episode.user_data['orbit_states'][agent_key], episode.user_data['sim_time'],episode.user_data['sim_error_states'][agent_key],episode.user_data['nAgents']):
+                combined_metrics.append(r+s+t+u+v+w+x+y+z)
 
 
 #            for metric_key in episode.user_data.keys():

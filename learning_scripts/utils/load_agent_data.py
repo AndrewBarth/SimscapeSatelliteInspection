@@ -115,11 +115,14 @@ def load_data_inspection(episode, agent, file_path):
 #    endIdx = endIdx+5
 #    action         = trajData[:,startIdx:endIdx]
     startIdx = endIdx 
-    endIdx = endIdx+3
+    endIdx = endIdx+4
     reward         = trajData[:,startIdx:endIdx]
     startIdx = endIdx 
     endIdx = endIdx+6
     orbit          = trajData[:,startIdx:endIdx]
+    startIdx = endIdx+1 
+    endIdx = endIdx+1
+    nAgents       = trajData[:,startIdx]
 
-    return npts,position,velocity,acceleration,sim_time,nInspected,coverage,reward,orbit
+    return npts,position,velocity,acceleration,sim_time,nInspected,coverage,reward,orbit,nAgents
 

@@ -2,11 +2,14 @@ import sys
 import os
 import time
 import numpy as np
+import ray
 from ray.rllib.algorithms.algorithm_config import AlgorithmConfig
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.tune.registry import get_trainable_cls
+from ray.rllib.evaluation.metrics import collect_episodes, summarize_episodes
 from ray import air, tune
 from custom_metrics import MyCallbacks
+
 
 def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
 
@@ -65,7 +68,7 @@ def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
               rollout_fragment_length=rollout_fragment_length
               )\
         .evaluation(
-            evaluation_num_workers=0,
+            evaluation_num_workers=1,
             # Will  evaluate after training.
             evaluation_interval=None,
             evaluation_parallel_to_training=False,
@@ -80,7 +83,7 @@ def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
             #evaluation_config=dict(
             evaluation_config=PPOConfig.overrides(
                 explore=False,
-                evaluation_num_workers=0,
+                evaluation_num_workers=1,
                 evaluation_interval=None,
                 evaluation_parallel_to_training=False,
                 #evaluation_duration=nSteps,
@@ -90,7 +93,8 @@ def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
                 num_rollout_workers=0,
                 #rollout_fragment_length=nSteps,
                 ##rollout_fragment_length="auto",
-                #train_batch_size=nSteps,
+                train_batch_size=1,
+                sgd_minibatch_size=1,
             )\
         )\
 

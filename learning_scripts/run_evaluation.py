@@ -3,6 +3,7 @@ import os
 import time
 import pickle
 import numpy as np
+import ray
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.tune.registry import register_env
 from ray.rllib.algorithms.algorithm import Algorithm
@@ -31,7 +32,10 @@ case_type = 'Benchmark2'
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-08-11-09-44/checkpoint_60'
+checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-08-20-13-55/checkpoint_200'
+
+# Run everything on a local process
+ray.init(local_mode=True)
 
 # Instantiate the environment
 #Create the environment
@@ -43,6 +47,7 @@ elif mission == 'Robotics':
     env,caseName = create_robotics_env(scenario_type,nAgents)
 
 learning_step_size = env.control_step_size
+
 
 # Set up a save directory
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M")
