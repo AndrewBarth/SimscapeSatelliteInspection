@@ -22,16 +22,16 @@ from utils.format_mat_data import format_mat_data
 nAgents=3
 perform_hyperparameter_tuning = False
 debug = False    # You also need to give the -m -pdb arguments to python on command line
-#debug = True
+debug = True
 
 
-save_step = 40
-checkpoint_step = 40
-nIter = 100 
+save_step = 10
+checkpoint_step = 10
+nIter = 200 
 
-save_step = 20
-checkpoint_step = 20
-nIter = 100 
+#save_step = 20 
+#checkpoint_step = 20
+#nIter = 2 
 
 caseName = 'agent_parameters'
 caseTitle = 'Agent Parameters'
@@ -39,10 +39,14 @@ caseTitle = 'Agent Parameters'
 if debug:
     # Run everything on a local process
     ray.init(local_mode=True)
+else:
+    ray.init()
 
 mission = 'Inspection'
 #mission = 'Robotics'
+
 init_type = 'fixed'
+#init_type = 'random'
 scenario_type = 'train'
 case_type = 'Benchmark2'
 
@@ -51,7 +55,7 @@ case_type = 'Benchmark2'
 if mission == 'Transfer':
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Inspection':
-    env,task_type,caseName = create_inspection_env(init_type,scenario_type,case_type,nAgents)
+    env,task_type,caseName = create_inspection_env(init_type,scenario_type,case_type)
 elif mission == 'Robotics':
     env,caseName = create_robotics_env(scenario_type,nAgents)
 
@@ -62,7 +66,8 @@ nSteps = 1
 # Fixed hyperparameters
 # Cubesat inspection values
 if mission == 'Inspection':
-    train_batch_size = int(400)
+    #train_batch_size = int(400)
+    train_batch_size = int(30)
     sgd_minibatch_size = int(train_batch_size/5)
     duration = 1
 
@@ -107,7 +112,7 @@ else:
     algoConfig.training(
           train_batch_size=train_batch_size,
           sgd_minibatch_size=sgd_minibatch_size,
-          model={'use_lstm':True,'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
+          model={'max_seq_len':2,'use_lstm':True,'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
           )
 
     # Now Build the config
@@ -160,7 +165,7 @@ else:
         time_steps += train_results["timesteps_total"]
         #print(results['timesteps_total'])
 
-        if not Iter % checkpoint_step:
+        if not Iter % checkpoint_step or Iter == nIter:
             check_dir_inc = check_dir[0]+"checkpoint_"+str(Iter)
             if not os.path.exists(check_dir_inc):
                 os.makedirs(check_dir_inc)
@@ -168,7 +173,7 @@ else:
             checkpoint = algo.save_checkpoint(check_dir_inc)
 
         # Store intermediate data from training
-        if not Iter % save_step:
+        if not Iter % save_step or Iter == nIter:
 
             print('Running an evaluation case')
             eval_results = algo.evaluate()
@@ -176,7 +181,7 @@ else:
       
             #if eval_results['evaluation']['episodes_this_iter'] > 0:
             if True:
-                for i in range(env.nAgents):
+                for i in range(len(env.active_agents)):
                     save_dir_inc = save_dir[i]+"_"+str(Iter)
 #                    #agents[i].save_model(save_dir_inc)
 #                    #agents[i].save_memory(save_dir_inc)
@@ -186,13 +191,17 @@ else:
 #                    rospy.logerr("agent: "+name+" Q-net stored")
 
                     # Save as mat file, first must place in dictionary
-                    Data = np.squeeze(np.array(eval_results['evaluation']['custom_metrics'][agent_id]))
+                    #if len(eval_results['evaluation']['custom_metrics'][agent_id][0]) > 0:
+                    try:
+                        Data = np.squeeze(np.array(eval_results['evaluation']['custom_metrics'][agent_id]))
 
-                    matData = format_mat_data(Data,caseTitle,caseName,mission,learning_step_size)
+                        matData = format_mat_data(Data,caseTitle,caseName,mission,learning_step_size)
 
-                    # Create mat file
-                    fileName = caseName + '.mat'
-                    data_utils.save_mat(content=matData, fdir=save_dir_inc, fname=fileName)
+                        # Create mat file
+                        fileName = caseName + '.mat'
+                        data_utils.save_mat(content=matData, fdir=save_dir_inc, fname=fileName)
+                    except:
+                        print('Error saving mat file for agent: ',agent_id)
 
             # auto_garbage_collection - Call the garbage collection if memory used is greater than 80% of total available memory.
             # This is called to deal with an issue in Ray not freeing up used memory.
@@ -202,8 +211,8 @@ else:
             if psutil.virtual_memory().percent >= pct:
                 gc.collect()
 
-    #print(results)
     # Save a final checkpoint
+    check_dir_inc = check_dir[0]+"checkpoint_"+str(Iter)
     checkpoint = algo.save()
 
 print('Training Complete')

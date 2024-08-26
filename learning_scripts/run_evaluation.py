@@ -32,7 +32,7 @@ case_type = 'Benchmark2'
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-08-20-13-55/checkpoint_200'
+checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-08-26-08-40/checkpoint_100'
 
 # Run everything on a local process
 ray.init(local_mode=True)
@@ -42,7 +42,7 @@ ray.init(local_mode=True)
 if mission == 'Transfer':
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Inspection':
-    env,task_type,caseName = create_inspection_env(init_type,scenario_type,case_type,nAgents)
+    env,task_type,caseName = create_inspection_env(init_type,scenario_type,case_type)
 elif mission == 'Robotics':
     env,caseName = create_robotics_env(scenario_type,nAgents)
 
@@ -67,18 +67,21 @@ eval_results = algo.evaluate()
 
 # Store results in both pkl and matlab format
 Iter = 1
-for i in range(env.nAgents):
+for i in range(len(env.active_agents)):
     save_dir_inc = save_dir[i]+"_"+str(Iter)
     agent_id = i+1
     data_utils.save_pkl(content=eval_results['evaluation']['custom_metrics'][agent_id], fdir=save_dir_inc, fname="agent_parameters.pkl")
     
-    # Save as mat file, first must place in dictionary
-    Data = np.squeeze(np.array(eval_results['evaluation']['custom_metrics'][agent_id]))
+    try:
+        # Save as mat file, first must place in dictionary
+        Data = np.squeeze(np.array(eval_results['evaluation']['custom_metrics'][agent_id]))
 
-    matData = format_mat_data(Data,caseTitle,caseName,mission,learning_step_size)
-
-    # Create mat file
-    fileName = caseName + '.mat'
-    data_utils.save_mat(content=matData, fdir=save_dir_inc, fname=fileName)
+        matData = format_mat_data(Data,caseTitle,caseName,mission,learning_step_size)
+    
+        # Create mat file
+        fileName = caseName + '.mat'
+        data_utils.save_mat(content=matData, fdir=save_dir_inc, fname=fileName)
+    except: 
+        print('Error saving mat file for agent: ',agent_id)
 
 print('Evaluation Complete')

@@ -71,7 +71,7 @@ void rt_OneStep(RT_MODEL_SatelliteServicing_M_T *const
   // Enable interrupts here
 }
 
-extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_conditions, real_T mean_motion, int_T* nFaces)
+extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* fov, real_T* initial_conditions, real_T mean_motion, int_T* nFaces)
 {
   // Allocate model data
   SatelliteServicing_Mission_M = SatelliteServicing_Mission
@@ -88,6 +88,14 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
     // Terminate model
     SatelliteServicing_Mission_terminate(SatelliteServicing_Mission_M);
     return(1);
+  }
+
+  int ncppAgents = 4;
+
+  // Set default FOV value to 45 deg for all agents. Will be overwritten for
+  // active agents below
+  for (int i=0;i<ncppAgents;i++) {
+      SatelliteServicing_Mission_P.Constant2_Value[i] = 0.7854;
   }
 
   // ADD INITIAL CONDITIONS HERE
@@ -112,6 +120,8 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
       SatelliteServicing_Mission_P.cubesat[0].IC.rel_velocity[0] = initial_conditions[3];
       SatelliteServicing_Mission_P.cubesat[0].IC.rel_velocity[1] = initial_conditions[4];
       SatelliteServicing_Mission_P.cubesat[0].IC.rel_velocity[2] = initial_conditions[5];
+      
+      SatelliteServicing_Mission_P.Constant2_Value[0] = fov[0];
   }
   if (nAgents > 1) {
       // 2nd agent is being trained
@@ -121,6 +131,8 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
       SatelliteServicing_Mission_P.cubesat[1].IC.rel_velocity[0] = initial_conditions[9];
       SatelliteServicing_Mission_P.cubesat[1].IC.rel_velocity[1] = initial_conditions[10];
       SatelliteServicing_Mission_P.cubesat[1].IC.rel_velocity[2] = initial_conditions[11];
+
+      SatelliteServicing_Mission_P.Constant2_Value[1] = fov[1];
   }
   if (nAgents > 2) {
       // 3rd agent is being trained
@@ -130,6 +142,7 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
       SatelliteServicing_Mission_P.cubesat[2].IC.rel_velocity[0] = initial_conditions[15];
       SatelliteServicing_Mission_P.cubesat[2].IC.rel_velocity[1] = initial_conditions[16];
       SatelliteServicing_Mission_P.cubesat[2].IC.rel_velocity[2] = initial_conditions[17];
+      SatelliteServicing_Mission_P.Constant2_Value[2] = fov[2];
   }
   if (nAgents > 3) {
       // 4th agent is being trained
@@ -139,6 +152,13 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
       SatelliteServicing_Mission_P.cubesat[3].IC.rel_velocity[0] = initial_conditions[21];
       SatelliteServicing_Mission_P.cubesat[3].IC.rel_velocity[1] = initial_conditions[22];
       SatelliteServicing_Mission_P.cubesat[3].IC.rel_velocity[2] = initial_conditions[23];
+
+      SatelliteServicing_Mission_P.Constant2_Value[3] = fov[3];
+  }
+  
+  // Set the values for the camera field of view, expect values for all possible agents
+  for (int i=0; i<ncppAgents; i++) {
+      SatelliteServicing_Mission_P.Constant2_Value[i] = fov[i];
   }
 
   SatelliteServicing_Mission_P.orbit.mean_motion = mean_motion;
@@ -168,7 +188,7 @@ extern "C" int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_con
 // illustrates how you do this relative to initializing the model.
 //
 //int_T main(int_T argc, const char *argv[])for (int i=3*nAgents; i<3*ncppAgents; i++) {
-extern "C" int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime)
+extern "C" int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize, real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime)
 {
 
   // Unused arguments
@@ -257,8 +277,8 @@ extern "C" int_T sim_terminate()
 
 // Declare external functions to be accessed from Python
 extern "C" {
-    int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize,  real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime);
-    int_T sim_init(real_T simStepSize, int_T nAgents, real_T* initial_conditions, real_T mean_motion, int_T* nFaces);
+    int_T sim_wrapper(int_T nAgents, int_T nFaces, real_T stopTime, real_T controlStepSize, real_T* actions, real_T* observations, int_T* coverage, int_T* dones, real_T* simTime);
+    int_T sim_init(real_T simStepSize, int_T nAgents, real_T* fov, real_T* initial_conditions, real_T mean_motion, int_T* nFaces);
     int_T sim_terminate();
 }
 

@@ -23,27 +23,22 @@ class CubesatInspectionEnv(MultiAgentEnv):
 
         super().__init__()
 
+        # Max agents is fixed in the c++ sim, this must match
         self.maxAgents = 4
-        self.nAgents = kwargs['nAgents']
         self.agent_ids = {1} 
         self._agent_ids = {1}  # Later version of Ray require a private variable
-# Agent ids stay at only 1, nAgents is the number of active cubesats
-        #for i in range(2,self.nAgents+1):
-        #    self.agent_ids.add(i)
-        #    self._agent_ids.add(i)
-
+        # Agent ids stay at only 1, active_agents is the number of active cubesats
          
+        # Start with all agents active
         self.active_agents = {1}
-        #for i in range(2,self.nAgents+1):
-        for i in range(2,self.maxAgents+1):
-            self.active_agents.add(i)
-
         self.total_agents = {1}
         for i in range(2,self.maxAgents+1):
+            self.active_agents.add(i)
             self.total_agents.add(i)
 
         self.earth_radius = 6378.0   # km
         self.earth_mu = 398600 # km^3/s^2
+
         # Process arguments
         self.scenario_type = kwargs['scenario_type']
         self.init_type = kwargs['init_type']
@@ -55,8 +50,8 @@ class CubesatInspectionEnv(MultiAgentEnv):
         self.task_eccentricity_bounds = kwargs['eccentricity_bounds']
         self.task_inc_bounds = kwargs['inclination_bounds']
         self.task_period_bounds = kwargs['task_period_bounds']
+        self.fov_bounds = kwargs['fov_bounds']
         self.task_type = kwargs['task_type']
-        self.chief_bounds = kwargs['chief_bounds']
             
         self.min_period = orbit_utils.compute_period(self.ref_altitude_bounds[0]+self.earth_radius)
         self.max_period = orbit_utils.compute_period(self.ref_altitude_bounds[1]+self.earth_radius)
@@ -64,13 +59,15 @@ class CubesatInspectionEnv(MultiAgentEnv):
         self.step_size = 0.5
         self.control_step_size = 0.5
 
+        # Initialize fov to 45 deg for all possible agents
+        self.defaultFOV = [0.7854 for i in range(self.maxAgents)] 
+
         if self.init_type == 'random':
 
             # Instantiate class to define the random state
             self.random_state = randomState()
             
         else:
-            self.chief_state = np.array(kwargs['chief_state'])
             # All agents assumed to be on the same orbit as target
             self.ref_altitude = {}
             for agent_id in self.active_agents:
@@ -114,44 +111,35 @@ class CubesatInspectionEnv(MultiAgentEnv):
 #                                                        self.task_inc_bounds[agent_id][1]], \
 #                                                        dtype=np.float32))
 #            disc_act_space[agent_id] = Discrete(2)
+        # Define each individual space type
         bound_act_space = Box(low=np.array([self.task_semimajor_bounds[1][0], \
-                                            self.task_inc_bounds[1][0]], \
+                                            self.task_inc_bounds[1][0], \
+                                            self.fov_bounds[1][0]], \
                                             dtype=np.float32), \
                               high=np.array([self.task_semimajor_bounds[1][1], \
-                                             self.task_inc_bounds[1][1]], \
+                                             self.task_inc_bounds[1][1], \
+                                             self.fov_bounds[1][1]], \
                                              dtype=np.float32))
         incSign_act_space = Discrete(2)
         nSat_act_space = Discrete(self.maxAgents)
 
-        #self.action_space = Dict([(agent_id, box_act_space[agent_id]) for agent_id in self.agent_ids])
-        #self.action_space = Dict([(agent_id, box_act_space[agent_id]) for agent_id in self.total_agents])
-        #self.action_space = Dict([(agent_id, Tuple((box_act_space[agent_id], disc_act_space[agent_id]))) for agent_id in self.total_agents])
-        #self.action_space = Sequence(Tuple(((box_act_space[agent_id], disc_act_space[agent_id]))),seed=self.nAgents)
-        #self.action_space = Dict({1: Sequence(Tuple((bound_act_space,incSign_act_space,nSat_act_space)), seed=self.nAgents)})
+        # Put individual spaces together
         agent_action_space = Dict([(agent_id, Tuple((bound_act_space,incSign_act_space,nSat_act_space))) for agent_id in self.active_agents])
         self.action_space = Dict({1: agent_action_space})
         
         # Define the observation space
         self._obs_space_in_preferred_format = True
-        #box_obs_space = Box(low=np.float32(-1e5), high=np.float32(1e5),shape=(22,))
-         
-        #obsLow  = [0, 0]
-        #obsLow.extend(3*self.maxAgents*[-1e5])
-        #obsHigh = [1e4, 1e5]
-        #obsHigh.extend(3*self.maxAgents*[1e5])
-        #box_obs_space = Box(low=np.array(obsLow,dtype=np.float32),high=np.array(obsHigh,dtype=np.float32))
-        coverage_obs_space = Box(low=np.array([0,0],dtype=np.float32),high=np.array([1e4,1e5],dtype=np.float32))
-        orbit_obs_space = Box(low=np.array([-1e5,-1e5,-1e5],dtype=np.float32),high=np.array([1e5,1e5,1e5],dtype=np.float32))
-        #agent_obs_space = Dict([(agent_id, Tuple((coverage_obs_space,orbit_obs_space))) for agent_id in self.active_agents])
-        #agent_obs_space = Repeated(Tuple((coverage_obs_space,orbit_obs_space)),max_len=4)
-        obsLow  = [0, 0, -1e5, -1e5, -1e5]
-        obsHigh = [1e4, 1e5, 1e5, 1e5, 1e5]
+        
+        #coverage_obs_space = Box(low=np.array([0,0],dtype=np.float32),high=np.array([1e4,1e5],dtype=np.float32))
+        #orbit_obs_space = Box(low=np.array([-1e5,-1e5,-1e5],dtype=np.float32),high=np.array([1e5,1e5,1e5],dtype=np.float32))
+
+        # Use a repeated space for a variable number of agents. The first two observations are not 
+        # unique to an agent so they will be repeated
+        obsLow  = [0, 0, 0, -1e5, -1e5, -1e5]
+        obsHigh = [1e4, 1e5, 1e5, 1e5, 1e5, 1e5]
         agent_obs_space = Repeated(Box(low=np.array(obsLow,dtype=np.float32),high=np.array(obsHigh,dtype=np.float32)),max_len=4)
 
-
-     
-        #box_obs_space = Box(low=np.array([0.0,0.0],dtype=np.float32),high=np.array([self.nInspectionFaces, 1e5]))
-         
+        # Examples of different ways to form obs or act space 
 #        self.observation_space = Dict(
 #            {
 #                1: box_obs_space,
@@ -160,8 +148,6 @@ class CubesatInspectionEnv(MultiAgentEnv):
 #             }
 #        )
         #self.observation_space = Dict([(agent_id, box_obs_space) for agent_id in self.agent_ids])
-        #self.observation_space = Dict([(agent_id, box_obs_space) for agent_id in self.total_agents])
-        #self.observation_space = Dict({1: box_obs_space})
         self.observation_space = Dict({1: agent_obs_space})
 
         # Create object from cpp wrapper class
@@ -210,22 +196,9 @@ class CubesatInspectionEnv(MultiAgentEnv):
     def init_state(self):
 
 
-        if self.init_type == 'random':
-            # Select random values to define the state
-
-            # Select the semi-major axis, eccentricity, and inclination for the desired orbit 
-            self.task_semimajor = dict([(agent_id, self.random_state.select_semimajor(self.task_semimajor_bounds[agent_id])) for agent_id in self.active_agents])
-            self.task_ecc = dict([(agent_id, self.random_state.select_eccentricity(self.task_eccentricity_bounds[agent_id])) for agent_id in self.active_agents])
-            self.task_inc = dict([(agent_id, self.random_state.select_inclination(self.task_inc_bounds[agent_id])) for agent_id in self.active_agents])
-            self.task_period = dict([(agent_id, self.random_state.select_period(self.task_period_bounds[agent_id])) for agent_id in self.active_agents])
-            # Define initial state for the chief
-            self.chief_state = self.random_state.select_chief_state(self.task_semimajor[1], self.chief_bounds)
-
-        else:
-            # Task period and eccentricity must be defined below for the orbit type
-            self.task_period = {}
-            self.task_ecc = {}
-
+        # Task period and eccentricity must be defined below for the orbit type
+        self.task_period = {}
+        self.task_ecc = {}
         self.task_initial_state = {}
         
       
@@ -235,7 +208,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
                 self.y0 = -1*self.task_semimajor[agent_id]
                 #self.y0 = dict([(agent_id, -1*self.ref_semimajor[agent_id]) for agent_id in self.agent_ids])
                 self.task_initial_state[agent_id] = [0, self.y0, 0, 0.5*self.y0*self.ref_mean_motion[agent_id], 0, np.tan(self.task_inc[agent_id]*np.pi/180.0)*0.5*self.y0*self.ref_mean_motion[agent_id]]
-                # For a PRO, the task orbit period is the same as the refernece orbit
+                # For a PRO, the task orbit period is the same as the refernece orbit and the eccentricity is always 0.5
                 self.task_period[agent_id] = self.ref_period[agent_id]
                 self.task_period_bounds[agent_id] = [self.min_period, self.max_period]
                 self.task_ecc[agent_id] = 0.5
@@ -251,7 +224,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
             vel_Hill = self.task_initial_state[agent_id][3:6]
             self.initial_state_Hill[agent_id] = np.concatenate((pos_Hill, vel_Hill))
 
-        # Since all agents have same period, use this as the maximum stop time for the propagation
+        # Since all agents have same max period, use this as the maximum stop time for the propagation
         self.stop_time = self.ref_period[1]
 
         self.info = dict([(agent_id, {'obs': []}) for agent_id in self.agent_ids])
@@ -270,93 +243,36 @@ class CubesatInspectionEnv(MultiAgentEnv):
         self.coveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
 
         # Update the action space based on the period
-        box_act_space = {}
-        disc_act_space = {}
-        #for agent_id in self.agent_ids:
-        #for agent_id in self.total_agents:
-        #    if self.task_type == 'PRO':
-        #        # For PRO, eccentricity and period are fixed
-        #        box_act_space[agent_id] = Box(low=np.array([self.task_semimajor_bounds[agent_id][0], \
-        #                                                    0.4999, \
-        #                                                    self.task_inc_bounds[agent_id][0], \
-        #                                                    self.ref_period[agent_id]],dtype=np.float32), \
-        #                                     high=np.array([self.task_semimajor_bounds[agent_id][1], \
-        #                                                    0.5001, \
-        #                                                    self.task_inc_bounds[agent_id][1], \
-        #                                                    self.ref_period[agent_id]],dtype=np.float32))
-        #        disc_act_space[agent_id] = Discrete(2)
-        #    else:
-        #        box_act_space[agent_id] = Box(low=np.array([self.task_semimajor_bounds[agent_id][0], \
-        #                                                    self.task_eccentricity_bounds[agent_id][0], \
-        #                                                    self.task_inc_bounds[agent_id][0], \
-        #                                                    self.task_period_bounds[agent_id][0]],dtype=np.float32), \
-        #                                     high=np.array([self.task_semimajor_bounds[agent_id][1], \
-        #                                                    self.task_eccentricity_bounds[agent_id][1], \
-        #                                                    self.task_inc_bounds[agent_id][1], \
-        #                                                    self.task_period_bounds[agent_id][1]],dtype=np.float32))
-        #        disc_act_space[agent_id] = Discrete(2)
-
-        #self.action_space = Dict([(agent_id, box_act_space[agent_id]) for agent_id in self.agent_ids])
-        #self.action_space = Dict([(agent_id, box_act_space[agent_id]) for agent_id in self.total_agents])
-        #self.action_space = Dict([(agent_id, Tuple((box_act_space[agent_id], disc_act_space[agent_id]))) for agent_id in self.total_agents])
         bound_act_space = Box(low=np.array([self.task_semimajor_bounds[1][0], \
-                                            self.task_inc_bounds[1][0]], \
+                                            self.task_inc_bounds[1][0], \
+                                            self.fov_bounds[1][0]], \
                                             dtype=np.float32), \
                               high=np.array([self.task_semimajor_bounds[1][1], \
-                                             self.task_inc_bounds[1][1]], \
+                                             self.task_inc_bounds[1][1], \
+                                             self.fov_bounds[1][1]], \
                                              dtype=np.float32))
         incSign_act_space = Discrete(2)
         nSat_act_space = Discrete(self.maxAgents)
-        #self.action_space = Dict({1: Sequence(Tuple((bound_act_space,incSign_act_space,nSat_act_space)), seed=self.nAgents)})
         agent_action_space = Dict([(agent_id, Tuple((bound_act_space,incSign_act_space,nSat_act_space))) for agent_id in self.active_agents])
         self.action_space = Dict({1: agent_action_space})
-
-        # Reset the observation space based on the chosen number of agents
-        #obsLow  = [0, 0]
-        #obsLow.extend(3*self.nChosenAgents*[-1e5])
-        #obsHigh = [1e4, 1e5]
-        #obsHigh.extend(3*self.nChosenAgents*[1e5])
-        #box_obs_space = Box(low=np.array(obsLow,dtype=np.float32),high=np.array(obsHigh,dtype=np.float32))
-        #self.observation_space = Dict({1: box_obs_space})
-
-##        coverage_obs_space = Box(low=np.array([0,0],dtype=np.float32),high=np.array([1e4,1e5],dtype=np.float32))
- ##       orbit_obs_space = Box(low=np.array([-1e5,-1e5,-1e5],dtype=np.float32),high=np.array([1e5,1e5,1e5],dtype=np.float32))
-  ##      agent_obs_space = Dict([(agent_id, Tuple((coverage_obs_space,orbit_obs_space))) for agent_id in self.active_agents])
-   ##     self.observation_space = Dict({1: agent_obs_space})
-
-        #print('Initializing State for New Propagation')
 
     def reset(self, *, seed=None, options=None):
 
         self.sim_time = 0
         self.step_count = 0
-        #self.totalCoveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
-        #self.nCoveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
-        #self.coveredFaces = dict([(agent_id, []) for agent_id in self.active_agents])
 
         # Define the target state
         self.init_target()
 
         # Set initial observations to zero since the observations are dependent on the actions
         # which haven't been computed yet
-#        obs = 0
-#        obs = np.append(obs,0)
-#        for agent_id in self.active_agents:
-#            obs = np.append(obs,0)
-#            obs = np.append(obs,0)
-#            obs = np.append(obs,0)
-##        obs = {i: (np.array([0,0],dtype=np.float32),np.array([0,0,0],dtype=np.float32)) for i in self.active_agents}
-        obs = [np.array([0,0,0,0,0],dtype=np.float32)]
+        # Observations must match the type from the observation space
+        zero_obs = np.array([0,0,0,0,0,0],dtype=np.float32)
+        obs = [zero_obs]
         for i in range(self.maxAgents-1):
-            obs.append(np.array([0,0,0,0,0],dtype=np.float32))
+            obs.append(zero_obs)
 
-#        # Observations must match the type from the observation space
-#        obs = obs.astype('float32')
         observations = {i: obs for i in self.agent_ids}
-
-        # Set a max range that the agent can stray from the target before setting done flag
-        # Evaluated on a per axis basis
-        self.max_range = 1.5*np.max(np.abs(self.chief_state))
 
         info = dict([(agent_id, []) for agent_id in self.agent_ids])
 
@@ -369,14 +285,11 @@ class CubesatInspectionEnv(MultiAgentEnv):
         self.coveredFaces[agent_id] = np.where(np.array(coverage[agent_id]).astype(int) == agent_id)[0].tolist()
         self.nCoveredFaces[agent_id] = np.count_nonzero(np.array(self.coveredFaces[agent_id])+1)  # add 1 because index starts at 0
 
-       
-
     def get_observation(self, agent_id, coverage, sim_time):
         # Form the observation dictionary that will be used for training
 
         # Should the observations be normalized
         normalized_obs = 0
-
 
         if normalized_obs == 1:            
             obsFace = self.normalize_obs(self.totalCoveredFaces[agent_id],0,self.nInspectionFaces)
@@ -387,21 +300,10 @@ class CubesatInspectionEnv(MultiAgentEnv):
 
         # Set the observation values
         # The number of values here must match what was used to define the observation space
-#        obs = obsFace
-#        obs = np.append(obs,obsTime)
-#        for agent_id in self.active_agents:
-#            obs = np.append(obs,self.nCoveredFaces[agent_id]) 
-#            obs = np.append(obs,self.task_semimajor[agent_id])
-#            obs = np.append(obs,self.task_inc[agent_id])
-
-        # Observations must match the type from the observation space
-#        obs = obs.astype('float32')
-        
-##        obs = {i: ([obsFace,obsTime],[self.nCoveredFaces[i],self.task_semimajor[i],self.task_inc[i]]) for i in self.active_agents}
-        obs = [np.array([obsFace,obsTime,self.nCoveredFaces[1],self.task_semimajor[1],self.task_inc[1]],dtype=np.float32)]
+        obs = [np.array([obsFace,obsTime,self.nCoveredFaces[1],self.ref_period[1],self.task_semimajor[1],self.task_inc[1]],dtype=np.float32)]
         for i in range(self.nChosenAgents-1):
-            obs.append(np.array([obsFace,obsTime,self.nCoveredFaces[i+2],self.task_semimajor[i+2],self.task_inc[i+2]],dtype=np.float32))
-##            obs.append((np.array([0,0,0,0,0],dtype=np.float32)))
+            obs.append(np.array([obsFace,obsTime,self.nCoveredFaces[i+2],self.ref_period[i+2],self.task_semimajor[i+2],self.task_inc[i+2]],dtype=np.float32))
+
         return obs
 
     def normalize_obs(self,data,lower_bound,upper_bound):
@@ -453,7 +355,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
     def compute_errors(self, agent_id, coverage):
 
         # These aren't actually errors, but rather stats on the inspection coverage
-        error_state = [self.sim_time, self.nInspectionFaces, self.totalCoveredFaces[agent_id]]
+        error_state = [self.sim_time, self.nInspectionFaces, self.totalCoveredFaces[agent_id], self.fov[agent_id-1]]
         error_state.extend(coverage)
 
         return np.array(error_state)
@@ -478,16 +380,18 @@ class CubesatInspectionEnv(MultiAgentEnv):
             for i in range(2,self.nChosenAgents+1):
                 self.active_agents.add(i)
 
-            # Loop through the individual agents and set the sign for the inclination
+            # Loop through the individual agents and set the sign for the inclination and fov
             incSign = {}
+            self.fov = [self.defaultFOV[i] for i in range(self.nChosenAgents)]
             for agent_id in self.active_agents:
+                self.fov[agent_id-1] = agent_action[agent_id][0][2]*np.pi/180.0
                 if agent_action[agent_id][1] < 1:
                     incSign[agent_id]=-1
                 else:
                     incSign[agent_id]=1
 
 
-            # Select the semi-major axis, eccentricity, and inclination for the desired orbit  from the actions
+            # Select the semi-major axis, eccentricity, and inclination for the desired orbit from the actions
             self.task_semimajor = dict([(agent_id, agent_action[agent_id][0][0]) for agent_id in self.active_agents])
             self.task_inc = dict([(agent_id, agent_action[agent_id][0][1]*incSign[agent_id]) for agent_id in self.active_agents])
 
@@ -499,7 +403,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
             self.init_state()
             
             # Initialize the cpp simulation
-            self.nInspectionFaces = self.cppWrapper.init_cpp_inspection(self.step_size,self.active_agents,self.ref_mean_motion[1],self.initial_state_Hill)
+            self.nInspectionFaces = self.cppWrapper.init_cpp_inspection(self.step_size,self.active_agents,self.fov,self.ref_mean_motion[1],self.initial_state_Hill)
 
             self.inspectionComplete = False
 
@@ -513,7 +417,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
         # Info must only have keys for active agents because it is returned from step
         self.info = dict([(agent_id, {'obs': []}) for agent_id in self.agent_ids])
 
-        # Propagate the orbit with zero delta-V
+        # In the cpp sim, the actions are delta-v's. For this mission, propagate the orbit with zero delta-V
         for agent_id in self.active_agents:
             current_action[agent_id] = [0]*3
 
@@ -527,22 +431,18 @@ class CubesatInspectionEnv(MultiAgentEnv):
 
             # Only propagate a single step at a time so that states can be stored for 
             # each individual step
-            self.propSteps = [1 for i in range(self.nAgents)]
+            self.propSteps = [1 for i in range(len(self.active_agents))]
 
         else:
             # Keep the original actions
             current_action = copy.deepcopy(action)
 
             # Only propagate a single step at a time
-            self.propSteps = [1 for i in range(self.nAgents)]
+            self.propSteps = [1 for i in range(len(self.active_agents))]
 
         # Execute the desired number of steps of the CPP simulation and return a new state
         #for i in range(propSteps):
-        states = {}
-        dones = {}
-        #sim_time = {}
         for i in range(max(self.propSteps)):
-            #current_states, current_coverage, current_dones, current_sim_time = self.cppWrapper.step_cpp_inspection(agent_ids,self.nInspectionFaces,self.stop_time,self.control_step_size,current_action)
             current_states, current_coverage, current_dones, current_sim_time = self.cppWrapper.step_cpp_inspection(self.active_agents,self.nInspectionFaces,self.stop_time,self.control_step_size,current_action)
             coverage = current_coverage
             states = current_states
@@ -571,7 +471,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
                 break
 
         if self.scenario_type == 'train':
-            # When training, the episode is propagated the entire transfer time so it is "done" after
+            # When training, the episode is propagated the entire time so it is "done" after
             # one step
             if not all(any_dones.values()):
                 self.cppWrapper.terminate_cpp()
@@ -589,7 +489,6 @@ class CubesatInspectionEnv(MultiAgentEnv):
 #            self.action_states[agent_id] = action[agent_id].tolist()
 #            self.action_states[agent_id] = [action[agent_id][0][0], action[agent_id][0][1], action[agent_id][0][2], action[agent_id][0][3],action[agent_id][1]]
             self.orbit_states[agent_id] = [self.ref_altitude[agent_id],self.ref_period[agent_id],self.task_semimajor[agent_id],self.task_inc[agent_id],self.task_ecc[agent_id],self.task_period[agent_id]]
-#            self.orbit_states[agent_id].extend(self.chief_state.tolist())
 
         # Compute rewards for this step 
         step_rewards = {i: self.get_reward(i,self.totalCoveredFaces,self.nCoveredFaces,self.sim_time) for i in self.active_agents}

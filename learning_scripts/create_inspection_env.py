@@ -3,7 +3,7 @@ from ray.tune.registry import register_env
 from cubesat_inspection_gym_env import CubesatInspectionEnv
 
 
-def create_inspection_env(init_type,scenario_type,case_type,nAgents):
+def create_inspection_env(init_type,scenario_type,case_type):
 
     if scenario_type == 'train':
         name = 'Train'
@@ -38,40 +38,38 @@ def create_inspection_env(init_type,scenario_type,case_type,nAgents):
             task_type = {1: 'PRO'}
             caseName = 'Benchmark3_RL_'+name
 
-        # Set Chief state outside of the the target orbits
-        chief_state = [0, -100, 0, 0, 0, 0]
-
     elif init_type == 'random':
         # For random initialization scenarios only need to specify the number of iterations
         # Initialization parameters will be selected based on the bounds
         ref_altitude_bounds = [400,1200]
-        task_type = {1: 'PRO', 2: 'PRO', 3: 'PRO'}
+        task_type = {1: 'PRO', 2: 'PRO', 3: 'PRO', 4: 'PRO'}
         caseName = 'Varied_RL_'+name+'_LEO'
 
     # Even when running a fixed state scenario, the bounds are used for observation
     # normalization. 
-    task_semimajor_bounds = {1: [5, 50], 2: [5, 50], 3: [5, 50], 4: [5,50]}
+    task_semimajor_bounds = {1: [5, 50], 2: [5, 50], 3: [5, 50], 4: [5, 50]}
     task_ecc_bounds = {1: [0.4999, 0.5001], 2: [0.4999, 0.5001], 3: [0.4999, 0.5001], 4: [0.4999, 0.5001]}    # ECC must be less than 1.0
     task_inclination_bounds = {1: [0, 80], 2: [0, 80], 3: [0, 80], 4: [0,80]}
     task_period_bounds = {1: [10*60, 60*60], 2: [10*60, 60*60], 3: [10*60, 60*60], 4: [10*60, 60*60]}
-    chief_bounds = [0,100]   # Chief will be initialized outside the largest task trajectory, 
-                             # therefore lower bound may be overwritten
+
+    # Set the bounds for selecting camera field of view
+    fov_bounds =  {1: [10, 50], 2: [10, 50], 3: [10, 50], 4: [10, 50]}  # Total angle, in degrees
 
 
     # Register enviornment with gym and create an instance of the environment
     if init_type == 'fixed':
         register_env(
-            "multi_agent_sat_servicing", lambda _: CubesatInspectionEnv(nAgents=nAgents,altitude=ref_altitude,chief_state=chief_state,task_type=task_type,chief_bounds=chief_bounds,semimajor_bounds=task_semimajor_bounds,eccentricity_bounds=task_ecc_bounds,altitude_bounds=ref_altitude_bounds,inclination_bounds=task_inclination_bounds,task_period_bounds=task_period_bounds,scenario_type=scenario_type,init_type=init_type)
+            "multi_agent_sat_servicing", lambda _: CubesatInspectionEnv(altitude=ref_altitude,task_type=task_type,semimajor_bounds=task_semimajor_bounds,eccentricity_bounds=task_ecc_bounds,altitude_bounds=ref_altitude_bounds,inclination_bounds=task_inclination_bounds,task_period_bounds=task_period_bounds,fov_bounds=fov_bounds,scenario_type=scenario_type,init_type=init_type)
         )
 
-        env = CubesatInspectionEnv(nAgents=nAgents,altitude=ref_altitude,chief_state=chief_state,task_type=task_type,chief_bounds=chief_bounds,semimajor_bounds=task_semimajor_bounds,eccentricity_bounds=task_ecc_bounds,altitude_bounds=ref_altitude_bounds,inclination_bounds=task_inclination_bounds,task_period_bounds=task_period_bounds,scenario_type=scenario_type,init_type=init_type)
+        env = CubesatInspectionEnv(altitude=ref_altitude,task_type=task_type,semimajor_bounds=task_semimajor_bounds,eccentricity_bounds=task_ecc_bounds,altitude_bounds=ref_altitude_bounds,inclination_bounds=task_inclination_bounds,task_period_bounds=task_period_bounds,fov_bounds=fov_bounds,scenario_type=scenario_type,init_type=init_type)
     elif init_type == 'random':
 
         register_env(
-            "multi_agent_sat_servicing", lambda _: CubesatInspectionEnv(nAgents=nAgents,chief_bounds=chief_bounds,task_type=task_type,semimajor_bounds=task_semimajor_bounds,eccentricity_bounds=task_ecc_bounds,altitude_bounds=ref_altitude_bounds,inclination_bounds=task_inclination_bounds,task_period_bounds=task_period_bounds,scenario_type=scenario_type,init_type=init_type)
+            "multi_agent_sat_servicing", lambda _: CubesatInspectionEnv(task_type=task_type,semimajor_bounds=task_semimajor_bounds,eccentricity_bounds=task_ecc_bounds,altitude_bounds=ref_altitude_bounds,inclination_bounds=task_inclination_bounds,task_period_bounds=task_period_bounds,fov_bounds=fov_bounds,scenario_type=scenario_type,init_type=init_type)
         )
 
-        env = CubesatInspectionEnv(nAgents=nAgents,chief_bounds=chief_bounds,task_type=task_type,semimajor_bounds=task_semimajor_bounds,eccentricity_bounds=task_ecc_bounds,altitude_bounds=ref_altitude_bounds,inclination_bounds=task_inclination_bounds,task_period_bounds=task_period_bounds,scenario_type=scenario_type,init_type=init_type)
+        env = CubesatInspectionEnv(task_type=task_type,semimajor_bounds=task_semimajor_bounds,eccentricity_bounds=task_ecc_bounds,altitude_bounds=ref_altitude_bounds,inclination_bounds=task_inclination_bounds,task_period_bounds=task_period_bounds,fov_bounds=fov_bounds,scenario_type=scenario_type,init_type=init_type)
 
     return env,task_type,caseName
 

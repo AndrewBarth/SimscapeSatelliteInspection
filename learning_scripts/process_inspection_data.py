@@ -16,8 +16,8 @@ def main():
     fileDate = '2023-07-18'
     fileTime = '13-36'    # 1000 episodes of varied LEO evaluation
 
-    fileDate = '2024-08-21'
-    fileTime = '15-54'
+    fileDate = '2024-08-22'
+    fileTime = '13-58'
 
     #scenario_type = 'Train'
     scenario_type = 'Eval'
@@ -35,21 +35,21 @@ def main():
     caseType='3d'
 
     if mission == 'Inspection':
-        npts1,position1,velocity1,accel1,sim_time1,nInspected1,coverage1,reward1,orbit1,nAgents1 = load_data_inspection(str(episode_number),'1',file_path)
+        npts1,position1,velocity1,accel1,sim_time1,nInspected1,fov1,coverage1,reward1,orbit1,nAgents1 = load_data_inspection(str(episode_number),'1',file_path)
         cumReward1 = np.cumsum(reward1,axis=0)
         nAgents = nAgents1[0]
         if nAgents == 2:
-            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
+            npts2,position2,velocity2,accel2,sim_time2,nInspected2,fov2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
             cumReward2 = np.cumsum(reward2,axis=0)
         elif nAgents == 3:
-            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,accel3,sim_time3,nInspected3,coverage3,reward3,orbit3,nAgents3 = load_data_inspection(str(episode_number),'3',file_path)
+            npts2,position2,velocity2,accel2,sim_time2,nInspected2,fov2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
+            npts3,position3,velocity3,accel3,sim_time3,nInspected3,fov3,coverage3,reward3,orbit3,nAgents3 = load_data_inspection(str(episode_number),'3',file_path)
             cumReward2 = np.cumsum(reward2,axis=0)
             cumReward3 = np.cumsum(reward3,axis=0)
         else:
-            npts2,position2,velocity2,accel2,sim_time2,nInspected2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
-            npts3,position3,velocity3,accel3,sim_time3,nInspected3,coverage3,reward3,orbit3,nAgents3 = load_data_inspection(str(episode_number),'3',file_path)
-            npts4,position4,velocity4,accel4,sim_time4,nInspected4,coverage4,reward4,orbit4,nAgents4 = load_data_inspection(str(episode_number),'4',file_path)
+            npts2,position2,velocity2,accel2,sim_time2,nInspected2,fov2,coverage2,reward2,orbit2,nAgents2 = load_data_inspection(str(episode_number),'2',file_path)
+            npts3,position3,velocity3,accel3,sim_time3,nInspected3,fov3,coverage3,reward3,orbit3,nAgents3 = load_data_inspection(str(episode_number),'3',file_path)
+            npts4,position4,velocity4,accel4,sim_time4,nInspected4,fov4,coverage4,reward4,orbit4,nAgents4 = load_data_inspection(str(episode_number),'4',file_path)
             cumReward2 = np.cumsum(reward2,axis=0)
             cumReward3 = np.cumsum(reward3,axis=0)
             cumReward4 = np.cumsum(reward4,axis=0)

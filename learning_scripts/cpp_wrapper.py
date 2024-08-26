@@ -83,7 +83,7 @@ class cppWrapper(object):
 
         return observations, errors, dones, simtime[0]
     
-    def init_cpp_inspection(self, sim_step_size, agent_ids, mean_motion, initial_state_dict):
+    def init_cpp_inspection(self, sim_step_size, agent_ids, fov, mean_motion, initial_state_dict):
         print('Initializing CPP Simulation')
 
         nAgents = len(agent_ids)
@@ -97,15 +97,16 @@ class cppWrapper(object):
 
         nStates = len(initial_states)
         # Create variables using ctypes to pass initial conditions to C++
-        lib.sim_init.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.c_double, ctypes.POINTER(ctypes.c_int)]
+        lib.sim_init.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_double, ctypes.POINTER(ctypes.c_int)]
         empty_var = []
         sim_step_size_data = (ctypes.c_double)(sim_step_size)
         nAgent_data = (ctypes.c_int)(nAgents)
+        fov_data = (ctypes.c_double * (nAgents) )(*fov)
         initial_state_data = (ctypes.c_double * (nStates) )(*initial_states)
         mean_motion_data = (ctypes.c_double)(mean_motion)
         nFaces_data = (ctypes.c_int * 1)(*empty_var)
 
-        ret = lib.sim_init(sim_step_size_data,nAgent_data,initial_state_data,mean_motion_data,nFaces_data)
+        ret = lib.sim_init(sim_step_size_data,nAgent_data,fov_data,initial_state_data,mean_motion_data,nFaces_data)
 
         return nFaces_data[0]
 
