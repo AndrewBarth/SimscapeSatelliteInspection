@@ -1,10 +1,44 @@
 
-%coverage = out.coverageOut.Data(:,1,end);
-credit = out.creditOut.Data(:,1,end);
-%credit = out.creditOut.Data(end,:)';
 
+% credit = out.creditOut.Data(:,1,end);
+credit = agentData{21}.Benchmark2_RL_Eval.cubesat.coverage(end,:);
+
+nAgents = 0;
+if ~isempty(agentData{21})
+    cubesatRelPosition{1} = agentData{21}.Benchmark2_RL_Eval.cubesat.position;
+    nAgents = nAgents + 1;
+    lText{nAgents} = strcat('Deputy',num2str(nAgents));
+end
+if ~isempty(agentData2{21})
+    cubesatRelPosition{2} = agentData2{21}.Benchmark2_RL_Eval.cubesat.position;
+    nAgents = nAgents + 1;
+    lText{nAgents} = strcat('Deputy',num2str(nAgents));
+end
+if ~isempty(agentData3{21})
+    cubesatRelPosition{3} = agentData3{21}.Benchmark2_RL_Eval.cubesat.position;
+    nAgents = nAgents + 1;
+    lText{nAgents} = strcat('Deputy',num2str(nAgents));
+end
+if ~isempty(agentData4{21})
+    cubesatRelPosition{4} = agentData4{21}.Benchmark2_RL_Eval.cubesat.position;
+    nAgents = nAgents + 1;
+    lText{nAgents} = strcat('Deputy',num2str(nAgents));
+end
+
+clear GPData
 if ~exist('GPData')
-    loadInspectionParams;
+    %loadInspectionParams;
+    GBa = 2;
+    GBb = 2;
+
+    sf = 9;
+    % Use golden ratio for radius
+    PHI = (1+sqrt(5)) / 2;
+    radius = sf*norm([PHI 1 0]);
+    
+    makePlots = 0;
+    [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(GBa,GBb,radius,makePlots);
+    nFaces = length(faceCenter);
 end
 
 ONE = 1;
@@ -30,19 +64,18 @@ for i=1:length(GPData.F)
 end
 
 
-    % Plot the Goldberg Polyhedron
+% Plot the Goldberg Polyhedron
 figure;
     hold on; 
     axis equal;
     view(3);
     C=colororder;
 
+    for i=1:nAgents
+        plot3(cubesatRelPosition{i}(:,1),cubesatRelPosition{i}(:,2),cubesatRelPosition{i}(:,3),'color',C(i,:))
+    end 
 
-   plot3(out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data(:,3),'color',C(1,:))
-   plot3(out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data(:,3),'color',C(2,:))
-   plot3(out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data(:,3),'color',C(3,:))
-   plot3(out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,1),out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,2),out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data(:,3),'color',C(4,:))
-    for i=1:client.nFaces
+    for i=1:nFaces
         if credit(i) > 0
             patch('Vertices', scaledV, 'Faces', GPData.F{i}+ONE, 'FaceColor', C(credit(i),:));
         else
@@ -50,24 +83,6 @@ figure;
         end
     end
 
-    % for i=1:size(faceCenter,1)
-    %     scatter3(faceCenter(i,1),faceCenter(i,2),faceCenter(i,3),'yo','MarkerFaceColor','y')
-    % end
-    titleStr = ['Goldberg Polyhedron G(' num2str(a) ',' num2str(b) ')'];
-    xlabel('x');ylabel('y');zlabel('z');title(titleStr)
-
-    % for i=1:client.nFaces
-    %     if coverage(i) == 1
-    %         if i<=nPentagons
-    %             patch('Vertices', V, 'Faces', F5(i,:), 'FaceColor', C(credit(i),:));
-    %         else
-    %             patch('Vertices', V, 'Faces', F6(i-nPentagons,:), 'FaceColor', C(credit(i),:));
-    %         end
-    %     else
-    %         if i<=nPentagons
-    %             patch('Vertices', V, 'Faces', F5(i,:), 'FaceColor', 'k');
-    %         else
-    %             patch('Vertices', V, 'Faces', F6(i,:), 'FaceColor', 'k');
-    %         end
-    %     end
-    % end
+    titleStr = ['Inspection Coverage for a Goldberg Polyhedron G(' num2str(GBa) ',' num2str(GBb) ')'];
+    xlabel('x (m)');ylabel('y (m)');zlabel('z (m)');title(titleStr)
+    legend(lText,'Location','NorthEast')

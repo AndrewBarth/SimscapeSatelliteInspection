@@ -254,18 +254,18 @@ elseif ARM_TYPE == 6
     arm(1) = left_arm;
     arm(2) = right_arm;
 
-    Base_dia = 0.1;
-    Base_height = 0.00;
+    % Base_dia = 0.1;
+    % Base_height = 0.00;
     arm(1).smiData.RigidTransform(1).angle = 0.0;
     % arm(1).smiData.RigidTransform(1).translation = [Base_height 0 0];
     % arm(1).armAttachOffset(1).orientation = [45 0 90]*dtr;
-    arm(1).armAttachOffset(1).orientation = [0 -135 0]*dtr;
-    arm(1).armAttachOffset(1).translation = [ 1*((sat.service.radius)*cos(pi/8)*(1-cos(pi/4)))+Base_height*cos(pi/4) -Base_dia/2 (sat.service.radius)*cos(pi/8)*cos(pi/4)+Base_height*cos(pi/4)];
+    % arm(1).armAttachOffset(1).orientation = [0 -135 0]*dtr;
+    % arm(1).armAttachOffset(1).translation = [ 1*((sat.service.radius)*cos(pi/8)*(1-cos(pi/4)))+Base_height*cos(pi/4) -Base_dia/2 (sat.service.radius)*cos(pi/8)*cos(pi/4)+Base_height*cos(pi/4)];
 
     arm(2).smiData.RigidTransform(1).angle = 0.0;
     % arm(2).armAttachOffset(1).orientation = [-45 0 90]*dtr;
-    arm(2).armAttachOffset(1).orientation = [0 -45 0]*dtr;
-    arm(2).armAttachOffset(1).translation = [ -1*((sat.service.radius)*cos(pi/8)*(1-cos(pi/4)))+Base_height*cos(pi/4) -Base_dia/2 (sat.service.radius)*cos(pi/8)*cos(pi/4)-Base_height*cos(pi/4)];
+    % arm(2).armAttachOffset(1).orientation = [0 -45 0]*dtr;
+    % arm(2).armAttachOffset(1).translation = [ -1*((sat.service.radius)*cos(pi/8)*(1-cos(pi/4)))+Base_height*cos(pi/4) -Base_dia/2 (sat.service.radius)*cos(pi/8)*cos(pi/4)-Base_height*cos(pi/4)];
 
 else
     % Initial Joint Angles and Rates

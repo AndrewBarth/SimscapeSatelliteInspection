@@ -1,14 +1,14 @@
 clear
 %clc
 
-MISSION_TYPE = 0;
+MISSION_TYPE = 1;
 VSS_RoboticArmOperation = Simulink.Variant('MISSION_TYPE==0');
 VSS_CubeSatOperation = Simulink.Variant('MISSION_TYPE==1');
 
 
 
 % Select robotic arm to use in the simulation
-ARM_TYPE = 6;    
+ARM_TYPE = 0;    
 % 0 = Planar3Link
 % 1 = ViperX300 (5-DOF)
 % 2 = General6DOF (6-DOF)
@@ -84,6 +84,7 @@ elseif ARM_TYPE == 5
    arm(2).rigidBodyTree = load("General7DOF_RigidBodyTree.mat");
 
 elseif ARM_TYPE == 6
+
     % Set up arm 1
     ArmAssembly_DataFile
     arm(1).smiData = smiData; clear smiData
@@ -112,8 +113,8 @@ elseif ARM_TYPE == 3
     General7DOF_test
 elseif ARM_TYPE == 5
     General7DOF_test
-% elseif ARM_TYPE == 6
-%     Dual3LinkTest
+elseif ARM_TYPE == 6
+    Dual3LinkTest
 end
 
 
