@@ -1,6 +1,7 @@
 
-totalFaces = 122; % G(2,2)
-totalFaces = 272; % G(3,3)
+totalFaces = 32; % G(1,1)
+% totalFaces = 122; % G(2,2)
+% totalFaces = 272; % G(3,3)
 rtd = 180/pi;
 
 for i = 1:length(agentData)
@@ -49,7 +50,7 @@ plot(sortedEpisodes,orbit_sma); hold all
 plot(sortedEpisodes,orbit2_sma)
 xlabel({'Episode';'(a)'});ylabel('Semi-Major Axis (m)');title('Semi-Major Axis for Each Deputy')
 legend('Deputy 1','Deputy 2')
-grid on;
+grid on;grid minor
 nexttile
 plot(sortedEpisodes,orbit_inc); hold all
 plot(sortedEpisodes,orbit2_inc)

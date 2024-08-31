@@ -12,6 +12,8 @@ GBb = 2;
 PHI = (1+sqrt(5)) / 2;
 radius = norm([PHI 1 0]);
 
+radius=5;
+
 makePlots = 1;
 [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(GBa,GBb,radius,makePlots);
 

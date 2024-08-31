@@ -9,12 +9,28 @@
 % % runTime = '13-14';        % Training 200 cases G(3,3) polyhedron
 % % runType = 'Train';
 
+% % runDate = '2024-08-29';
+% % runTime = '11-47';        % Training 200 cases G(1,1) polyhedron
+% % runType = 'Train';
+
+% % runDate = '2024-08-29';
+% % runTime = '16-08';        % Training 200 cases G(1,1) polyhedron with 5m radius
+% % runType = 'Train';
+
 % % runDate = '2024-08-28';
 % % runTime = '12-16';        % Evaluation of the 08-27-07-50 training
 % % runType = 'Eval';
 
-runDate = '2024-08-29';
-runTime = '10-54';        % Evaluation of the 08-27-13-14 training
+% % runDate = '2024-08-29';
+% % runTime = '10-54';        % Evaluation of the 08-27-13-14 training
+% % runType = 'Eval';
+
+% % runDate = '2024-08-29';
+% % runTime = '12-40';        % Evaluation of the 08-29-11-47 training
+% % runType = 'Eval';
+
+runDate = '2024-08-30';
+runTime = '08-18';        % Evaluation of the 08-29-16-08 training
 runType = 'Eval';
 
 % Set the storage location
