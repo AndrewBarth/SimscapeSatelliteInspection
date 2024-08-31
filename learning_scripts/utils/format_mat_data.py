@@ -47,7 +47,7 @@ def format_mat_data(Data,caseTitle,caseName,mission,time_step):
         outdata[caseName]['cubesat']['fov']           = Data[:,12]
         startIdx       = 13
         endIdx         = 13+outdata[caseName]['cubesat']['nFaces'][-1]
-        outdata[caseName]['cubesat']['coverage ']     = Data[:,startIdx:endIdx].astype(int)
+        outdata[caseName]['cubesat']['coverage']      = Data[:,startIdx:endIdx].astype(int)
 #        startIdx = endIdx
 #        endIdx = endIdx+5
 #        action         = trajData[:,startIdx:endIdx]

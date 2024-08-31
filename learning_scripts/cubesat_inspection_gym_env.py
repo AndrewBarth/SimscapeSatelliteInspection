@@ -90,7 +90,7 @@ class CubesatInspectionEnv(MultiAgentEnv):
         self.reward_parameters['time']['bias'] = 0.0 
 
         self.reward_parameters['nAgents'] = {}
-        self.reward_parameters['nAgents']['reward_value'] = -5.0 
+        self.reward_parameters['nAgents']['reward_value'] = -2.0 
 
         self.terminateds = set()
         self.truncateds = set()

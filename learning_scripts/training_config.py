@@ -68,14 +68,14 @@ def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
               rollout_fragment_length=rollout_fragment_length
               )\
         .evaluation(
-            evaluation_num_workers=1,
+            evaluation_num_workers=0,
             # Will  evaluate after training.
             evaluation_interval=None,
             evaluation_parallel_to_training=False,
 
             # Run 1 episodes each time evaluation runs
-            evaluation_duration=duration,
-            #evaluation_duration=1,
+#            evaluation_duration=duration,
+            evaluation_duration=1,
             evaluation_duration_unit='episodes',
             #evaluation_duration=nSteps,
             #evaluation_duration_unit='timesteps',
@@ -83,7 +83,7 @@ def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
             #evaluation_config=dict(
             evaluation_config=PPOConfig.overrides(
                 explore=False,
-                evaluation_num_workers=1,
+                evaluation_num_workers=0,
                 evaluation_interval=None,
                 evaluation_parallel_to_training=False,
                 #evaluation_duration=nSteps,
@@ -91,8 +91,6 @@ def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
                 custom_evaluation_function=None,
                 #horizon=nSteps,
                 num_rollout_workers=0,
-                #rollout_fragment_length=nSteps,
-                ##rollout_fragment_length="auto",
                 train_batch_size=1,
                 sgd_minibatch_size=1,
             )\
