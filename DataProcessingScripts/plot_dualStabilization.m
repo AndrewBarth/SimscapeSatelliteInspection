@@ -4,17 +4,21 @@ ori_base = out.base_state.rotation.euler.Data;
 angv_base = out.base_state.rotation.angular_rate.Data;
 data_time = out.base_state.translation.position.Time;
 
-% nVar = 2;
-nVar = 4;
+
+yoffset = 0.0; % 3 link
+nVar = 4;  % 3 link
+% nVar = 2;      % 7 link
+% yoffset = 1.5; % 7 link
+
 nJoints1 = size(out.joint_state1.Data,2)/nVar;
-arm1_joint_angles = out.joint_state1.Data(:,1:nJoints1);
-arm1_joint_rates  = out.joint_state1.Data(:,nJoints1+1:2*nJoints1);
+arm1_joint_angles = out.joint_state1.Data(:,1:nVar:nVar*nJoints1);
+arm1_joint_rates  = out.joint_state1.Data(:,2:nVar:nVar*nJoints1);
 
 nJoints2 = size(out.joint_state2.Data,2)/nVar;
-arm2_joint_angles = out.joint_state2.Data(:,1:nJoints2);
-arm2_joint_rates  = out.joint_state2.Data(:,nJoints2+1:2*nJoints2);
-% arm2_joint_torques = out.desired_torque1.Data(:,1:nJoints2);
-arm2_joint_torques = squeeze(out.dualArmControlSignal.Data(1,1:nJoints2,:))';
+arm2_joint_angles = out.joint_state2.Data(:,1:nVar:nVar*nJoints2);
+arm2_joint_rates  = out.joint_state2.Data(:,2:nVar:nVar*nJoints2);
+arm2_joint_torques = out.desired_torque1.Data(:,1:nJoints2);
+% arm2_joint_torques = squeeze(out.dualArmControlSignal.Data(1,1:nJoints2,:))';
 
 linear_momentum = squeeze(out.momentum_combined.Data(1:3,1,:))';
 angular_momentum = squeeze(out.momentum_combined.Data(4:6,1,:))';
@@ -62,7 +66,7 @@ rtd = 180/pi;
 figure;
 subplot(2,1,1)
 plot(data_time,pos_base(:,1)); hold all;
-plot(data_time,pos_base(:,2));
+plot(data_time,pos_base(:,2)+yoffset);
 plot(data_time,pos_base(:,3));
 xlabel('Time (s)'); ylabel('Base Position (m)')
 title('Base Positions')

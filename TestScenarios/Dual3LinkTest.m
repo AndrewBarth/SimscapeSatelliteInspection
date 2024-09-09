@@ -1,5 +1,5 @@
  
-config = 1;
+config = 2;
 % config 1: octagon base arms at front, center
 % config 2: octagon base, arms at front, 45 deg
 
@@ -31,7 +31,9 @@ clear acc vel ang angles rates
     jointControlData.Kp = inertiaPct*.1;
     jointControlData.Kd = inertiaPct*0;
     jointControlData.Ki = inertiaPct*.1;
-
+    jointControlData.Kp = inertiaPct*1;
+    jointControlData.Kd = inertiaPct*0;
+    jointControlData.Ki = inertiaPct*1;
 
 Base_dia = 0.1;
 Base_height = 0.00;

@@ -1,14 +1,14 @@
 clear
 %clc
 
-MISSION_TYPE = 1;
+MISSION_TYPE = 0;
 VSS_RoboticArmOperation = Simulink.Variant('MISSION_TYPE==0');
 VSS_CubeSatOperation = Simulink.Variant('MISSION_TYPE==1');
 
 
 
 % Select robotic arm to use in the simulation
-ARM_TYPE = 0;    
+ARM_TYPE = 4;    
 % 0 = Planar3Link
 % 1 = ViperX300 (5-DOF)
 % 2 = General6DOF (6-DOF)

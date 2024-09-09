@@ -17,6 +17,9 @@ sat.service.dimensions = [0.5 0.5 0.5];
 sat.service.Com = [0 0 0];
 sat.service.MoI = [0.0833333 0.0833333 0.0833333];
 sat.service.PoI = [0 0 0];
+sat.service.IC.pose.position.x = 0.0;
+sat.service.IC.pose.position.y = 0.0;
+sat.service.IC.pose.position.z = 0.0;
 
 % Initial Joint Angles and Rates
 for i = 1:arm(1).nLink
