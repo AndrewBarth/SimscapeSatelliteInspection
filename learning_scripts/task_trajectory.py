@@ -16,7 +16,7 @@ class taskTraj():
         self.mean_motion = 2*np.pi/self.period
 
         self.semi_major_axis = semi_major_axis
-        self.semi_minor_axis = eccentricity*self.semi_major_axis
+        self.semi_minor_axis = semi_major_axis*np.sqrt(1-eccentricity**2)self.semi_major_axis
         self.orbit_type = orbit_type;
 
         self.inclination_rad = inclination*np.pi/180.0

@@ -26,7 +26,6 @@ def create_inspection_env(init_type,scenario_type,case_type):
             task_type = {1: 'PRO', 2: 'PRO', 3: 'PRO', 4: 'PRO'}
             caseName = 'Benchmark2_RL_'+name
 
-            #task_ecc = {1: 0.0, 2: 0.0, 3: 0.5}
             #task_inc = {1: 0, 2: 0, 3: 135}   # DEGREES
             #task_period = {1: 2000, 2: 2000, 3: 0}  # Will be set to period of reference orbit for PRO
             #task_type = {1: 'CIRCLE', 2: 'CIRCLE', 3: 'PRO'}
@@ -48,7 +47,7 @@ def create_inspection_env(init_type,scenario_type,case_type):
     # Even when running a fixed state scenario, the bounds are used for observation
     # normalization. 
     task_semimajor_bounds = {1: [5, 50], 2: [5, 50], 3: [5, 50], 4: [5, 50]}
-    task_ecc_bounds = {1: [0.4999, 0.5001], 2: [0.4999, 0.5001], 3: [0.4999, 0.5001], 4: [0.4999, 0.5001]}    # ECC must be less than 1.0
+    task_ecc_bounds = {1: [0.866024, 0.866026], 2: [0.866024, 0.866026], 3: [0.866024, 0.866026], 4: [0.866024, 0.866026]}    # ECC must be less than 1.0
     task_inclination_bounds = {1: [0, 80], 2: [0, 80], 3: [0, 80], 4: [0,80]}
     task_period_bounds = {1: [10*60, 60*60], 2: [10*60, 60*60], 3: [10*60, 60*60], 4: [10*60, 60*60]}
 

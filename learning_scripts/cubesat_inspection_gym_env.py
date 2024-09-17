@@ -208,10 +208,10 @@ class CubesatInspectionEnv(MultiAgentEnv):
                 self.y0 = -1*self.task_semimajor[agent_id]
                 #self.y0 = dict([(agent_id, -1*self.ref_semimajor[agent_id]) for agent_id in self.agent_ids])
                 self.task_initial_state[agent_id] = [0, self.y0, 0, 0.5*self.y0*self.ref_mean_motion[agent_id], 0, np.tan(self.task_inc[agent_id]*np.pi/180.0)*0.5*self.y0*self.ref_mean_motion[agent_id]]
-                # For a PRO, the task orbit period is the same as the refernece orbit and the eccentricity is always 0.5
+                # For a PRO, the task orbit period is the same as the refernece orbit and the eccentricity is always 0.866
                 self.task_period[agent_id] = self.ref_period[agent_id]
                 self.task_period_bounds[agent_id] = [self.min_period, self.max_period]
-                self.task_ecc[agent_id] = 0.5
+                self.task_ecc[agent_id] = np.sqrt(3)/2 
                 
 
         # Set the task trajectory class based on the above parameters
