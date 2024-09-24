@@ -19,15 +19,14 @@ from hyperparameter_tuning import HyperparameterTuning
 from utils import data_utils
 from utils.format_mat_data import format_mat_data
 
-nAgents=3
 perform_hyperparameter_tuning = False
 debug = False    # You also need to give the -m -pdb arguments to python on command line
-debug = True
+#debug = True
 
 
 save_step = 10
 checkpoint_step = 10
-nIter = 200 
+nIter = 400 
 
 #save_step = 20 
 #checkpoint_step = 20
@@ -42,8 +41,8 @@ if debug:
 else:
     ray.init()
 
-mission = 'Inspection'
-#mission = 'Robotics'
+#mission = 'Inspection'
+mission = 'Robotics'
 
 init_type = 'fixed'
 #init_type = 'random'
@@ -54,14 +53,15 @@ case_type = 'Benchmark2'
 #Create the environmet
 if mission == 'Transfer':
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
+    nAgents=3
 elif mission == 'Inspection':
     env,task_type,caseName = create_inspection_env(init_type,scenario_type,case_type)
+    nAgents=3
 elif mission == 'Robotics':
+    nAgents = 1
     env,caseName = create_robotics_env(scenario_type,nAgents)
 
 learning_step_size = env.control_step_size
-#nSteps = int(env.stop_time/learning_step_size)
-nSteps = 1
 
 # Fixed hyperparameters
 # Cubesat inspection values
@@ -69,26 +69,35 @@ if mission == 'Inspection':
     #train_batch_size = int(400)
     train_batch_size = int(30)
     sgd_minibatch_size = int(train_batch_size/5)
+    nSteps = 1
     duration = 1
+    gamma = 0.0
+    # Define a learning rate schedule
+    lr = 1e-4
+    lr_start = 1e-4
+    lr_end = 1e-5
+    lr_endtime = 0.8*nIter*train_batch_size
 
 elif mission == 'Robotics':
     train_batch_size = int(500)
     #train_batch_size = nSteps
     sgd_minibatch_size = int(train_batch_size/10)
+    nSteps = int(env.stop_time/learning_step_size)
     nBatches = int(nSteps/train_batch_size)
     duration = nBatches
+    gamma = 0.99
+    # Define a learning rate schedule
+    lr = 1e-4
+    lr_start = 1e-4
+    lr_end = 5e-6
+    lr_endtime = 0.8*nIter*train_batch_size
 
 #num_sgd_iter = 1
-#clip_param = 0.3
+clip_param = 0.3
 entropy_coeff = 0.005
 kl_coeff = 0.5
 lambdaVal = 0.95
-lr = 1e-4
-lr_start = 1e-4
-lr_end = 1e-5
 
-# Define a learning rate schedule
-lr_endtime = 0.8*nIter*train_batch_size
 
 # Get the algorithm configuration settings
 algoConfig = PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug)
@@ -99,10 +108,10 @@ if perform_hyperparameter_tuning == True:
 
 else:
 
-#    algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.99, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
-#})
-    algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.0, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
+    algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": gamma, "clip_param": clip_param, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
 })
+#    algoConfig.policies.update({'policy_1': (None, env.observation_space[1], env.action_space[1], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": gamma, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
+#})
 #    algoConfig.policies.update({'policy_2': (None, env.observation_space[2], env.action_space[2], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.0, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
 #})
 #    algoConfig.policies.update({'policy_3': (None, env.observation_space[3], env.action_space[3], {"lambda": lambdaVal, "kl_coeff": kl_coeff, "entropy_coeff": entropy_coeff, "gamma": 0.0, "lr": lr_start, "lr_schedule": [[0, lr_start],[lr_endtime, lr_end]]})
@@ -131,9 +140,9 @@ else:
     check_dir.append(os.path.dirname(sys.path[1])+"/data_storage/"+date_time+"/")
 
     # Restore the old (checkpointed) state.
-    #checkpoint_dir = '/home/barthal/ray_results/PPO_multi_agent_sat_servicing_2023-09-07_10-39-23ftxv4usc/checkpoint_000401'
+    #checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-09-18-09-42/checkpoint_200'
     #algo.restore(checkpoint_dir)
-    #nIter=800
+    #nIter=400
 
 #    stop = {
 #        "training_iteration": nIter,

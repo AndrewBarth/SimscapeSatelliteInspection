@@ -13,17 +13,19 @@ def main():
 
     rtd = 180/np.pi
     #time_step = 0.001
-    time_step = 0.01
+    #time_step = 0.01
+    time_step = 0.1
 
     # Specify data
-    fileDate = '2024-03-26'
-    fileTime = '13-31'
+    fileDate = '2024-09-22'
+    fileTime = '21-59'
 
     scenario_type = 'eval_dv'
+    scenario_type = 'train_dv'
 
     file_path = os.path.dirname(sys.path[0])+"/data_storage/"+fileDate+"-"+fileTime
 
-    episode_number = 1
+    episode_number = 400
     nAgents = 1
 
     caseType='3d'
@@ -42,6 +44,7 @@ def main():
     cumCntReward = np.cumsum(reward['cnterr_reward'],axis=0)
     cumJntReward = np.cumsum(reward['jntlmt_reward'],axis=0)
     cumSmoReward = np.cumsum(reward['smooth_reward'],axis=0)
+    cumSuccessReward = np.cumsum(reward['success_reward'],axis=0)
     totalReward.append(np.sum(cumReward[npts-1]))
     all_reward.append(reward)
 
@@ -58,11 +61,16 @@ def main():
         current_time += time_step
         ref_time.append(current_time)
 
-    colors=['orange','green','red','blue','cyan','olive']
+    colors=['orange','green','red','blue','cyan','olive','firebrick']
     #labels=['Servicing Satellite Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
     #legend=['Sat']
     #plotData={'data0':sat['position']}
     #plot_static('3d',plotData,labels,legend,colors)
+
+    labels=['Base Spacecraft Orientation','Points','X Orientation (deg)','Y Orientation (deg)','Z Orientation (deg)']
+    legend=['Actual']
+    plotData={'data0':sat['orientation']*rtd}
+    plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
     legend=['Actual','Reference']
@@ -112,9 +120,9 @@ def main():
     plotData={'data0':reward['poserr_reward'],'data1':reward['orierr_reward'],'data3':reward['cnterr_reward'],'data4':reward['jntlmt_reward']}
     plot_static('1d',plotData,labels,legend,colors)
 
-    labels=['Cumulative Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Total Reward']
-    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Smoothness Reward', 'Total Reward']
-    plotData={'data0':cumPosReward,'data1':cumOriReward,'data2':cumCntReward,'data3':cumJntReward,'data4':cumSmoReward,'data5':cumReward}
+    labels=['Cumulative Rewards','Points','Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Smoothess Reward','Success Reward','Total Reward']
+    legend=['Pos Error Reward','Ori Error Reward', 'Control Reward', 'Joint Limit Reward', 'Smoothness Reward', 'Success Reward', 'Total Reward']
+    plotData={'data0':cumPosReward,'data1':cumOriReward,'data2':cumCntReward,'data3':cumJntReward,'data4':cumSmoReward,'data5':cumSuccessReward,'data6':cumReward}
     plot_static('1d',plotData,labels,legend,colors)
 
     labels=['Sim Time','Points','Time (s)']

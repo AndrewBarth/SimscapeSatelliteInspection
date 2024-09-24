@@ -135,7 +135,9 @@ extern "C" int_T sim_wrapper(real_T stopTime, real_T controlStepSize, real_T* ac
   // Set the inputs for the model
 //  SatelliteServicing_Mission_U.control_type = 1;
   for (int i=0; i<agents; i++) {
-      SatelliteServicing_Mission_U.ManipulatorActions[i] = actions[i];
+      double torque = actions[i] / double(nBaseSteps);
+      //SatelliteServicing_Mission_U.ManipulatorActions[i] = actions[i];
+      SatelliteServicing_Mission_U.ManipulatorActions[i] = torque;
   }
 
 

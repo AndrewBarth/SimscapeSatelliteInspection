@@ -17,12 +17,8 @@ from scipy.io import loadmat
 
 values = loadmat('jointCmds.mat')
 
-
-
-nAgents=3
-
-mission = 'Inspection'
-#mission = 'Robotics'
+#mission = 'Inspection'
+mission = 'Robotics'
 init_type = 'fixed'
 scenario_type = 'eval'
 case_type = 'Benchmark2'
@@ -32,7 +28,7 @@ case_type = 'Benchmark2'
 #caseName = 'Test_Scenario'
 caseTitle = 'agent_parameters'
 caseName = 'agent_parameters'
-checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-08-26-08-40/checkpoint_100'
+checkpoint_dir = '/home/barthal/SimscapeSatelliteInspection/data_storage/2024-09-19-15-02/checkpoint_100'
 
 # Run everything on a local process
 ray.init(local_mode=True)
@@ -40,10 +36,13 @@ ray.init(local_mode=True)
 # Instantiate the environment
 #Create the environment
 if mission == 'Transfer':
+    nAgents=3
     env,task_type,caseName = create_dv_env(init_type,scenario_type,case_type,nAgents)
 elif mission == 'Inspection':
+    nAgents=3
     env,task_type,caseName = create_inspection_env(init_type,scenario_type,case_type)
 elif mission == 'Robotics':
+    nAgents=1
     env,caseName = create_robotics_env(scenario_type,nAgents)
 
 learning_step_size = env.control_step_size

@@ -19,8 +19,8 @@ class SatServiceEnv(MultiAgentEnv):
 
     def __init__(self,  *args, **kwargs):
 
-        alldata = data_utils.load_mat('.','jointCmds.mat')
-        self.jointCmds = alldata['jointCmds']
+#        alldata = data_utils.load_mat('.','jointCmds.mat')
+#        self.jointCmds = alldata['jointCmds']
 
         self.nAgents = kwargs['nAgents']
         self.agents = {1}
@@ -28,8 +28,11 @@ class SatServiceEnv(MultiAgentEnv):
         self._agent_ids = set(self.agents)
 
         self.active_agents = {1}
+        self.total_agents = {1}
         for i in range(2,self.nAgents+1):
             self.active_agents.add(i)
+            self.total_agents.add(i)
+        self.nChosenAgents = self.nAgents
  
         # Process argements
         self.initial_state = kwargs['initial_state']
@@ -57,7 +60,8 @@ class SatServiceEnv(MultiAgentEnv):
 #                            dtype=np.float32)
 #        box_act_space1 = Box(low=np.array([-0.005,-0.001,-0.0005]), high=np.array([0.005,0.001,0.0005]),
 #                            dtype=np.float32)
-        box_act_space1 = Box(low=np.array([-0.005,-0.001,-0.001]), high=np.array([0.005,0.001,0.001]),
+        #box_act_space1 = Box(low=np.array([-0.005,-0.001,-0.001]), high=np.array([0.005,0.001,0.001]),
+        box_act_space1 = Box(low=np.array([-0.01,-0.005,-0.001]), high=np.array([0.01,0.005,0.001]),
                             dtype=np.float32)
         box_act_space2 = Box(low=-0.001, high=0.001,
                             shape=(agent_dof,), dtype=np.float32)
@@ -178,10 +182,10 @@ class SatServiceEnv(MultiAgentEnv):
 
         return obs
 
-    def get_reward(self, agent_id, joint_states, error_states, errors, states, action_states, prev_control):
+    def get_reward(self, agent_id, joint_states, error_states, errors, states, action_states, prev_control, dones):
 
         # Call function to get the current reward
-        reward = self.reward.compute_reward(agent_id, self.step_count, self.dof, joint_states, self.joint_limits, error_states, errors, states, action_states, prev_control)
+        reward = self.reward.compute_reward(agent_id, self.step_count, self.dof, joint_states, self.joint_limits, error_states, errors, states, action_states, prev_control, dones)
 
         return reward
 
@@ -233,16 +237,29 @@ class SatServiceEnv(MultiAgentEnv):
     def step(self, action):
         agent_ids = action.keys()
 
+        # Locally track the current step number
+        self.step_count += 1
+
         second_action = action[1][1]
 #        action[1] = np.array([0.0, second_action, 0.0])
         #new_action = self.jointCmds[self.step_count,:]
         #action[1] = self.jointCmds[self.step_count,:]
 
-        # Locally track the current step number
-        self.step_count += 1
+        # Establish a deadzone arournd the actions
+        new_action = dict([(agent_id, action[agent_id]) for agent_id in self.agent_ids])
+        
+        if self.step_count > 1:
+            for agent_id in agent_ids:
+                new_action[agent_id].setflags(write=1)
+                for i in range(len(action[agent_id])):
+                    if np.linalg.norm(action[agent_id][i]) < 1e-5:
+                        new_action[agent_id][i] = 0.0
+                    else:
+                        new_action[agent_id][i] = action[agent_id][i]
+
 
         # Execute one step of the CPP simulation and return a new state
-        states, sim_errors, dones, sim_time = self.cppWrapper.step_cpp_robotics(agent_ids,action,self.stop_time,self.control_step_size)
+        states, sim_errors, dones, sim_time = self.cppWrapper.step_cpp_robotics(agent_ids,new_action,self.stop_time,self.control_step_size)
 
         # Compute errors relative to reference trajectory
         #errors, ref_states = {i: self.compute_errors(i,sim_time,states[i]) for i in agent_ids}
@@ -252,7 +269,7 @@ class SatServiceEnv(MultiAgentEnv):
             errors[agent_id], ref_states[agent_id] = self.compute_errors(agent_id,sim_time,states[agent_id])
 
         # Get the observations
-        observations = {i: self.get_observation(i,states,errors,action) for i in agent_ids}
+        observations = {i: self.get_observation(i,states,errors,new_action) for i in agent_ids}
 
         #if sim_time % 10 == 0:
         #    print('Obs: ',observations[1][0:3])
@@ -295,19 +312,19 @@ class SatServiceEnv(MultiAgentEnv):
             self.sim_error_states[agent_id].extend(euler_simerr.tolist())
             self.sim_error_states[agent_id].extend(sim_errors[agent_id][7:13])
 
-            self.action_states[agent_id] = action[agent_id].tolist()
+            self.action_states[agent_id] = new_action[agent_id].tolist()
             self.info[agent_id]['obs'].append(observations[agent_id])
 
             quat_error = np.array(errors[agent_id][3:7])
         self.sim_time = sim_time
 
         # Compute rewards for this step 
-        step_rewards = {i: self.get_reward(i,self.joint_states,self.error_states,errors,states,self.action_states,self.prev_control) for i in agent_ids}
+        step_rewards = {i: self.get_reward(i,self.joint_states,self.error_states,errors,states,self.action_states,self.prev_control,dones) for i in agent_ids}
 
         rewards = {}
         # Collect rewards
         for agent_id in agent_ids:
-            self.reward_states[agent_id] = [step_rewards[agent_id]['position_error_reward'], step_rewards[agent_id]['orientation_error_reward'], step_rewards[agent_id]['velocity_error_reward'], step_rewards[agent_id]['angular_rate_error_reward'], step_rewards[agent_id]['control_reward'],step_rewards[agent_id]['joint_limit_reward'], step_rewards[agent_id]['smoothness_reward']]
+            self.reward_states[agent_id] = [step_rewards[agent_id]['position_error_reward'], step_rewards[agent_id]['orientation_error_reward'], step_rewards[agent_id]['velocity_error_reward'], step_rewards[agent_id]['angular_rate_error_reward'], step_rewards[agent_id]['control_reward'],step_rewards[agent_id]['joint_limit_reward'], step_rewards[agent_id]['smoothness_reward'], step_rewards[agent_id]['success_reward']]
             # Total reward is used in training
             rewards[agent_id] = step_rewards[agent_id]['total']
         

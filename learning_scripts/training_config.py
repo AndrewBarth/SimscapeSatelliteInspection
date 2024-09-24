@@ -40,12 +40,12 @@ def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
         .environment('multi_agent_sat_servicing')\
         .multi_agent(
             policies={
-#                "policy_1": (
-#                    None, env.observation_space[1], env.action_space[1], {"gamma": 0.98}
-#                ),
                 "policy_1": (
-                    None, env.observation_space[1], env.action_space[1], {"gamma": 0.0}
+                    None, env.observation_space[1], env.action_space[1], {"gamma": 0.98}
                 ),
+#                "policy_1": (
+#                    None, env.observation_space[1], env.action_space[1], {"gamma": 0.0}
+#                ),
 #                "policy_2": (
 #                    None, env.observation_space[2], env.action_space[2], {"gamma": 0.0}
 #                ),
@@ -74,8 +74,8 @@ def PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug):
             evaluation_parallel_to_training=False,
 
             # Run 1 episodes each time evaluation runs
-#            evaluation_duration=duration,
-            evaluation_duration=1,
+            evaluation_duration=duration,
+#            evaluation_duration=1,
             evaluation_duration_unit='episodes',
             #evaluation_duration=nSteps,
             #evaluation_duration_unit='timesteps',
