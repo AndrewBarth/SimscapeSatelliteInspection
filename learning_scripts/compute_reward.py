@@ -13,34 +13,22 @@ class SatServiceReward():
         self.reward_parameters = {}
         self.reward_parameters['position_error'] = {}
         self.reward_parameters['position_error']['enable'] = 1
-        self.reward_parameters['position_error']['enable'] = 0
         self.reward_parameters['position_error']['min_error'] = 0.0
         self.reward_parameters['position_error']['max_reward'] = 1.0
-#        self.reward_parameters['position_error']['scale_factor'] = 0.02
-#        self.reward_parameters['position_error']['scale_factor'] = 0.1
         self.reward_parameters['position_error']['scale_factor'] = 0.2
         self.reward_parameters['position_error']['exponent'] = -2.0
-#        self.reward_parameters['position_error']['bias'] = -0.02
-#        self.reward_parameters['position_error']['bias'] = -0.10
         self.reward_parameters['position_error']['bias'] = -0.20
 
         # Define orientation reward
-        self.reward_parameters['orientation_error'] = {}
-        self.reward_parameters['orientation_error']['enable'] = 0
-        self.reward_parameters['orientation_error']['min_error'] = 0.0
-        self.reward_parameters['orientation_error']['max_reward'] = 1.0
-#        self.reward_parameters['orientation_error']['scale_factor'] = -0.01
-        self.reward_parameters['orientation_error']['scale_factor'] = -10000.0
-        self.reward_parameters['orientation_error']['power'] = 2.0
-        self.reward_parameters['orientation_error']['bias'] =  0.0
 
         self.reward_parameters['orientation_error'] = {}
-        self.reward_parameters['orientation_error']['enable'] = 0
+        self.reward_parameters['orientation_error']['enable'] = 1
         self.reward_parameters['orientation_error']['min_error'] = 0.0
         self.reward_parameters['orientation_error']['max_reward'] = 1.0
-        self.reward_parameters['orientation_error']['scale_factor'] = -0.005
-        self.reward_parameters['orientation_error']['exponent'] = 5.0 
-        self.reward_parameters['orientation_error']['bias'] =  0.0
+        self.reward_parameters['orientation_error']['scale_factor'] = 0.08
+        self.reward_parameters['orientation_error']['exponent'] = -2.0 
+        self.reward_parameters['orientation_error']['bias'] = -0.08
+ 
  
         # Define velocity reward
         self.reward_parameters['velocity_error'] = {}
@@ -62,21 +50,28 @@ class SatServiceReward():
 
         # Define control reward
         self.reward_parameters['control_effort'] = {}
-        self.reward_parameters['control_effort']['enable'] = 1
         self.reward_parameters['control_effort']['enable'] = 0
-        #self.reward_parameters['control_effort']['scale_factor'] = -1e-1
-        self.reward_parameters['control_effort']['scale_factor'] = -5
+        self.reward_parameters['control_effort']['scale_factor'] = -.5/1.0
         self.reward_parameters['control_effort']['power'] = 1.0
-        self.reward_parameters['control_effort']['bias'] = 0
+        self.reward_parameters['control_effort']['bias'] = 0/1.0
 
         # Define smoothness reward
         self.reward_parameters['smoothness'] = {}
         self.reward_parameters['smoothness']['enable'] = 1
         self.reward_parameters['smoothness']['min_error'] = 0.0
         self.reward_parameters['smoothness']['max_reward'] = 1.0
-        self.reward_parameters['smoothness']['scale_factor'] = 0.2
+        self.reward_parameters['smoothness']['scale_factor'] = 0.2/1.0
         self.reward_parameters['smoothness']['exponent'] = -2.0
-        self.reward_parameters['smoothness']['bias'] = -0.2
+        self.reward_parameters['smoothness']['bias'] = -0.2/1.0
+
+        # Define joint limit reward
+        self.reward_parameters['joint_limit'] = {}
+        self.reward_parameters['joint_limit']['enable'] = 1
+        self.reward_parameters['joint_limit']['min_error'] = 0.0
+        self.reward_parameters['joint_limit']['max_reward'] = 1.0
+        self.reward_parameters['joint_limit']['scale_factor'] = -3.0
+        self.reward_parameters['joint_limit']['exponent'] = -100.0
+        self.reward_parameters['joint_limit']['bias'] = 0.0
 
         # Define success reward
         self.reward_parameters['pos_success'] = {}
@@ -130,14 +125,15 @@ class SatServiceReward():
             poserr_reward = 0
 
         # Get orientation error for this agent
-        #ori_error =  np.array(error_states[agent_id][3:6])
-        ori_error = np.array(errors[agent_id][4:7])
+        #ori_error =  np.array(error_states[agent_id][3:6])   # Euler error
+        ori_error = np.array(errors[agent_id][4:7])          # Quaternion error
+        ori_angle = 2*np.arccos(errors[agent_id][3])
         rates = np.array(states[agent_id][22:25])
 
         if any(np.abs(rates)) < 1e-10:
-            direction = ori_error*rates/np.abs(rates)
-        else:
             direction = np.array([1,0,0])
+        else:
+            direction = ori_error*rates/np.abs(rates)
 
 
         # Reward is based on the square of the error
@@ -151,18 +147,10 @@ class SatServiceReward():
         self.prev_ori_error[agent_id] = norm_error
 
         params = self.reward_parameters['orientation_error']
-#        if norm_error < params['min_error']:
-#            orierr_reward = params['max_reward']
-#        else:
-#            orierr_reward = reward_utils.power_reward(params,delta_error)
 
         orierr_reward = 0
         if params['enable'] == 1:
-            for i in range(3):
-                if direction[i] < 0:
-                   orierr_reward = orierr_reward + reward_utils.exp_reward(params,-direction[i])
-                else:
-                   orierr_reward = orierr_reward
+            orierr_reward = reward_utils.exp_reward(params,ori_angle)
 
         # Get velocity error for this agent
         vel_error = np.array(error_states[agent_id][7:10])
@@ -203,16 +191,18 @@ class SatServiceReward():
         else:
             control_reward = 0
 
+        params = self.reward_parameters['joint_limit']
         joint_angles = np.array(joint_states[agent_id])
         joint_limits = joint_limits[agent_id]
         joint_limit_reward = 0
-        for i in range(len(joint_angles)):
-            if joint_angles[i] <=0:
-                if joint_angles[i] < 0.98*joint_limits[i]:
-                    joint_limit_reward += -0.1
-            else:
-                if joint_angles[i] > 0.98*joint_limits[i+len(joint_angles)]:
-                    joint_limit_reward += -0.1
+        if params['enable'] == 1:
+            for i in range(len(joint_angles)):
+                if joint_angles[i] <=0:
+                    pct_limit = joint_angles[i]/joint_limits[i]
+                    joint_limit_reward += reward_utils.exp_reward(params,np.abs(pct_limit))
+                else:
+                    pct_limit = joint_angles[i]/joint_limits[i+len(joint_angles)]
+                    joint_limit_reward += reward_utils.exp_reward(params,np.abs(pct_limit))
 
 
         params = self.reward_parameters['smoothness']

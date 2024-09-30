@@ -16,8 +16,8 @@ def main():
     fileDate = '2023-07-18'
     fileTime = '13-36'    # 1000 episodes of varied LEO evaluation
 
-    fileDate = '2024-08-22'
-    fileTime = '13-58'
+    fileDate = '2024-08-28'
+    fileTime = '12-16'
 
     #scenario_type = 'Train'
     scenario_type = 'Eval'
@@ -25,11 +25,11 @@ def main():
     mission = 'Inspection'
 
 
-    storageLocation = '/data_storage/'
+    storageLocation = '/data_storage/CubesatInspection/'
 
     file_path = os.path.dirname(sys.path[0])+storageLocation+fileDate+"-"+fileTime
 
-    episode_number = 1
+    episode_number = 200
     nAgents = 3
 
     caseType='3d'

@@ -17,15 +17,18 @@ def main():
     time_step = 0.1
 
     # Specify data
-    fileDate = '2024-09-22'
-    fileTime = '21-59'
+    fileDate = '2024-09-28'
+    fileTime = '09-06'     # Same target as training
+
+    fileDate = '2024-09-29'
+    fileTime = '12-57'
 
     scenario_type = 'eval_dv'
-    scenario_type = 'train_dv'
+    #scenario_type = 'train_dv'
 
     file_path = os.path.dirname(sys.path[0])+"/data_storage/"+fileDate+"-"+fileTime
 
-    episode_number = 400
+    episode_number = 1
     nAgents = 1
 
     caseType='3d'
@@ -67,10 +70,10 @@ def main():
     #plotData={'data0':sat['position']}
     #plot_static('3d',plotData,labels,legend,colors)
 
-    labels=['Base Spacecraft Orientation','Points','X Orientation (deg)','Y Orientation (deg)','Z Orientation (deg)']
-    legend=['Actual']
-    plotData={'data0':sat['orientation']*rtd}
-    plot_static('3d',plotData,labels,legend,colors)
+    #labels=['Base Spacecraft Orientation','Points','X Orientation (deg)','Y Orientation (deg)','Z Orientation (deg)']
+    #legend=['Actual']
+    #plotData={'data0':sat['orientation']*rtd}
+    #plot_static('3d',plotData,labels,legend,colors)
 
     labels=['End Effector Position','Points','X Position (m)','Y Position (m)','Z Position (m)']
     legend=['Actual','Reference']

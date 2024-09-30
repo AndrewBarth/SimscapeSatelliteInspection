@@ -66,12 +66,12 @@ learning_step_size = env.control_step_size
 # Fixed hyperparameters
 # Cubesat inspection values
 if mission == 'Inspection':
-    #train_batch_size = int(400)
     train_batch_size = int(30)
     sgd_minibatch_size = int(train_batch_size/5)
     nSteps = 1
     duration = 1
     gamma = 0.0
+    entropy_coeff = 0.005
     # Define a learning rate schedule
     lr = 1e-4
     lr_start = 1e-4
@@ -79,22 +79,23 @@ if mission == 'Inspection':
     lr_endtime = 0.8*nIter*train_batch_size
 
 elif mission == 'Robotics':
-    train_batch_size = int(500)
-    #train_batch_size = nSteps
-    sgd_minibatch_size = int(train_batch_size/10)
     nSteps = int(env.stop_time/learning_step_size)
+    train_batch_size = int(nSteps)
+    sgd_minibatch_size = int(train_batch_size/10)
     nBatches = int(nSteps/train_batch_size)
     duration = nBatches
     gamma = 0.99
+#    entropy_coeff = 0.008
+    entropy_coeff = 0.005
     # Define a learning rate schedule
     lr = 1e-4
     lr_start = 1e-4
-    lr_end = 5e-6
+    lr_end = 1e-5
     lr_endtime = 0.8*nIter*train_batch_size
 
 #num_sgd_iter = 1
 clip_param = 0.3
-entropy_coeff = 0.005
+#clip_param = 0.2
 kl_coeff = 0.5
 lambdaVal = 0.95
 
@@ -102,6 +103,9 @@ lambdaVal = 0.95
 # Get the algorithm configuration settings
 algoConfig = PPOAlgorithmConfig(nSteps,duration,mission,nAgents,env,debug)
 
+algoConfig.training(
+    model={'max_seq_len':2,'use_lstm':True,'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
+)
 
 if perform_hyperparameter_tuning == True:
     HyperparameterTuning(algoConfig)
@@ -122,6 +126,7 @@ else:
           train_batch_size=train_batch_size,
           sgd_minibatch_size=sgd_minibatch_size,
           model={'max_seq_len':2,'use_lstm':True,'fcnet_hiddens':[128,256,256,128],'fcnet_activation':'relu'}
+          #model={'max_seq_len':2,'use_lstm':True,'fcnet_hiddens':[128,256,128,256,128],'fcnet_activation':'relu'}
           )
 
     # Now Build the config

@@ -39,7 +39,7 @@ def HyperparameterTuning(algoConfig):
     )
 
     # Stop when we've either reached 50 training iterations or reward=-10
-    stopping_criteria = {"training_iteration": 50, "episode_reward_mean": -10.0}
+    stopping_criteria = {"training_iteration": 50, "episode_reward_mean": 100.0}
 
     # Episodes for evalutaion
     duration = 1
@@ -85,4 +85,4 @@ def HyperparameterTuning(algoConfig):
     ]
     pprint.pprint({k: v for k, v in best_result.metrics.items() if k in metrics_to_print})
 
-print('Tuning Complete')
+    print('Tuning Complete')
