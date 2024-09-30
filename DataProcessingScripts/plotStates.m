@@ -1,6 +1,6 @@
 %% ALWAYS RUN THIS SECTION AS A FIRST STEP (YOU ONLY NEED TO DO IT ONCE)
 close all
-jointData = [out.joint_state.Data out.joint_cmds.Data];
+jointData = [out.joint_state1.Data out.joint_cmds.Data];
 data_time = (0:endTime/(length(jointData)-1):endTime)';
 rtd = 180/pi;
 
@@ -104,8 +104,8 @@ xlabel('Time (s)')
 %% Positions--- Seperate Figures for Each Object (Client, Base, EE, Tip)
 % pos_client = out.client_cm_state.translation.position.Data;
 pos_base = out.base_state.translation.position.Data;
-pos_ee = out.ee_state.translation.position.Data;
-ori_ee = out.ee_state.rotation.euler.Data;
+pos_ee = out.ee_state1.translation.position.Data;
+ori_ee = out.ee_state1.rotation.euler.Data;
 pos_eecmd = squeeze(out.eeCmd_RelWorld.Position.Data);
 ori_eecmd = squeeze(out.eeCmd_RelWorld.Euler.Data);
 % pos_tip= out.tip_states.Data(:,1:3);
@@ -150,7 +150,7 @@ figure;
 subplot(3,1,1); hold all;
 plot(data_time,pos_ee(:,1)); plot(data_time,pos_eecmd(1,:)'); ylabel('x-Position (m)')
 title('EE Positions')
-legend('EE Position x','location','best')
+legend('EE Position','EE Cmd','location','best')
 grid on; grid minor
 subplot(3,1,2); hold all;
 plot(data_time,pos_ee(:,2)); plot(data_time,pos_eecmd(2,:)'); ylabel('y-Position (m)')
@@ -167,7 +167,7 @@ figure;
 subplot(3,1,1); hold all;
 plot(data_time,ori_ee(:,1)*rtd); plot(data_time,ori_eecmd(1,:)'*rtd); ylabel('x-Orientation (deg)')
 title('EE Orientation')
-legend('EE Orientation x','location','best')
+legend('EE Orientation','EE Cmd','location','best')
 grid on; grid minor
 subplot(3,1,2); hold all;
 plot(data_time,ori_ee(:,2)*rtd); plot(data_time,ori_eecmd(2,:)'*rtd); ylabel('y-Orientation (deg)')
@@ -247,7 +247,7 @@ xlabel('Time (s)')
 %% Velocities--- Seperate Figures for Each Object (Client, Base, EE)
 % vel_client = out.client_cm_state.translation.velocity.Data;
 vel_base = out.base_state.translation.velocity.Data;
-vel_ee = out.ee_state.translation.velocity.Data;
+vel_ee = out.ee_state1.translation.velocity.Data;
 % vel_tip = out.tip_states.Data(:,4:6);
 
 % figure for client velocities

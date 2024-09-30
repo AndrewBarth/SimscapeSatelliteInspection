@@ -114,8 +114,8 @@ sat.service.IC.twist.linear.x = 0.0;
 sat.service.IC.twist.linear.y = 0.0;
 sat.service.IC.twist.linear.z = 0.0;
 % Attitude in rad Z-Y-X order and sequence
-% sat.service.IC.pose.orientation = [20.0 0.0 0.0]*dtr;
-sat.service.IC.pose.orientation = [0.0 0.0 0.0]*dtr;
+sat.service.IC.pose.orientation = [20.0 0.0 0.0]*dtr;
+% sat.service.IC.pose.orientation = [0.0 0.0 0.0]*dtr;
 % Angular velocity in rad/s
 sat.service.IC.twist.angular = [0.0 0.0 0.0]*dtr;
 
@@ -418,64 +418,33 @@ alpha = zeros(1, nLink);
 
 % Define arm controller data
 jointControlData.cntrlMode = 2;   % 1: Joint Control, 2: EE control (Joint control not implemented in Simulink)
-% jointControlData.Kp = [1 1 1 .1 .1 .1]*0.7;
-jointControlData.Kp = [1 1 1 .2 .2 .2]*0.7;
-jointControlData.Kd = [1 1 1 1 1 1]*4;
-% jointControlData.Kd = [1 1 1 1 1 1]*0;
-jointControlData.Ki = [1 1 1 1 1 1]*0.;
 
 % Use these with 3-Link Planar arm
 % jointControlData.Kp = [1 1 1 1 1 1]*0.7;   % when using angle errors
 %jointControlData.Kd = [1 1 1 .8 .8 .8]*4;
-jointControlData.Kp = [1 1 1 .05 .05 .05]*0.7; % when using MRP errors
-jointControlData.Kd = [1 1 1 .08 .08 .08]*4;
-% jointControlData.Kp = [1 1 1 .7 .7 .7]*0.7; % when using MRP errors
+
 jointControlData.Kp = [1 1 1 2.5 2.5 2.5]*0.7; % when using MRP errors
-% jointControlData.Kd = [1 1 1 4.0 4.0 4.0]*4;
 jointControlData.Kd = [1 1 1 5.0 5.0 5.0]*4;
-% jointControlData.Ki = [0 0 0 .08 .08 .08]*1.;
 jointControlData.Ki = [0 0 0 .18 .18 .18]*1.;
 jointControlData.Kp = [0.1 0.1 0.1 1.0 1.0 1.0]*0.01; % when using quat errors
 jointControlData.Kp = [0.1 0.1 0.1 1.0 1.0 1.0]*10; % when using joint rate errors
-%jointControlData.Ki = [0.1 0.1 0.1 0.5 0.5 0.5]*0.1;
 jointControlData.Ki = [0.1 0.1 0.1 0.1 0.1 0.1]*0.0;
 jointControlData.Kd = [1 1 1 1.0 1.0 1.0]*0.0;
 % Used for joint control only (Joint control not implemented in Simulink)
 jointControlData.qCmdDot = [0 0 0];
 jointControlData.qCmd = [0 0 0]*pi/180;
 
+
+jointControlData.Kp = [1 1 1 1 1 1]*0.7;
+jointControlData.Kd = [1 1 1 1 1 1]*4;
+jointControlData.Ki = [1 1 1 1 1 1]*0.;
+
+jointControlData.Kp = [3 3 3 2 2 2]*1.5;
+jointControlData.Kd = [1 1 1 2 2 2]*4;
+jointControlData.Ki = [1 1 1 2 2 2]*0.;
+
 % Used for end effector control [pos, ang, vel, angRate]
 jointControlData.eeCmd = zeros(1,12);
-% jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -40.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-%jointControlData.refTime = [0 20 30 50 70];
-
-% jointControlData.eeRefTraj(1,:) = [-0.236    0.0438     0.2710 90.0*dtr 0.0  -100.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(2,:) = [-0.236     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-% jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-
-jointControlData.eeRefTraj(1,:) = [-0.236    0.0438        0.2710 90.0*dtr 0.0  -100.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(2,:) = [-0.236    0.0438       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-
-jointControlData.eeRefTraj(1,:) = [-0.236    0.0438        0.2710 90.0*dtr 0.0  -60.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(2,:) = [-0.236    0.0438       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(3,:) = [0.0       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 90.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-
-jointControlData.eeRefTraj(1,:) = [-0.4    0.2        0.2710 90.0*dtr 0.0*dtr  -120.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(1,:) = [-0.4280    0.1395    0.2710 90.0*dtr 0.0*dtr   -125.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-jointControlData.eeRefTraj(1,:) = [-0.2785   0.4757    0.2710 90.0*dtr 0.0*dtr   -160.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];  % Joint 1 to 0 deg
-
-jointControlData.refTime = [0 50 60 70 80];
 
 % From Summer2022dev
 jointControlData.eeCmd = zeros(1,12);
@@ -483,16 +452,20 @@ jointControlData.eeRefTraj(1,:) = [-0.2     -0.0       0.2710 90.0*dtr 0.0  -80.
 jointControlData.eeRefTraj(2,:) = [-0.25     0.3       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(3,:) = [-0.1       0.4       0.2710 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(4,:) = [0         0.4       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-%jointControlData.eeRefTraj(5,:) = [0.4       0.6       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
-%jointControlData.eeRefTraj(6,:) = [0.4       0.6       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(5,:) = [-0.1    0.55       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(6,:) = [-0.1    0.55       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 
-% jointControlData.refTime = [0 20 30 50 70 100];
-jointControlData.refTime = [0 20 30 100 110 12000];
-jointControlData.Kp = [1 1 1 1 1 1]*0.7;
-jointControlData.Kd = [1 1 1 1 1 1]*4;
-jointControlData.Ki = [1 1 1 1 1 1]*0.;
+% Baseline in disseration
+jointControlData.eeRefTraj(1,:) = [-0.2362  0.1468     0.2310 90.0*dtr 0.0  -80.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(2,:) = [-0.0911  0.8302     0.2310 90.0*dtr 0.0   50.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(3,:) = [-0.3      0.4       0.2310 90.0*dtr 0.0 -150.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(4,:) = [-0.3      0.4       0.2310 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(5,:) = [-0.1    0.55       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+jointControlData.eeRefTraj(6,:) = [-0.1    0.55       0.2710 45.0*dtr 0.0   90.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+
+jointControlData.refTime = [0 20 60 100 110 12000];
+
+
 
 if ARM_TYPE == 5
     % jointControlData.Kp = [1 1 1 1 1 1 1]*50.0;

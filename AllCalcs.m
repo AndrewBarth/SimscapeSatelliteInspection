@@ -269,6 +269,14 @@ elseif ARM_TYPE == 6
 
 else
     % Initial Joint Angles and Rates
+    % Starting end effector state (world) (-0.2711   -1.4456    0.2310) (90 0, -60)
+    % Desired end effector state (world) (-0.3696   -0.7510    0.2310) 
+    desired_ee_world_pos = [-0.3696   -0.7510    0.2310];
+    desired_ee_world_ori = [90.0     0.0000     75]*pi/180;
+    % Yields desired end effector state  
+    % arm(1).smiData.RevoluteJoint(1).Rz.Pos = 40.0;
+    % arm(1).smiData.RevoluteJoint(2).Rz.Pos = -45.0;
+    % arm(1).smiData.RevoluteJoint(3).Rz.Pos = -30.0;
     for i = 1:nLink
         q(i) = arm(1).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;

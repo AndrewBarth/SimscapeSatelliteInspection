@@ -1,5 +1,5 @@
 
-config = 2;
+config = 1;
 % config 1: arms at center in x and z
 % config 2: arms at top and front
 % config 3: one arm top left, one arm bottom right

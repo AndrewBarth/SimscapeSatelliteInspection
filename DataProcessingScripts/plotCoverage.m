@@ -63,6 +63,15 @@ for i=1:length(GPData.F)
     end
 end
 
+% Track credit
+nInspectedperAgent = zeros(nAgents,1);
+for i=1:nAgents
+    nInspectedperAgent(i) = int32(sum(credit(:)==i));
+    fprintf('Agent %d inspected %d faces\n',i,nInspectedperAgent(i))
+end
+
+
+
 
 % Plot the Goldberg Polyhedron
 figure;
