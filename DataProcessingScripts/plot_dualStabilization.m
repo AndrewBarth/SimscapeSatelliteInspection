@@ -6,17 +6,22 @@ data_time = out.base_state.translation.position.Time;
 
 
 yoffset = 0.0; % 3 link
-nVar = 4;  % 3 link
+nVar = 4;  % 2, 3 link
+iter = nVar; % 2, 3 link
+% nVar = 2;  % 2 link
+% iter = 1;  % 2 link
+
 % nVar = 2;      % 7 link
 % yoffset = 1.5; % 7 link
+% iter = nVar;   % 7 link
 
 nJoints1 = size(out.joint_state1.Data,2)/nVar;
-arm1_joint_angles = out.joint_state1.Data(:,1:nVar:nVar*nJoints1);
-arm1_joint_rates  = out.joint_state1.Data(:,2:nVar:nVar*nJoints1);
+arm1_joint_angles = out.joint_state1.Data(:,1:iter:nVar*nJoints1);
+arm1_joint_rates  = out.joint_state1.Data(:,2:iter:nVar*nJoints1);
 
 nJoints2 = size(out.joint_state2.Data,2)/nVar;
-arm2_joint_angles = out.joint_state2.Data(:,1:nVar:nVar*nJoints2);
-arm2_joint_rates  = out.joint_state2.Data(:,2:nVar:nVar*nJoints2);
+arm2_joint_angles = out.joint_state2.Data(:,1:iter:nVar*nJoints2);
+arm2_joint_rates  = out.joint_state2.Data(:,2:iter:nVar*nJoints2);
 arm2_joint_torques = out.desired_torque1.Data(:,1:nJoints2);
 % arm2_joint_torques = squeeze(out.dualArmControlSignal.Data(1,1:nJoints2,:))';
 

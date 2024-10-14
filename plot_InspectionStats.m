@@ -1,6 +1,6 @@
 
-totalFaces = 32; % G(1,1)
-% totalFaces = 122; % G(2,2)
+% totalFaces = 32; % G(1,1)
+totalFaces = 122; % G(2,2)
 % totalFaces = 272; % G(3,3)
 rtd = 180/pi;
 

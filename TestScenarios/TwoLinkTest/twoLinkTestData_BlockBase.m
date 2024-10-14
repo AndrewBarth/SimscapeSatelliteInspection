@@ -1,22 +1,38 @@
 
-config = 1;
-% config 1: arms at center in x and z
+config = 2; % (make sure simscape model matches)
+% config 1: arms at center in x and z  
 % config 2: arms at top and front
 % config 3: one arm top left, one arm bottom right
 
+base_scale = 1;
 
 endTime = 50;
+% complete prescribed motion in half time
+% endTime = 25;
+% torque_scale = 4.0;
+
 arm(1).nLink = 2;
 arm(2).nLink = 2;
 
-sat.service.mass = 2;
-sat.service.radius = 0.25;
-sat.service.length = 0.25;
-sat.service.dimensions = [0.5 0.5 0.5];
-% The following mass properties are derived from simscape
-sat.service.Com = [0 0 0];
-sat.service.MoI = [0.0833333 0.0833333 0.0833333];
-sat.service.PoI = [0 0 0];
+if base_scale == 20
+    sat.service.mass = 2*base_scale;
+    sat.service.radius = 0.25;
+    sat.service.length = 0.25;
+    sat.service.dimensions = [0.5 0.5 0.5];
+    % The following mass properties are derived from simscape
+    sat.service.Com = [0 0 0];
+    sat.service.MoI = [1.66667, 1.66667, 1.66667];
+    sat.service.PoI = [0 0 0];
+else
+    sat.service.mass = 2;
+    sat.service.radius = 0.25;
+    sat.service.length = 0.25;
+    sat.service.dimensions = [0.5 0.5 0.5];
+    % The following mass properties are derived from simscape
+    sat.service.Com = [0 0 0];
+    sat.service.MoI = [0.0833333 0.0833333 0.0833333];
+    sat.service.PoI = [0 0 0];
+end
 sat.service.IC.pose.position.x = 0.0;
 sat.service.IC.pose.position.y = 0.0;
 sat.service.IC.pose.position.z = 0.0;
@@ -54,12 +70,12 @@ arm(2).massProperties.mt = mt;
 arm(1).smiData.RigidTransform(1).angle = 0.0;
 arm(1).thetaOffset = [0 0]*pi/180;
 arm(1).DHparams(1,:) = [0 0.1351 0 0];
-arm(1).Joint_Limits = [-2*pi 2*pi; -2*pi 2*pi];
+arm(1).Joint_Limits = [-150 150; -150 150]*pi/180;
 
 arm(2).smiData.RigidTransform(1).angle = 0.0;
 arm(2).thetaOffset = [0 0]*pi/180;
 arm(2).DHparams(1,:) = [0 0.1351 0 0];
-arm(2).Joint_Limits = [-2*pi 2*pi; -2*pi 2*pi];
+arm(2).Joint_Limits = [-150 150; -150 150]*pi/180;
 
 % Configuration specific arm parameters
 if config == 1
@@ -138,10 +154,10 @@ jointControlDataBus = evalin('base',busInfo.busName);
 i=0;
  for t=0:.001:endTime
     i=i+1;
-    acc1(i) = 0.00088;
+    acc1(i) = 0.00088*torque_scale;
     vel1(i) = acc1(i)*t;
     ang1(i) = q1(1) + 0.5*acc1(i)*t^2;
-    acc2(i) = 0.00088;
+    acc2(i) = 0.00088*torque_scale;
     vel2(i) = acc2(i)*t;
     ang2(i) = q1(2) + 0.5*acc2(i)*t^2;
 end
