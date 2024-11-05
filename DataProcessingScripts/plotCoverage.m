@@ -1,29 +1,58 @@
 
+dataType = 0;   % Directly from simulink
+% dataType = 1;   % From RL sim
 
-% credit = out.creditOut.Data(:,1,end);
-idx = 1;
-credit = agentData{idx}.Benchmark2_RL_Eval.cubesat.coverage(end,:);
+
+if dataType == 0
+    credit = out.creditOut.Data(:,1,end);
+else
+    idx = 1;
+    credit = agentData{idx}.Benchmark2_RL_Eval.cubesat.coverage(end,:);
+end
 
 nAgents = 0;
-if ~isempty(agentData{idx})
-    cubesatRelPosition{1} = agentData{idx}.Benchmark2_RL_Eval.cubesat.position;
-    nAgents = nAgents + 1;
-    lText{nAgents} = strcat('Deputy',num2str(nAgents));
-end
-if ~isempty(agentData2{idx})
-    cubesatRelPosition{2} = agentData2{idx}.Benchmark2_RL_Eval.cubesat.position;
-    nAgents = nAgents + 1;
-    lText{nAgents} = strcat('Deputy',num2str(nAgents));
-end
-if ~isempty(agentData3{idx})
-    cubesatRelPosition{3} = agentData3{idx}.Benchmark2_RL_Eval.cubesat.position;
-    nAgents = nAgents + 1;
-    lText{nAgents} = strcat('Deputy',num2str(nAgents));
-end
-if ~isempty(agentData4{idx})
-    cubesatRelPosition{4} = agentData4{idx}.Benchmark2_RL_Eval.cubesat.position;
-    nAgents = nAgents + 1;
-    lText{nAgents} = strcat('Deputy',num2str(nAgents));
+if dataType == 0
+    if isfield(out.cubesatRelState.Cubesat1_RelState,'Rel_Position')
+        cubesatRelPosition{1} = out.cubesatRelState.Cubesat1_RelState.Rel_Position.Data;
+        nAgents = nAgents + 1;
+        lText{nAgents} = strcat('Deputy',num2str(nAgents));
+    end
+    if isfield(out.cubesatRelState.Cubesat2_RelState,'Rel_Position')
+        cubesatRelPosition{2} = out.cubesatRelState.Cubesat2_RelState.Rel_Position.Data;
+        nAgents = nAgents + 1;
+        lText{nAgents} = strcat('Deputy',num2str(nAgents));
+    end
+    if isfield(out.cubesatRelState.Cubesat3_RelState,'Rel_Position')
+        cubesatRelPosition{3} = out.cubesatRelState.Cubesat3_RelState.Rel_Position.Data;
+        nAgents = nAgents + 1;
+        lText{nAgents} = strcat('Deputy',num2str(nAgents));
+    end
+    if isfield(out.cubesatRelState.Cubesat4_RelState,'Rel_Position')
+        cubesatRelPosition{4} = out.cubesatRelState.Cubesat4_RelState.Rel_Position.Data;
+        nAgents = nAgents + 1;
+        lText{nAgents} = strcat('Deputy',num2str(nAgents));
+    end
+else
+    if ~isempty(agentData{idx})
+        cubesatRelPosition{1} = agentData{idx}.Benchmark2_RL_Eval.cubesat.position;
+        nAgents = nAgents + 1;
+        lText{nAgents} = strcat('Deputy',num2str(nAgents));
+    end
+    if ~isempty(agentData2{idx})
+        cubesatRelPosition{2} = agentData2{idx}.Benchmark2_RL_Eval.cubesat.position;
+        nAgents = nAgents + 1;
+        lText{nAgents} = strcat('Deputy',num2str(nAgents));
+    end
+    if ~isempty(agentData3{idx})
+        cubesatRelPosition{3} = agentData3{idx}.Benchmark2_RL_Eval.cubesat.position;
+        nAgents = nAgents + 1;
+        lText{nAgents} = strcat('Deputy',num2str(nAgents));
+    end
+    if ~isempty(agentData4{idx})
+        cubesatRelPosition{4} = agentData4{idx}.Benchmark2_RL_Eval.cubesat.position;
+        nAgents = nAgents + 1;
+        lText{nAgents} = strcat('Deputy',num2str(nAgents));
+    end
 end
 
 clear GPData

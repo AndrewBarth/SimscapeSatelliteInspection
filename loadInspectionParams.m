@@ -3,10 +3,13 @@
 % GBa = 4;
 GBa = 2;
 GBb = 2;
+
 % GBa = 3;
 % GBb = 3;
- % GBa = 1;
- % GBb = 1;
+ GBa = 1;
+ GBb = 1;
+ % GBa = 7;
+ % GBb = 2;
 
 % Use golden ratio for radius
 PHI = (1+sqrt(5)) / 2;

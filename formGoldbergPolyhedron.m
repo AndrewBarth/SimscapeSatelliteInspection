@@ -190,13 +190,13 @@ function [faceCenter,faceRadius,GPData] = formGoldbergPolyhedron(a,b,radius,make
             end
             for i=1:size(mapped,1)
                 for j = 1:size(mapped,2)
-            %        scatter3(mapped(i,j,1),mapped(i,j,2),mapped(i,j,3),'ro','MarkerFaceColor','r')
+                    scatter3(mapped(i,j,1),mapped(i,j,2),mapped(i,j,3),'ro','MarkerFaceColor','r')
                     k=k+1;
                 end
             end
-            for i=1:size(faceCenter,1)
-                scatter3(faceCenter(i,1),faceCenter(i,2),faceCenter(i,3),'yo','MarkerFaceColor','y')
-            end
+            % for i=1:size(faceCenter,1)
+            %     scatter3(faceCenter(i,1),faceCenter(i,2),faceCenter(i,3),'yo','MarkerFaceColor','y')
+            % end
             xlabel('x');ylabel('y');zlabel('z');title(['Goldberg Polyhedron G(',num2str(a),',',num2str(b),')'])
     end
 end

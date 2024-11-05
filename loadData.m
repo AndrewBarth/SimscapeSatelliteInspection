@@ -8,7 +8,7 @@ VSS_CubeSatOperation = Simulink.Variant('MISSION_TYPE==1');
 
 
 % Select robotic arm to use in the simulation
-ARM_TYPE = 0;    
+ARM_TYPE = 6;    
 % 0 = Planar3Link
 % 1 = ViperX300 (5-DOF)
 % 2 = General6DOF (6-DOF)
@@ -118,7 +118,7 @@ elseif ARM_TYPE == 6
 end
 
 
-ARM_CONTROL_TYPE = 0;
+ARM_CONTROL_TYPE = 3;
 VSS_NoControl = Simulink.Variant('ARM_CONTROL_TYPE==0');
 VSS_ModelBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
 VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==2');

@@ -89,7 +89,7 @@ dtr = pi/180;
 % sat.service.mass = 150;
 sat.service.mass = 20;
 sat.service.radius = 0.25;
-sat.service.length = 0.5;
+sat.service.length = 0.75;
 % The following mass properties are derived from simscape
 sat.service.Com = [0 0 0];
 sat.service.MoI = [5.23993, 5.23993, 4.22985];
@@ -115,7 +115,7 @@ sat.service.IC.twist.linear.y = 0.0;
 sat.service.IC.twist.linear.z = 0.0;
 % Attitude in rad Z-Y-X order and sequence
 sat.service.IC.pose.orientation = [20.0 0.0 0.0]*dtr;
-% sat.service.IC.pose.orientation = [0.0 0.0 0.0]*dtr;
+sat.service.IC.pose.orientation = [0.0 0.0 0.0]*dtr;
 % Angular velocity in rad/s
 sat.service.IC.twist.angular = [0.0 0.0 0.0]*dtr;
 
@@ -359,9 +359,13 @@ elseif ARM_TYPE == 6
     arm(1).nLink = 3;
 
     % Data from Solidworks model (in m)
-    arm(1).Link_Length(1) = 0.2;
-    arm(1).Link_Length(2) = 0.2;
-    arm(1).Link_Length(3) = 0.08;
+    % arm(1).Link_Length(1) = 0.2;
+    % arm(1).Link_Length(2) = 0.2;
+    % arm(1).Link_Length(3) = 0.08;
+    arm(1).Link_Length(1) = 0.22;
+    arm(1).Link_Length(2) = 0.22;
+    % arm(1).Link_Length(3) = 0.065;
+    arm(1).Link_Length(3) = 0.07;
 
     arm(1).Link_CG(1,:) = [arm(1).Link_Length(1)/2 0 0];
     arm(1).Link_CG(2,:) = [arm(1).Link_Length(2)/2 0 0];
@@ -374,9 +378,13 @@ elseif ARM_TYPE == 6
 
     arm(2).nLink = 3;
     % Data from Solidworks model (in m)
-    arm(2).Link_Length(1) = 0.2;
-    arm(2).Link_Length(2) = 0.2;
-    arm(2).Link_Length(3) = 0.08;
+    % arm(2).Link_Length(1) = 0.2;
+    % arm(2).Link_Length(2) = 0.2;
+    % arm(2).Link_Length(3) = 0.08;
+    arm(2).Link_Length(1) = 0.22;
+    arm(2).Link_Length(2) = 0.22;
+    % arm(2).Link_Length(3) = 0.065;
+    arm(2).Link_Length(3) = 0.07;
 
     arm(2).Link_CG(1,:) = [arm(2).Link_Length(1)/2 0 0];
     arm(2).Link_CG(2,:) = [arm(2).Link_Length(2)/2 0 0];

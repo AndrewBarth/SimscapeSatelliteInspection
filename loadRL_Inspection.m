@@ -61,6 +61,10 @@ runDate = '2024-10-14';
 runTime = '08-08';        % Evaluation of the G(2,2) 10-13-19-18 training fixed at 4 agents, 10m sma
 runType = 'Eval';
 
+runDate = '2024-10-15';
+runTime = '15-22';        % Evaluation of the G(2,2) 10-13-19-18 training fixed at 4 agents, 10m sma
+runType = 'Eval';
+
 % Set the storage location
 dataDir = 'data_storage/CubesatInspection';
 baseFilePath = append(dataDir,'\',runDate,'-',runTime,'\');
