@@ -1,7 +1,6 @@
 %% Rod Calculations
-rod.rho = material.rho;  % Density (kg/m3)
-rod.E   = material.E;    % Young's Modulous (GPa)
-rod.G   = material.G;    % Shear Modulous (GPa)
+% Call script to load calculations
+% flexibleBeam_Calcs;
 
 %% Satellite Calculations
 % None were needed for this method
@@ -32,11 +31,11 @@ if ARM_TYPE == 1
 %     DHparams(6,:) = [Link_Length(5) 0.0  90*dtr q(5)+thetaOffset(5)];
 %     DHparams(1,:) = [sat.service.radius*cos(pi/8)+Base_height sat.service.length/2 0.0*dtr Base_z];
     DHparams(1,:) = [0 sat.service.length/2 0.0*dtr Base_z];
-    DHparams(2,:) = [Link_Length(1) 0.0  90.0*dtr q(1)+thetaOffset(1)];
-    DHparams(3,:) = [0.0 Link_Length(2)   0.0*dtr q(2)+thetaOffset(2)];
-    DHparams(4,:) = [0.0 Link_Length(3)  90.0*dtr q(3)+thetaOffset(3)];
-    DHparams(5,:) = [0.0 Link_Length(4)  90.0*dtr q(4)+thetaOffset(4)];
-    DHparams(6,:) = [Link_Length(5) 0.0   0.0*dtr q(5)+thetaOffset(5)];
+    DHparams(2,:) = [arm(1).Link_Length(1) 0.0  90.0*dtr q(1)+thetaOffset(1)];
+    DHparams(3,:) = [0.0 arm(1).Link_Length(2)   0.0*dtr q(2)+thetaOffset(2)];
+    DHparams(4,:) = [0.0 arm(1).Link_Length(3)  90.0*dtr q(3)+thetaOffset(3)];
+    DHparams(5,:) = [0.0 arm(1).Link_Length(4)  90.0*dtr q(4)+thetaOffset(4)];
+    DHparams(6,:) = [arm(1).Link_Length(5) 0.0   0.0*dtr q(5)+thetaOffset(5)];
     
     % Set up mass properties
     % THESE ARE PROBABLY INCORRECT. NEED TO MATCH THIS WITH ARM MODEL
@@ -73,7 +72,7 @@ if ARM_TYPE == 1
 elseif ARM_TYPE == 2
     % Initial Joint Angles and Rates
     for i = 1:nLink
-        q(i) = smiData.RevoluteJoint(i).Rz.Pos*dtr;
+        q(i) = arm(1).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;
     end
 
@@ -103,12 +102,12 @@ elseif ARM_TYPE == 2
 %     %DHparams(6,:) = [0.0 Link_Length(5)  90*dtr   q(5)+90*dtr];
 %     DHparams(7,:) = [Link_Length(6) 0.0225 -90*dtr   q(6)];
 
-    DHparams(2,:) = [Link_Length(1) 0.0  90*dtr  q(1)+thetaOffset(1)];
-    DHparams(3,:) = [0.0 Link_Length(2)   0*dtr  q(2)+thetaOffset(2)];
-    DHparams(4,:) = [0.0 Link_Length(3)   0*dtr  q(3)+thetaOffset(3)];
-    DHparams(5,:) = [0.0 Link_Length(4)  90*dtr  q(4)+thetaOffset(4)];
+    DHparams(2,:) = [arm(1).Link_Length(1) 0.0  90*dtr  q(1)+thetaOffset(1)];
+    DHparams(3,:) = [0.0 arm(1).Link_Length(2)   0*dtr  q(2)+thetaOffset(2)];
+    DHparams(4,:) = [0.0 arm(1).Link_Length(3)   0*dtr  q(3)+thetaOffset(3)];
+    DHparams(5,:) = [0.0 arm(1).Link_Length(4)  90*dtr  q(4)+thetaOffset(4)];
     DHparams(6,:) = [0.0 0.0             90*dtr  q(5)+thetaOffset(5)];
-    DHparams(7,:) = [Link_Length(5)+Link_Length(6) 0.0  -90*dtr  q(6)+thetaOffset(6)];
+    DHparams(7,:) = [arm(1).Link_Length(5)+arm(1).Link_Length(6) 0.0  -90*dtr  q(6)+thetaOffset(6)];
 
 %     DHparams(1,:) = [Link_Length(1) 0.0  90*dtr  q(1)];
 %     DHparams(2,:) = [0.0 Link_Length(2)   0*dtr  q(2)];
@@ -128,9 +127,9 @@ elseif ARM_TYPE == 2
 
     % Set up mass properties
     % THESE ARE PROBABLY INCORRECT. NEED TO MATCH THIS WITH ARM MODEL
-    m_base = sat.service.mass + smiData.Solid(1).mass;  % Sum satellite base and arm base
+    m_base = sat.service.mass + arm(1).smiData.Solid(1).mass;  % Sum satellite base and arm base
     for i = 1:nLink
-        m_link(i) = smiData.Solid(i+1).mass;
+        m_link(i) = arm(1).smiData.Solid(i+1).mass;
     end
     mt = m_base + sum(m_link);
     massVec = [m_base m_link];
@@ -142,9 +141,9 @@ elseif ARM_TYPE == 2
                   
     linkIdx = 1;
     for i = 1:nLink
-        inertiaMat(i,:,:) = [smiData.Solid(i+linkIdx).MoI(1) smiData.Solid(i+linkIdx).PoI(1) smiData.Solid(i+linkIdx).PoI(2); ... 
-                             smiData.Solid(i+linkIdx).PoI(1) smiData.Solid(i+linkIdx).MoI(2) smiData.Solid(i+linkIdx).PoI(3); ...
-                             smiData.Solid(i+linkIdx).PoI(2) smiData.Solid(i+linkIdx).PoI(3) smiData.Solid(i+linkIdx).MoI(3)]/1000/1000; % Convert from kg*mm2 to kg*m2
+        inertiaMat(i,:,:) = [arm(1).smiData.Solid(i+linkIdx).MoI(1) arm(1).smiData.Solid(i+linkIdx).PoI(1) arm(1).smiData.Solid(i+linkIdx).PoI(2); ... 
+                             arm(1).smiData.Solid(i+linkIdx).PoI(1) arm(1).smiData.Solid(i+linkIdx).MoI(2) arm(1).smiData.Solid(i+linkIdx).PoI(3); ...
+                             arm(1).smiData.Solid(i+linkIdx).PoI(2) arm(1).smiData.Solid(i+linkIdx).PoI(3) arm(1).smiData.Solid(i+linkIdx).MoI(3)]/1000/1000; % Convert from kg*mm2 to kg*m2
     end
     linkInertia = zeros(nLink,3,3);
     arm(1).massProperties.mt = mt;

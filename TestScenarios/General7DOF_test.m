@@ -60,3 +60,8 @@ jointControlData.eeRefTraj(2,:) = [0.0350    0.8761    3.1786      0.0*dtr   0.0
 jointControlData.eeRefTraj(3,:) = [2.2682    0.5576    2.3177   90.0*dtr 180.0*dtr -45.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(4,:) = [2.2682    0.5576    2.3177  180.0*dtr 0.0*dtr 180.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
 jointControlData.eeRefTraj(5,:) = [2.2682    0.5576    2.3177  180.0*dtr 0.0*dtr 180.0*dtr 0.0 0.0 0.0 0.0 0.0 0.0];
+
+
+jointControlData.Kp = [1 1 1 1 1 1 1]*50.0;
+jointControlData.Kd = [1 .5 .1 .05 .01 .005 .001]*0.01;
+jointControlData.Ki = [1 1 1 1 1 1 1]*10.;

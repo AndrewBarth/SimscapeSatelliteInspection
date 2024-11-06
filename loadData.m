@@ -49,6 +49,7 @@ if ARM_TYPE == 1
     ViperX_300_DataFile
 elseif ARM_TYPE == 2
     General_6DOF_ArmAssembly_DataFile
+    arm(1).smiData = smiData; clear smiData
 elseif ARM_TYPE == 3
     General_7DOF_ArmAssembly_DataFile
     arm(1).smiData = smiData; clear smiData
