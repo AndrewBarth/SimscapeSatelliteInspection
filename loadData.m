@@ -47,18 +47,22 @@ addpath('DataProcessingScripts')
 % Load parameter data for each element
 if ARM_TYPE == 1
     ViperX_300_DataFile
+    nARM = 1;
 elseif ARM_TYPE == 2
     General_6DOF_ArmAssembly_DataFile
     arm(1).smiData = smiData; clear smiData
+    nARM = 1;
 elseif ARM_TYPE == 3
     General_7DOF_ArmAssembly_DataFile
     arm(1).smiData = smiData; clear smiData
+    nARM = 1;
 elseif ARM_TYPE == 4
     ArmAssembly_DataFile
     RigidBodyTree = load("2linkPlanarTree.mat");
 
     arm(1).smiData = smiData;
     arm(2).smiData = smiData; clear smiData
+    nARM = 1;
 elseif ARM_TYPE == 5
 
     General_7DOF_ArmAssembly_DataFile
@@ -84,6 +88,7 @@ elseif ARM_TYPE == 5
    arm(2).smiData = smiData; clear smiData
    arm(2).rigidBodyTree = load("General7DOF_RigidBodyTree.mat");
 
+   nARM = 2;
 elseif ARM_TYPE == 6
 
     % Set up arm 1
@@ -96,10 +101,13 @@ elseif ARM_TYPE == 6
    arm(2).smiData = smiData; clear smiData
    arm(2).rigidBodyTree = load("3linkPlanarTree.mat");
 
+   nARM = 2;
 else
     ArmAssembly_DataFile
     arm(1).smiData = smiData; clear smiData
     RigidBodyTree = load("3linkPlanarTree.mat");
+
+    nARM = 1;
 end
 
 ClientAssembly_DataFile
@@ -112,6 +120,8 @@ elseif ARM_TYPE == 2
     General6DOF_test
 elseif ARM_TYPE == 3
     General7DOF_test
+elseif ARM_TYPE == 4
+    % Dual2LinkTest
 elseif ARM_TYPE == 5
     General7DOF_test
 elseif ARM_TYPE == 6
@@ -125,14 +135,23 @@ VSS_ModelBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
 VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==2');
 VSS_DualArmStabilization = Simulink.Variant('ARM_CONTROL_TYPE==3');
 
+ARM1_CONTROL_TYPE = 0;
+ARM2_CONTROL_TYPE = 3;
+% 0: No Control (zero torque cmds)
+% 1: Moded Based Control
+% 2: RL Based Control
+% 3: Dual Arm Stabilization (only valid for second arm in dual arm cases)
+
 % Perfom initialization calculations based on parameter data
 AllCalcs
 loadBusData
 
 % Set the source of the joint commands (computed or playback)
-JOINT_COMMAND_SOURCE = 1;
-VSS_ComputedTorques = Simulink.Variant('JOINT_COMMAND_SOURCE==0');
-VSS_Playback         = Simulink.Variant('JOINT_COMMAND_SOURCE==1');
+ARM1_JOINT_COMMAND_SOURCE = 1;
+ARM2_JOINT_COMMAND_SOURCE = 0;
+% 0: Computed joint torques
+% 1: Playback of joint angles
+
 
 % Load the Simulink model
 load_system('SatelliteServicing_Mission.slx');

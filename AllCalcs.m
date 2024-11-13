@@ -234,8 +234,20 @@ elseif ARM_TYPE == 6
     % arm(1).smiData.RevoluteJoint(1).Rz.Pos = -60.0;
     % arm(1).smiData.RevoluteJoint(2).Rz.Pos = -45.0;
     % arm(1).smiData.RevoluteJoint(3).Rz.Pos = -30.0;
+    % Stowed config
+    arm(1).smiData.RevoluteJoint(1).Rz.Pos = 80.0;
+    arm(1).smiData.RevoluteJoint(2).Rz.Pos = 90.0;
+    arm(1).smiData.RevoluteJoint(3).Rz.Pos = 20.0;
+    % Desired config
+    % arm(1).smiData.RevoluteJoint(1).Rz.Pos = 40.0;
+    % arm(1).smiData.RevoluteJoint(2).Rz.Pos = -45.0;
+    % arm(1).smiData.RevoluteJoint(3).Rz.Pos = -30.0;
+    % Waypoint 1
+    % arm(1).smiData.RevoluteJoint(1).Rz.Pos = -20.0;
+    % arm(1).smiData.RevoluteJoint(2).Rz.Pos =  90.0;
+    % arm(1).smiData.RevoluteJoint(3).Rz.Pos = 90.0;
     for i = 1:arm(1).nLink
-        arm(1).smiData.RevoluteJoint(i).Rz.Pos = 0.0;
+        % arm(1).smiData.RevoluteJoint(i).Rz.Pos = 0.0;
         q(i) = arm(1).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;
     end
@@ -248,8 +260,12 @@ elseif ARM_TYPE == 6
     % arm(2).smiData.RevoluteJoint(1).Rz.Pos = 60.0;
     % arm(2).smiData.RevoluteJoint(2).Rz.Pos = 45.0;
     % arm(2).smiData.RevoluteJoint(3).Rz.Pos = 30.0;
+    % Stowed config
+    arm(2).smiData.RevoluteJoint(1).Rz.Pos = -80.0;
+    arm(2).smiData.RevoluteJoint(2).Rz.Pos = -90.0;
+    arm(2).smiData.RevoluteJoint(3).Rz.Pos = -20.0;
     for i = 1:arm(2).nLink
-        arm(2).smiData.RevoluteJoint(i).Rz.Pos = 0.0;
+        % arm(2).smiData.RevoluteJoint(i).Rz.Pos = 0.0;
         q(i) = arm(2).smiData.RevoluteJoint(i).Rz.Pos*dtr;
         qDot(i) = 0.0;
     end

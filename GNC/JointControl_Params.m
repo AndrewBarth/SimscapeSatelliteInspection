@@ -68,7 +68,7 @@ if ARM_TYPE == 5
     jointControlData.Ki = massPct*40;
 
 elseif ARM_TYPE == 6
-    massPct = [1.0  0.5785 0.1571];
+    massPct = [1.0  0.5785 0.1571 1 1 1];
     jointControlData.Kp = massPct*1.5;
     jointControlData.Kd = massPct*0;
     jointControlData.Ki = massPct*1.0;
@@ -84,7 +84,8 @@ jointControlData.torqueLimit = 0.5*ones(1,nLink);
 
 % jointControlData.deadzone = 0.02*ones(1,nLink);
 % jointControlData.deadzone = 0.001*ones(1,nLink);
-jointControlData.deadzone = 1e-10*ones(1,nLink);
+jointControlData.deadzone = 1e-4*ones(1,nLink);
+% jointControlData.deadzone = 1e-10*ones(1,nLink);
 
 jointControlData.angleLimit = arm(1).Joint_Limits;
 jointControlData.rateLimit = 10*ones(1,nLink)*pi/180;

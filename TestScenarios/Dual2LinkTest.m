@@ -8,20 +8,20 @@ config = 3;
 i=0;
  for t=0:.001:endTime
     i=i+1;
-    acc1(i) = 0.00088;
-    vel1(i) = acc1(i)*t;
-    ang1(i) = arm(1).smiData.RevoluteJoint(1).Rz.Pos*pi/180 + 0.5*acc1(i)*t^2;
+    acc(i) = 0.00088;
+    vel(i) = acc(i)*t;
+    ang(i) = 0.5*acc(i)*t^2;
 end
 tVec=0:stepSize:endTime;
 zeroVec=zeros(1,length(tVec));
 
-angles=[ang1; zeroVec; zeroVec];
-rates=[vel1; zeroVec; zeroVec];
+angles=[ang; zeroVec; zeroVec];
+rates=[vel; zeroVec; zeroVec];
 
 prescribed_jointAngles = timeseries(angles,tVec);
 prescribed_jointRates = timeseries(rates,tVec);
 
-clear acc1 vel1 ang1 angles rates
+clear acc vel ang angles rates
 
     massPct = [1.0  0.5785 0.1571];
     jointControlData.Kp = massPct*1.5;
@@ -54,16 +54,6 @@ clear acc1 vel1 ang1 angles rates
     jointControlData.Kd = .15.*[1 1 1 1 1 80];
     % jointControlData.Ki = inertiaPct*.002;
     jointControlData.Ki = .0005.*[1 1 1 0 0 .5];
-
-    inertiaPct = [1.0 0.5376  .0751];
-    jointControlData.Kp = inertiaPct*.1;
-    jointControlData.Kd = inertiaPct*0;
-    jointControlData.Ki = inertiaPct*.1;
-    jointControlData.Kp = inertiaPct*1;
-    jointControlData.Kd = inertiaPct*0;
-    jointControlData.Ki = inertiaPct*1;
-
-
 jointControlData.torqueLimit = 1e-2*ones(1,nLink);
 
 Base_length = 0.1;
