@@ -27,22 +27,24 @@ ARM2_CONTROL_TYPE = 3;
 
 %% Path settings
 % Define path for required files
-addpath('RoboticArm_Models')
+addpath('RoboticArm_Models');
 addpath('RoboticArm_Models/ViperX_300');
 addpath('RoboticArm_Models/General_6DOF_Arm');
 addpath('RoboticArm_Models/General_7DOF_Arm');
 addpath('RoboticArm_Models/Planar_3Link_Arm');
 addpath('RoboticArm_Models/Planar_2Link_Arm');
 addpath('Utilities');
-addpath('GNC')
+addpath('GeneralModels');
+addpath('GNC');
 addpath('ClientSatellite');
 addpath('ServicingSatellite');
 addpath('ServicingSatellite/Camera');
 addpath('FlexibleBeam');
 addpath('ManipulatorControl');
-addpath('TestScenarios')
-addpath('TestScenarios/TwoLinkTest/')
-addpath('DataProcessingScripts')
+addpath('CubesatInspection');
+addpath('TestScenarios');
+addpath('TestScenarios/TwoLinkTest/');
+addpath('DataProcessingScripts');
 
 % Load default parameter data for each element
 AllParams
