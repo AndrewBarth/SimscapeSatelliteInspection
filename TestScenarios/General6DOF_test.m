@@ -1,4 +1,10 @@
 
+% Set up DH parameters
+Base_z = 90*dtr;   % Rotation becase Y axis is the joint axis
+alpha = zeros(1, nLink); 
+DHparams(1,:) = [sat.service.radius*cos(pi/8)+ArmBase_height sat.service.length/2 0.0*dtr Base_z];
+
+
 rod_base.rotation = [ 0 0 90]*pi/180;
 
 jointControlData.Kp = [.01 .01 .01 .001 .001 .001]*0.7;

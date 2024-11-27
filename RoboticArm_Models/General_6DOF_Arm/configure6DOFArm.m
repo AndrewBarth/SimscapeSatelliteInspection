@@ -1,9 +1,9 @@
-function arm = configure3DOFArm(arm,q,sat)
-
+function arm = configure6DOFArm(arm,q,sat)
     dtr = pi/180;
 
     armAttachPnt = [0 0 0];
     armAttachAngles = [0 0 0]*dtr;
+    thetaOffset = [0 0 0 0 90 0]*dtr;
 
     % DH parameters order: [d a alpha theta]
     %         d:     distance along z axis
@@ -11,14 +11,15 @@ function arm = configure3DOFArm(arm,q,sat)
     %         alpha: rotation about x axis
     %         theta: rotation about z axis
     % First row of DH table defined in test setup based on attach configuration
-    DHparams(1,:) = arm.DHparams;
-
-    thetaOffset = [0 0 0]*dtr;
-    for i = 1:arm.nLink
-        DHparams(i+1,:) = [0.0 arm.Link_Length(i) 0.0 q(i)+thetaOffset(i)];
-    end
+    DHparams(2,:) = [arm.Link_Length(1) 0.0  90*dtr  q(1)+thetaOffset(1)];
+    DHparams(3,:) = [0.0 arm.Link_Length(2)   0*dtr  q(2)+thetaOffset(2)];
+    DHparams(4,:) = [0.0 arm.Link_Length(3)   0*dtr  q(3)+thetaOffset(3)];
+    DHparams(5,:) = [0.0 arm.Link_Length(4)  90*dtr  q(4)+thetaOffset(4)];
+    DHparams(6,:) = [0.0 0.0             90*dtr  q(5)+thetaOffset(5)];
+    DHparams(7,:) = [arm.Link_Length(5)+arm.Link_Length(6) 0.0  -90*dtr  q(6)+thetaOffset(6)];
 
     % Set up mass properties
+    % THESE ARE PROBABLY INCORRECT. NEED TO MATCH THIS WITH ARM MODEL
     m_base = sat.service.mass + arm.smiData.Solid(1).mass;  % Sum satellite base and arm base
     for i = 1:arm.nLink
         m_link(i) = arm.smiData.Solid(i+1).mass;
@@ -38,17 +39,16 @@ function arm = configure3DOFArm(arm,q,sat)
                              arm.smiData.Solid(i+linkIdx).PoI(2) arm.smiData.Solid(i+linkIdx).PoI(3) arm.smiData.Solid(i+linkIdx).MoI(3)]/1000/1000; % Convert from kg*mm2 to kg*m2
     end
     linkInertia = zeros(arm.nLink,3,3);
+    arm(1).massProperties.mt = mt;
+    arm(1).massProperties.massVec = massVec;
+    arm(1).massProperties.inertiaMatBase = inertiaMatBase;
+    arm(1).massProperties.inertiaMat = inertiaMat;
+    arm(1).massProperties.linkInertia = linkInertia;
+    arm(1).thetaOffset = thetaOffset;
+    arm(1).DHparams = DHparams;
+    arm(1).thetaOffset = thetaOffset;
+    arm(1).armAttachPnt = armAttachPnt;
+    arm(1).armAttachAngles = armAttachAngles;
 
-    % Load data structure
-    arm.massProperties.mt = mt;
-    arm.massProperties.massVec = massVec;
-    arm.massProperties.inertiaMatBase = inertiaMatBase;
-    arm.massProperties.inertiaMat = inertiaMat;
-    arm.massProperties.linkInertia = linkInertia;
-    arm.thetaOffset = thetaOffset;
-    arm.DHparams = DHparams;
-    arm.thetaOffset = thetaOffset;
-    arm.armAttachPnt = armAttachPnt;
-    arm.armAttachAngles = armAttachAngles;
 
 end

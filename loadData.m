@@ -1,11 +1,10 @@
 clear
 %clc
 
+%% Define top-level configuration settings
 MISSION_TYPE = 0;
 VSS_RoboticArmOperation = Simulink.Variant('MISSION_TYPE==0');
 VSS_CubeSatOperation = Simulink.Variant('MISSION_TYPE==1');
-
-
 
 % Select robotic arm to use in the simulation
 ARM_TYPE = 6;    
@@ -17,14 +16,16 @@ ARM_TYPE = 6;
 % 5 = Dual Arm (Both 7-DOF)
 % 6 = Dual Arm (Both 3-DOF)
 
-VSS_RoboticArmPlanar3Link = Simulink.Variant('ARM_TYPE==0');
-VSS_RoboticArmViperX300   = Simulink.Variant('ARM_TYPE==1');
-VSS_RoboticArmGeneral6DOF = Simulink.Variant('ARM_TYPE==2');
-VSS_RoboticArmGeneral7DOF = Simulink.Variant('ARM_TYPE==3');
-VSS_RoboticArmPlanar2Link = Simulink.Variant('ARM_TYPE==4');
-VSS_RoboticArmDualArm7DOF = Simulink.Variant('ARM_TYPE==5');
-VSS_RoboticArmDualArm3DOF = Simulink.Variant('ARM_TYPE==6');
+% Select the control type for each arm
+ARM1_CONTROL_TYPE = 4;
+ARM2_CONTROL_TYPE = 3;
+% 0: No Control (zero torque cmds)
+% 1: Moded Based Control
+% 2: RL Based Control
+% 3: Dual Arm Stabilization (only valid for second arm in dual arm cases)
+% 4: Playback of joint angles
 
+%% Path settings
 % Define path for required files
 addpath('RoboticArm_Models')
 addpath('RoboticArm_Models/ViperX_300');
@@ -43,76 +44,10 @@ addpath('TestScenarios')
 addpath('TestScenarios/TwoLinkTest/')
 addpath('DataProcessingScripts')
 
-
-% Load parameter data for each element
-if ARM_TYPE == 1
-    ViperX_300_DataFile
-    nARM = 1;
-elseif ARM_TYPE == 2
-    General_6DOF_ArmAssembly_DataFile
-    arm(1).smiData = smiData; clear smiData
-    nARM = 1;
-elseif ARM_TYPE == 3
-    General_7DOF_ArmAssembly_DataFile
-    arm(1).smiData = smiData; clear smiData
-    nARM = 1;
-elseif ARM_TYPE == 4
-    ArmAssembly_DataFile
-    RigidBodyTree = load("2linkPlanarTree.mat");
-
-    arm(1).smiData = smiData;
-    arm(2).smiData = smiData; clear smiData
-    nARM = 1;
-elseif ARM_TYPE == 5
-
-    General_7DOF_ArmAssembly_DataFile
-    arm(1).smiData = smiData; clear smiData
-    arm(1).rigidBodyTree = load("General7DOF_RigidBodyTree.mat");
-    i=0;
-    for t=0:.001:49
-        i=i+1;
-        a(i) = 0.00088;
-        v(i) = a(i)*t;
-        ang(i) = 0.5*a(i)*t^2;
-    end
-   tVec=0:.001:49;
-   zeroVec=zeros(1,length(tVec));
-
-   angles=[zeroVec;ang;zeroVec;zeroVec;zeroVec;zeroVec;zeroVec;];
-   rates=[zeroVec;v;zeroVec;zeroVec;zeroVec;zeroVec;zeroVec;];
-   % times = [0 49];
-   prescribed_jointAngles = timeseries(angles,tVec);
-   prescribed_jointRates = timeseries(rates,tVec);
-
-   General_7DOF_ArmAssembly_DataFile
-   arm(2).smiData = smiData; clear smiData
-   arm(2).rigidBodyTree = load("General7DOF_RigidBodyTree.mat");
-
-   nARM = 2;
-elseif ARM_TYPE == 6
-
-    % Set up arm 1
-    ArmAssembly_DataFile
-    arm(1).smiData = smiData; clear smiData
-    arm(1).rigidBodyTree = load("3linkPlanarTree.mat");
-
-   % Set up arm 2
-   ArmAssembly_DataFile
-   arm(2).smiData = smiData; clear smiData
-   arm(2).rigidBodyTree = load("3linkPlanarTree.mat");
-
-   nARM = 2;
-else
-    ArmAssembly_DataFile
-    arm(1).smiData = smiData; clear smiData
-    RigidBodyTree = load("3linkPlanarTree.mat");
-
-    nARM = 1;
-end
-
-ClientAssembly_DataFile
+% Load default parameter data for each element
 AllParams
 
+%% Load Test scenario (used to override the default parameters)
 % Load parameter override data from TestScenarios directory
 if ARM_TYPE == 1
     ViperX_300_test
@@ -126,32 +61,13 @@ elseif ARM_TYPE == 5
     General7DOF_test
 elseif ARM_TYPE == 6
     Dual3LinkTest
+else
+    Single3LinkTest
 end
-
-
-ARM_CONTROL_TYPE = 3;
-VSS_NoControl = Simulink.Variant('ARM_CONTROL_TYPE==0');
-VSS_ModelBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==1');
-VSS_RLBasedArmControl = Simulink.Variant('ARM_CONTROL_TYPE==2');
-VSS_DualArmStabilization = Simulink.Variant('ARM_CONTROL_TYPE==3');
-
-ARM1_CONTROL_TYPE = 0;
-ARM2_CONTROL_TYPE = 3;
-% 0: No Control (zero torque cmds)
-% 1: Moded Based Control
-% 2: RL Based Control
-% 3: Dual Arm Stabilization (only valid for second arm in dual arm cases)
 
 % Perfom initialization calculations based on parameter data
 AllCalcs
 loadBusData
-
-% Set the source of the joint commands (computed or playback)
-ARM1_JOINT_COMMAND_SOURCE = 1;
-ARM2_JOINT_COMMAND_SOURCE = 0;
-% 0: Computed joint torques
-% 1: Playback of joint angles
-
 
 % Load the Simulink model
 load_system('SatelliteServicing_Mission.slx');

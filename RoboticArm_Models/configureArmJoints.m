@@ -3,7 +3,7 @@
 % Note that the state being set to 'Input' should be set first so that the
 % signal lines do not get disconnected because both were set to "Computed'
 if ARM_TYPE == 0
-    if ARM1_JOINT_COMMAND_SOURCE == 0
+    if ARM1_CONTROL_TYPE ~= 4
         % Configure the joints to accept torque input when in active control mode
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmPlanar3Link/Joint 1','TorqueActuationMode','InputTorque');      % 'InputTorque' , 'ComputedTorque'
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmPlanar3Link/Joint 1','MotionActuationMode','ComputedMotion');   % 'InputMotion' , 'ComputedMotion'
@@ -25,7 +25,7 @@ if ARM_TYPE == 0
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmPlanar3Link/Joint 3','TorqueActuationMode','ComputedTorque');   % 'InputTorque' , 'ComputedTorque'
     end
 elseif ARM_TYPE == 5
-    if ARM1_JOINT_COMMAND_SOURCE == 0
+    if ARM1_CONTROL_TYPE ~= 4
         % Configure the joints to accept torque input when in active control mode
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms7DOF/LeftArm/ShoulderAssm_1/Joint_1','TorqueActuationMode','InputTorque');      % 'InputTorque' , 'ComputedTorque'
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms7DOF/LeftArm/ShoulderAssm_1/Joint_1','MotionActuationMode','ComputedMotion');   % 'InputMotion' , 'ComputedMotion'
@@ -70,7 +70,7 @@ elseif ARM_TYPE == 5
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms7DOF/LeftArm/WristAssem_1/Joint_7','MotionActuationMode','InputMotion');      % 'InputMotion' , 'ComputedMotion'
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms7DOF/LeftArm/WristAssem_1/Joint_7','TorqueActuationMode','ComputedTorque');   % 'InputTorque' , 'ComputedTorque'
     end
-    if ARM1_JOINT_COMMAND_SOURCE == 0
+    if ARM1_CONTROL_TYPE ~= 4
         % Configure the joints to accept torque input when in active control mode
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms7DOF/RightArm/ShoulderAssm_1/Joint_1','TorqueActuationMode','InputTorque');      % 'InputTorque' , 'ComputedTorque'
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms7DOF/RightArm/ShoulderAssm_1/Joint_1','MotionActuationMode','ComputedMotion');   % 'InputMotion' , 'ComputedMotion'
@@ -117,7 +117,7 @@ elseif ARM_TYPE == 5
     end
 
 elseif ARM_TYPE == 6
-    if ARM1_JOINT_COMMAND_SOURCE == 0
+    if ARM1_CONTROL_TYPE ~= 4
         % Configure the joints to accept torque input when in active control mode
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms3DOF/LeftArm/Joint 1','TorqueActuationMode','InputTorque');      % 'InputTorque' , 'ComputedTorque'
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms3DOF/LeftArm/Joint 1','MotionActuationMode','ComputedMotion');   % 'InputMotion' , 'ComputedMotion'
@@ -138,7 +138,7 @@ elseif ARM_TYPE == 6
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms3DOF/LeftArm/Joint 3','MotionActuationMode','InputMotion');      % 'InputMotion' , 'ComputedMotion'
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms3DOF/LeftArm/Joint 3','TorqueActuationMode','ComputedTorque');   % 'InputTorque' , 'ComputedTorque'
     end
-    if ARM2_JOINT_COMMAND_SOURCE == 0
+    if ARM2_CONTROL_TYPE ~= 4
         % Configure the joints to accept torque input when in active control mode
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms3DOF/RightArm/Joint 1','TorqueActuationMode','InputTorque');      % 'InputTorque' , 'ComputedTorque'
         set_param('SatelliteServicing_Mission/Mission/Robotic_Arm/RoboticArm/RoboticArmDualArms3DOF/RightArm/Joint 1','MotionActuationMode','ComputedMotion');   % 'InputMotion' , 'ComputedMotion'

@@ -1,8 +1,48 @@
- 
+% Choose a configuration for the test
 config = 3;
 % config 1: octagon base arms at front, center, side mount
 % config 2: octagon base, arms at front, 45 deg, side mount
 % config 3: octagon base arms at front, center, front mount
+
+
+% Initial Joint Angles for Arm 1
+% Zero position
+% arm(1).smiData.RevoluteJoint(1).Rz.Pos = 0.0;
+% arm(1).smiData.RevoluteJoint(2).Rz.Pos = 0.0;
+% arm(1).smiData.RevoluteJoint(3).Rz.Pos = 0.0;
+
+% arm(1).smiData.RevoluteJoint(1).Rz.Pos = -60.0;
+% arm(1).smiData.RevoluteJoint(2).Rz.Pos = -45.0;
+% arm(1).smiData.RevoluteJoint(3).Rz.Pos = -30.0;
+% Stowed config
+arm(1).smiData.RevoluteJoint(1).Rz.Pos = 80.0;
+arm(1).smiData.RevoluteJoint(2).Rz.Pos = 90.0;
+arm(1).smiData.RevoluteJoint(3).Rz.Pos = 20.0;
+
+% Desired config
+% arm(1).smiData.RevoluteJoint(1).Rz.Pos = 40.0;
+% arm(1).smiData.RevoluteJoint(2).Rz.Pos = -45.0;
+% arm(1).smiData.RevoluteJoint(3).Rz.Pos = -30.0;
+
+% Waypoint 1
+% arm(1).smiData.RevoluteJoint(1).Rz.Pos = -20.0;
+% arm(1).smiData.RevoluteJoint(2).Rz.Pos =  90.0;
+% arm(1).smiData.RevoluteJoint(3).Rz.Pos = 90.0;
+
+% Initial Joint Angles for Arm 2
+% Zero position
+% arm(2).smiData.RevoluteJoint(1).Rz.Pos = 0.0;
+% arm(2).smiData.RevoluteJoint(2).Rz.Pos = 0.0;
+% arm(2).smiData.RevoluteJoint(3).Rz.Pos = 0.0;
+
+% arm(2).smiData.RevoluteJoint(1).Rz.Pos = 60.0;
+% arm(2).smiData.RevoluteJoint(2).Rz.Pos = 45.0;
+% arm(2).smiData.RevoluteJoint(3).Rz.Pos = 30.0;
+
+% Stowed config
+arm(2).smiData.RevoluteJoint(1).Rz.Pos = -80.0;
+arm(2).smiData.RevoluteJoint(2).Rz.Pos = -90.0;
+arm(2).smiData.RevoluteJoint(3).Rz.Pos = -20.0;
 
 % Trajectory for arm 1
 i=0;

@@ -8,6 +8,12 @@ function arm = configure2DOFArm(arm,q,sat)
     Base_z = 90*dtr;   % Rotation becase Y axis is the joint axis
     Base_z = 0;
     thetaOffset = [0 0]*dtr;
+
+    % DH parameters order: [d a alpha theta]
+    %         d:     distance along z axis
+    %         a:     distance along x axis
+    %         alpha: rotation about x axis
+    %         theta: rotation about z axis
     DHparams(1,:) = [sat.service.radius sat.service.length/2 0.0*dtr Base_z];
 
     for i = 1:arm.nLink

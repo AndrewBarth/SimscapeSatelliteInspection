@@ -2,10 +2,16 @@ function arm = configure7DOFArm(arm,q,sat)
   
     dtr = pi/180;
 
+    % DH parameters order: [d a alpha theta]
+    %         d:     distance along z axis
+    %         a:     distance along x axis
+    %         alpha: rotation about x axis
+    %         theta: rotation about z axis
     % Set DH parameters
     thetaOffset = [-90 0 0 0 0 0 -90]*dtr;
     % thetaOffset = [90 90 90 90 90 90 -90]*dtr;
   
+
     DHparams(1,:) = [0 0 0 0];
     DHparams(2,:) = [0.0  arm.Link_Length(1)              90.0*dtr q(1)+thetaOffset(1)];
     DHparams(3,:) = [0.0 -arm.Link_Length(2)           -90.0*dtr q(2)+thetaOffset(2)];

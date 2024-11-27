@@ -1,4 +1,10 @@
 
+% dtr = pi/180;
+
+% Set up DH parameters
+Base_z = 90*dtr;   % Rotation becase Y axis is the joint axis
+alpha = zeros(1, nLink); 
+DHparams(1,:) = [0 sat.service.length/2 0.0*dtr Base_z];
 
 jointControlData.eeCmd = zeros(1,12);
 
